@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>Attendance Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+ 
 <style>
-
+ 
 /* 🌈 BACKGROUND */
 body {
   margin:0;
@@ -14,7 +14,7 @@ body {
   background: linear-gradient(135deg,#1e3c72,#2a5298);
   color:#333;
 }
-
+ 
 /* 🔝 NAVBAR */
 .navbar {
   display:flex;
@@ -23,13 +23,10 @@ body {
   padding:15px 25px;
   color:white;
 }
-
+ 
 .navbar h2 { margin:0; }
-
-.navbar button {
-  margin-left:10px;
-}
-
+.navbar button { margin-left:10px; }
+ 
 /* 📦 GLASS CARD */
 .container {
   max-width:950px;
@@ -40,10 +37,10 @@ body {
   backdrop-filter: blur(10px);
   box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
-
+ 
 /* 🧾 HEADINGS */
 h2,h3 { color:white; }
-
+ 
 /* 🔘 BUTTONS */
 .btn {
   padding:8px 14px;
@@ -53,17 +50,18 @@ h2,h3 { color:white; }
   cursor:pointer;
   transition:0.2s;
 }
-
+ 
 .present { background:#4caf50; color:white; }
 .absent { background:#f44336; color:white; }
 .undo { background:#ff9800; color:white; }
 .clear { background:#607d8b; color:white; }
 .export { background:#3f51b5; color:white; }
-
+ 
 .btn:hover {
   transform:scale(1.05);
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
 }
-
+ 
 /* 🔍 INPUT */
 input {
   padding:8px;
@@ -72,7 +70,7 @@ input {
   outline:none;
   margin:5px;
 }
-
+ 
 /* 👨‍🎓 STUDENTS */
 .student-list li {
   list-style:none;
@@ -82,15 +80,13 @@ input {
   cursor:pointer;
   transition:0.2s;
 }
-
+ 
 .student-present { background:#a5d6a7; }
 .student-absent { background:#ef9a9a; }
 .student-unmarked { background:#e0e0e0; }
-
-.student-list li:hover {
-  transform:scale(1.02);
-}
-
+ 
+.student-list li:hover { transform:scale(1.02); }
+ 
 /* 📊 PANELS */
 #summaryPanel, #studentSummary {
   margin-top:20px;
@@ -98,72 +94,40 @@ input {
   border-radius:12px;
   background: rgba(255,255,255,0.9);
 }
-
+ 
 #studentSummary { display:none; }
-
-/* 📉 SMALL CHART */
+ 
 canvas {
   max-width:150px;
   max-height:150px;
 }
-
+ 
 /* 📱 MOBILE */
 @media(max-width:600px){
   .container { padding:10px; }
   input { width:100%; }
   .navbar { flex-direction:column; }
 }
+ 
 #summaryPanel h3,
-#studentSummary h3 {
-  color: black;
-}
-
+#studentSummary h3,
 #summaryPanel p,
-#studentSummary p {
-  color: black;
-}
-#summaryPanel h3,
-#studentSummary h3 {
-  color: black;
-}
-
-#summaryPanel p,
-#studentSummary p {
-  color: black;
-}
-.btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
+#studentSummary p { color: black; }
+ 
 /* 🌞 LIGHT MODE */
 .light-mode {
   background: linear-gradient(135deg,#f5f7fa,#c3cfe2);
   color: #000;
 }
-
-.light-mode .container {
-  background: rgba(255,255,255,0.9);
-}
-
-.light-mode h2,
-.light-mode h3 {
-  color: black;
-}
-
-/* 🌙 DARK MODE (default already) */
-.dark-mode {
-  background: linear-gradient(135deg,#1e3c72,#2a5298);
-}
-
-/* Smooth transition */
-body {
-  transition: all 0.4s ease;
-}
+.light-mode .container { background: rgba(255,255,255,0.9); }
+.light-mode h2, .light-mode h3 { color: black; }
+ 
+body { transition: all 0.4s ease; }
 </style>
 </head>
-
+ 
 <body>
-
+ 
 <div class="navbar">
   <h2>🎓 Attendance Pro</h2>
   <div>
@@ -172,14 +136,14 @@ body {
     <button class="btn absent" onclick="logout()">🚪</button>
   </div>
 </div>
-
+ 
 <div class="container">
-
+ 
 <h2>📝 Mark Attendance</h2>
-
+ 
 <h3 id="dateDisplay"></h3>
 <h3 id="subjectDisplay"></h3>
-
+ 
 <input type="text" id="bulkInput" placeholder="01,02 or 01-05">
 <button class="btn present" onclick="markBulk('Present')">✅ Present (P)</button>
 <button class="btn absent" onclick="markBulk('Absent')">❌ Absent (A)</button>
@@ -187,14 +151,14 @@ body {
 <button class="btn clear" onclick="clearAll()">🧹 Clear (C)</button>
 <button class="btn export" onclick="exportCSV()">💾 Export</button>
 <br><br>
-
+ 
 <input type="text" id="searchBox" placeholder="Search 01">
-
+ 
 <button class="btn present" onclick="markRemainingPresent()">⚡ Mark remaining Present</button>
 <button class="btn absent" onclick="markRemainingAbsent()">🚫 Mark remaining Absent</button>
-
+ 
 <ul id="studentList" class="student-list"></ul>
-
+ 
 <!-- CLASS SUMMARY -->
 <div id="summaryPanel">
   <h3>Class Summary</h3>
@@ -203,7 +167,7 @@ body {
   <p>Total: <span id="totalCount">0</span></p>
   <canvas id="pieChart"></canvas>
 </div>
-
+ 
 <!-- STUDENT SUMMARY -->
 <div id="studentSummary">
   <h3 id="studentNameDisplay"></h3>
@@ -214,371 +178,312 @@ body {
 <br><br>
 <button class="btn present" onclick="submitAttendance()">📤 Submit Attendance</button>
 </div>
-
+ 
 <script>
   let isLocked = false;
   const teacherSubject = localStorage.getItem("subject");
-const selectedSubject = localStorage.getItem("selectedSubject");
-
-// 🚫 BLOCK ACCESS
-if(teacherSubject !== selectedSubject){
-    alert("❌ Unauthorized Access!");
-    window.location.href = "teacherHome.html";
-}
-
-const API = "http://localhost:3000";
-
-// 📅 DATE
-const date = localStorage.getItem("selectedDate");
-// 🧠 DATE CONTROL LOGIC (ADD THIS BLOCK)
-const today = new Date().toISOString().split("T")[0];
-
-const isToday = (date === today);
-const isPast = (date < today);
-const isFuture = (date > today);
-
-// ❌ Block future
-if(isFuture){
-  alert("❌ Cannot mark attendance for future date");
-  window.location.href = "teacherHome.html";
-}
-
-// 🔒 Lock past
-if(isPast){
-  isLocked = true;
-}
-if(date){
-  const p = date.split("-");
-  document.getElementById("dateDisplay").innerText =
-    "📅 " + p[2]+"/"+p[1]+"/"+p[0];
-}
-
-// 📘 SUBJECT
-const subject = localStorage.getItem("selectedSubject");
-if(subject){
-  document.getElementById("subjectDisplay").innerText = "📘 " + subject;
-}
-
-// 👨‍🎓 STUDENTS
-// 👨‍🎓 STUDENTS (SECTION BASED SERIES)
-const section = localStorage.getItem("section");
-
-function generateSeries(start, end){
-  let list = [];
-
-  let prefix = "25G01A";   // SAME as before
-  let base = start.slice(0,2); // first 2 digits
-
-  let s = start.slice(2);
-  let e = end.slice(2);
-
-  let series = [];
-
-  // 01–99
-  for(let i=1;i<=99;i++){
-    series.push(i.toString().padStart(2,'0'));
+  const selectedSubject = localStorage.getItem("selectedSubject");
+ 
+  // 🚫 BLOCK ACCESS
+  if(teacherSubject !== selectedSubject){
+      alert("❌ Unauthorized Access!");
+      // ✅ FIXED: was "teacherHome.html" (capital H) — file is "teacherhome.html"
+      window.location.href = "teacherhome.html";
   }
-
-  // A0–Z9
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  letters.split("").forEach(l=>{
-    for(let i=0;i<=9;i++){
-      series.push(l+i);
+ 
+  // ✅ FIXED: was "http://localhost:3000" — breaks on Render
+  const API = window.location.origin;
+ 
+  // 📅 DATE
+  const date = localStorage.getItem("selectedDate");
+  const today = new Date().toISOString().split("T")[0];
+ 
+  const isToday = (date === today);
+  const isPast = (date < today);
+  const isFuture = (date > today);
+ 
+  // ❌ Block future
+  if(isFuture){
+    alert("❌ Cannot mark attendance for future date");
+    // ✅ FIXED: was "teacherHome.html" (capital H)
+    window.location.href = "teacherhome.html";
+  }
+ 
+  // 🔒 Lock past
+  if(isPast){ isLocked = true; }
+ 
+  if(date){
+    const p = date.split("-");
+    document.getElementById("dateDisplay").innerText =
+      "📅 " + p[2]+"/"+p[1]+"/"+p[0];
+  }
+ 
+  // 📘 SUBJECT
+  const subject = localStorage.getItem("selectedSubject");
+  if(subject){
+    document.getElementById("subjectDisplay").innerText = "📘 " + subject;
+  }
+ 
+  // 👨‍🎓 STUDENTS
+  const section = localStorage.getItem("section");
+ 
+  function generateSeries(start, end){
+    let list = [];
+    let prefix = "25G01A";
+    let base = start.slice(0,2);
+    let s = start.slice(2);
+    let e = end.slice(2);
+    let series = [];
+ 
+    for(let i=1;i<=99;i++){
+      series.push(i.toString().padStart(2,'0'));
     }
-  });
-
-  let startIndex = series.indexOf(s);
-  let endIndex = series.indexOf(e);
-
-  series.slice(startIndex, endIndex+1).forEach(n=>{
-    list.push(prefix + base + n);
-  });
-
-  return list;
-}
-
-let students = [];
-
-// 🔥 SECTION LOGIC
-if(section === "CSE - A") students = generateSeries("0501","0575");
-else if(section === "CSE - B") students = generateSeries("0576","05F0");
-else if(section === "CSE - C") students = generateSeries("05F1","05M5");
-else if(section === "CSE - D") students = generateSeries("05M6","05R9");
-
-else if(section === "A.I - A") students = generateSeries("4301","4375");
-else if(section === "A.I - B") students = generateSeries("4376","43F0");
-else if(section === "A.I - C") students = generateSeries("43F1","43I2");
-
-else if(section === "AIML - A") students = generateSeries("4201","4275");
-else if(section === "AIML - B") students = generateSeries("4276","42F0");
-else if(section === "AIML - C") students = generateSeries("42F1","42M0");
-
-else if(section === "CIVIL") students = generateSeries("0102","0109");
-else if(section === "D.S") students = generateSeries("3201","3241");
-
-else if(section === "ECE - A(electronics)") students = generateSeries("0401","0475");
-else if(section === "ECE - B(electronics)") students = generateSeries("0476","04B5");
-else if(section === "ECE - C(electrical)") students = generateSeries("0201","0219");
-else if(section === "ECE - D(electrical)") students = generateSeries("0301","0312");
-
-let attendanceMap = {};
-let history = [];
-let present=0, absent=0;
-
-// 🎯 RENDER
-function renderStudents(list=students){
-  const ul = document.getElementById("studentList");
-  ul.innerHTML="";
-
-  list.forEach(s=>{
-    const li = document.createElement("li");
-    li.innerText = s;
-
-    if(attendanceMap[s]==="Present") li.className="student-present";
-    else if(attendanceMap[s]==="Absent") li.className="student-absent";
-    else li.className="student-unmarked";
-
-    li.onclick = ()=>showStudentStats(s);
-    ul.appendChild(li);
-  });
-}
-
-// 📌 RANGE
-function parseInput(input){
-  let res=[];
-  input.split(",").forEach(p=>{
-    if(p.includes("-")){
-      let [s,e]=p.split("-").map(x=>parseInt(x));
-      for(let i=s;i<=e;i++) res.push(i.toString().padStart(2,'0'));
-    } else res.push(p.trim());
-  });
-  return res;
-}
-
-// MARK
-function markBulk(status){
-  if(isLocked){
-  alert("❌ Cannot edit previous attendance");
-  return;
-}
-  const input = document.getElementById("bulkInput").value;
-  if(!input) return alert("Enter values");
-
-  parseInput(input).forEach(num=>{
-    const s = "25G01A43"+num;
-    if(!students.includes(s)) return;
-
-    const prev = attendanceMap[s];
-    history.push({s,prev});
-
-    if(prev==="Present") present--;
-    if(prev==="Absent") absent--;
-
-    attendanceMap[s]=status;
-
-    if(status==="Present") present++;
-    else absent++;
-  });
-
-  updateUI();
-  document.getElementById("bulkInput").value="";
-}
-
-// UPDATE
-function updateUI(){
-  renderStudents();
-  document.getElementById("presentCount").innerText = present;
-  document.getElementById("absentCount").innerText = absent;
-  document.getElementById("totalCount").innerText = Object.keys(attendanceMap).length;
-
-  pieChart.data.datasets[0].data=[present,absent];
-  pieChart.update();
-}
-
-// STUDENT VIEW
-function showStudentStats(s){
-  document.getElementById("summaryPanel").style.display="none";
-  document.getElementById("studentSummary").style.display="block";
-
-  const p = attendanceMap[s]==="Present"?1:0;
-  const a = attendanceMap[s]==="Absent"?1:0;
-
-  document.getElementById("studentNameDisplay").innerText=s;
-  document.getElementById("studentPresent").innerText=p;
-  document.getElementById("studentAbsent").innerText=a;
-
-  studentChart.data.datasets[0].data=[p,a];
-  studentChart.update();
-}
-
-// 🔍 SEARCH FIX (01 INCLUDED)
-document.getElementById("searchBox").addEventListener("input",function(){
-  const q = this.value.trim();
-
-  if(!q){
-    document.getElementById("studentSummary").style.display="none";
-    document.getElementById("summaryPanel").style.display="block";
-    renderStudents();
-    return;
+ 
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    letters.split("").forEach(l=>{
+      for(let i=0;i<=9;i++){
+        series.push(l+i);
+      }
+    });
+ 
+    let startIndex = series.indexOf(s);
+    let endIndex = series.indexOf(e);
+ 
+    series.slice(startIndex, endIndex+1).forEach(n=>{
+      list.push(prefix + base + n);
+    });
+ 
+    return list;
   }
-
-  if(q.length===2){
-    const full = "25G01A43"+q;
-    if(students.includes(full)){
-      renderStudents([full]);
-      showStudentStats(full);
+ 
+  let students = [];
+ 
+  if(section === "CSE - A") students = generateSeries("0501","0575");
+  else if(section === "CSE - B") students = generateSeries("0576","05F0");
+  else if(section === "CSE - C") students = generateSeries("05F1","05M5");
+  else if(section === "CSE - D") students = generateSeries("05M6","05R9");
+  else if(section === "A.I - A") students = generateSeries("4301","4375");
+  else if(section === "A.I - B") students = generateSeries("4376","43F0");
+  else if(section === "A.I - C") students = generateSeries("43F1","43I2");
+  else if(section === "AIML - A") students = generateSeries("4201","4275");
+  else if(section === "AIML - B") students = generateSeries("4276","42F0");
+  else if(section === "AIML - C") students = generateSeries("42F1","42M0");
+  else if(section === "CIVIL") students = generateSeries("0102","0109");
+  else if(section === "D.S") students = generateSeries("3201","3241");
+  else if(section === "ECE - A(electronics)") students = generateSeries("0401","0475");
+  else if(section === "ECE - B(electronics)") students = generateSeries("0476","04B5");
+  else if(section === "ECE - C(electrical)") students = generateSeries("0201","0219");
+  else if(section === "ECE - D(electrical)") students = generateSeries("0301","0312");
+ 
+  let attendanceMap = {};
+  let history = [];
+  let present=0, absent=0;
+ 
+  function renderStudents(list=students){
+    const ul = document.getElementById("studentList");
+    ul.innerHTML="";
+    list.forEach(s=>{
+      const li = document.createElement("li");
+      li.innerText = s;
+      if(attendanceMap[s]==="Present") li.className="student-present";
+      else if(attendanceMap[s]==="Absent") li.className="student-absent";
+      else li.className="student-unmarked";
+      li.onclick = ()=>showStudentStats(s);
+      ul.appendChild(li);
+    });
+  }
+ 
+  function parseInput(input){
+    let res=[];
+    input.split(",").forEach(p=>{
+      if(p.includes("-")){
+        let [s,e]=p.split("-").map(x=>parseInt(x));
+        for(let i=s;i<=e;i++) res.push(i.toString().padStart(2,'0'));
+      } else res.push(p.trim());
+    });
+    return res;
+  }
+ 
+  function markBulk(status){
+    if(isLocked){
+      alert("❌ Cannot edit previous attendance");
       return;
     }
-  }
-
-  renderStudents(students.filter(s=>s.includes(q)));
-});
-
-// UNDO
-function undoLast(){
-  if(history.length===0) return;
-
-  const last = history.pop();
-
-  if(attendanceMap[last.s]==="Present") present--;
-  if(attendanceMap[last.s]==="Absent") absent--;
-
-  if(last.prev){
-    attendanceMap[last.s]=last.prev;
-    if(last.prev==="Present") present++;
-    else absent++;
-  } else delete attendanceMap[last.s];
-
-  updateUI();
-}
-
-// CLEAR
-function clearAll(){
-  attendanceMap={}; history=[];
-  present=0; absent=0;
-  updateUI();
-}
-
-// REMAINING
-function markRemainingPresent(){
-  students.forEach(s=>{
-    if(!attendanceMap[s]){ attendanceMap[s]="Present"; present++; }
-  });
-  updateUI();
-}
-
-function markRemainingAbsent(){
-  students.forEach(s=>{
-    if(!attendanceMap[s]){ attendanceMap[s]="Absent"; absent++; }
-  });
-  updateUI();
-}
-
-// CSV
-function exportCSV(){
-  let csv="Roll,Status\n";
-  students.forEach(s=>{
-    csv+=`${s},${attendanceMap[s]||"NA"}\n`;
-  });
-  const blob=new Blob([csv]);
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="attendance.csv";
-  a.click();
-}
-
-// CHARTS
-const pieChart = new Chart(document.getElementById("pieChart"),{
-  type:"pie",
-  data:{labels:["Present","Absent"],datasets:[{data:[0,0]}]}
-});
-
-const studentChart = new Chart(document.getElementById("studentChart"),{
-  type:"pie",
-  data:{labels:["Present","Absent"],datasets:[{data:[0,0]}]}
-});
-
-// NAV
-function goHome(){location.href="teacherHome.html";}
-function goReports(){location.href="reports.html";}
-function logout(){location.href="index.html";}
-
-// INIT
-renderStudents();
-
-// ⌨️ KEYBOARD SHORTCUTS
-document.addEventListener("keydown",function(e){
-  if(e.key==="p") markBulk("Present");
-  if(e.key==="a") markBulk("Absent");
-  if(e.key==="u") undoLast();
-  if(e.key==="c") clearAll();
-});
-// 🌗 TOGGLE THEME
-function toggleTheme(){
-  const body = document.body;
-
-  if(body.classList.contains("light-mode")){
-    body.classList.remove("light-mode");
-    localStorage.setItem("theme","dark");
-  } else {
-    body.classList.add("light-mode");
-    localStorage.setItem("theme","light");
-  }
-}
-
-// 🔁 LOAD SAVED THEME
-window.onload = function(){
-  const savedTheme = localStorage.getItem("theme");
-
-  if(savedTheme === "light"){
-    document.body.classList.add("light-mode");
-  }
-};
-<!-- ONLY CHANGE IS INSIDE submitAttendance() FUNCTION -->
-
-function submitAttendance(){
-if(!isToday){
-  alert("❌ Cannot submit attendance for past date");
-  return;
-}
-showLoader();   // ✅ ADD HERE (START LOADING)
-  let records = [];
-
-  students.forEach(s=>{
-    records.push({
-      studentName: s,
-      status: attendanceMap[s] || "Absent",
-      subject: subject,
-      date: date,
-      period: localStorage.getItem("period")   // ✅ NOW WORKS
+    const input = document.getElementById("bulkInput").value;
+    if(!input) return alert("Enter values");
+ 
+    parseInput(input).forEach(num=>{
+      const s = "25G01A43"+num;
+      if(!students.includes(s)) return;
+      const prev = attendanceMap[s];
+      history.push({s,prev});
+      if(prev==="Present") present--;
+      if(prev==="Absent") absent--;
+      attendanceMap[s]=status;
+      if(status==="Present") present++;
+      else absent++;
     });
+ 
+    updateUI();
+    document.getElementById("bulkInput").value="";
+  }
+ 
+  function updateUI(){
+    renderStudents();
+    document.getElementById("presentCount").innerText = present;
+    document.getElementById("absentCount").innerText = absent;
+    document.getElementById("totalCount").innerText = Object.keys(attendanceMap).length;
+    pieChart.data.datasets[0].data=[present,absent];
+    pieChart.update();
+  }
+ 
+  function showStudentStats(s){
+    document.getElementById("summaryPanel").style.display="none";
+    document.getElementById("studentSummary").style.display="block";
+    const p = attendanceMap[s]==="Present"?1:0;
+    const a = attendanceMap[s]==="Absent"?1:0;
+    document.getElementById("studentNameDisplay").innerText=s;
+    document.getElementById("studentPresent").innerText=p;
+    document.getElementById("studentAbsent").innerText=a;
+    studentChart.data.datasets[0].data=[p,a];
+    studentChart.update();
+  }
+ 
+  document.getElementById("searchBox").addEventListener("input",function(){
+    const q = this.value.trim();
+    if(!q){
+      document.getElementById("studentSummary").style.display="none";
+      document.getElementById("summaryPanel").style.display="block";
+      renderStudents();
+      return;
+    }
+    if(q.length===2){
+      const full = "25G01A43"+q;
+      if(students.includes(full)){
+        renderStudents([full]);
+        showStudentStats(full);
+        return;
+      }
+    }
+    renderStudents(students.filter(s=>s.includes(q)));
   });
-
-  fetch(API + "/submit-attendance", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
+ 
+  function undoLast(){
+    if(history.length===0) return;
+    const last = history.pop();
+    if(attendanceMap[last.s]==="Present") present--;
+    if(attendanceMap[last.s]==="Absent") absent--;
+    if(last.prev){
+      attendanceMap[last.s]=last.prev;
+      if(last.prev==="Present") present++;
+      else absent++;
+    } else delete attendanceMap[last.s];
+    updateUI();
+  }
+ 
+  function clearAll(){
+    attendanceMap={}; history=[];
+    present=0; absent=0;
+    updateUI();
+  }
+ 
+  function markRemainingPresent(){
+    students.forEach(s=>{
+      if(!attendanceMap[s]){ attendanceMap[s]="Present"; present++; }
+    });
+    updateUI();
+  }
+ 
+  function markRemainingAbsent(){
+    students.forEach(s=>{
+      if(!attendanceMap[s]){ attendanceMap[s]="Absent"; absent++; }
+    });
+    updateUI();
+  }
+ 
+  function exportCSV(){
+    let csv="Roll,Status\n";
+    students.forEach(s=>{ csv+=`${s},${attendanceMap[s]||"NA"}\n`; });
+    const blob=new Blob([csv]);
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="attendance.csv";
+    a.click();
+  }
+ 
+  const pieChart = new Chart(document.getElementById("pieChart"),{
+    type:"pie",
+    data:{labels:["Present","Absent"],datasets:[{data:[0,0]}]}
+  });
+ 
+  const studentChart = new Chart(document.getElementById("studentChart"),{
+    type:"pie",
+    data:{labels:["Present","Absent"],datasets:[{data:[0,0]}]}
+  });
+ 
+  // ✅ FIXED: all "teacherHome.html" → "teacherhome.html"
+  function goHome(){ location.href="teacherhome.html"; }
+  function goReports(){ location.href="reports.html"; }
+  function logout(){ location.href="index.html"; }
+ 
+  renderStudents();
+ 
+  document.addEventListener("keydown",function(e){
+    if(e.key==="p") markBulk("Present");
+    if(e.key==="a") markBulk("Absent");
+    if(e.key==="u") undoLast();
+    if(e.key==="c") clearAll();
+  });
+ 
+  function toggleTheme(){
+    const body = document.body;
+    if(body.classList.contains("light-mode")){
+      body.classList.remove("light-mode");
+      localStorage.setItem("theme","dark");
+    } else {
+      body.classList.add("light-mode");
+      localStorage.setItem("theme","light");
+    }
+  }
+ 
+  window.onload = function(){
+    const savedTheme = localStorage.getItem("theme");
+    if(savedTheme === "light"){ document.body.classList.add("light-mode"); }
+  };
+ 
+  function submitAttendance(){
+    if(!isToday){
+      alert("❌ Cannot submit attendance for past date");
+      return;
+    }
+    showLoader();
+ 
+    fetch(API + "/submit-attendance", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
         date: date,
         subject: subject,
         section: section,
         data: attendanceMap
+      })
     })
-})
-.then(res => res.json())
-.then(res => {
-   hideLoader();   // ✅ ADD HERE (STOP LOADING)
-    if(res.success){
+    .then(res => res.json())
+    .then(res => {
+      hideLoader();
+      if(res.success){
         alert("✅ Attendance submitted successfully");
-    } else {
+      } else {
         alert(res.message);
-    }
-})
-.catch(() => {
-    hideLoader();   // ✅ ADD HERE ALSO (ERROR CASE)
-    alert("Error ❌");
-});
-}
+      }
+    })
+    .catch(() => {
+      hideLoader();
+      alert("Error ❌");
+    });
+  }
 </script>
+ 
 <!-- 🔄 LOADER -->
 <div id="loader" style="display:none;">
   <div class="spinner"></div>

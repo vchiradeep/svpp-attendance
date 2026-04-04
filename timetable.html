@@ -3,7 +3,7 @@
 <head>
     <title>Timetable</title>
     <link rel="stylesheet" href="style.css">
-
+ 
     <style>
         .allowed { background:#c8e6c9; }
         .blocked { background:#ffcdd2; }
@@ -13,14 +13,14 @@
         }
     </style>
 </head>
-
+ 
 <body class="teacher-bg">
-
+ 
 <div class="container">
     <h2>📅 Timetable</h2>
-
+ 
     <h3 id="selectedDay"></h3>
-
+ 
     <table border="1" width="100%">
         <tr>
             <th>Period</th>
@@ -28,23 +28,20 @@
             <th>Subject</th>
             <th>Action</th>
         </tr>
-
+ 
         <tbody id="tableBody"></tbody>
     </table>
 </div>
-
+ 
 <script>
-
-// 📅 GET DATE
+ 
 const date = localStorage.getItem("selectedDate");
 const day = new Date(date).toLocaleString('en-US', { weekday: 'long' });
-
+ 
 document.getElementById("selectedDay").innerText = "Day: " + day;
-
-// 👨‍🏫 TEACHER SUBJECT
+ 
 const teacherSubject = localStorage.getItem("subject");
-
-// 🧠 TIMETABLE DATA
+ 
 const timetable = {
     Monday: [
         ["1","9:30-10:20","BEEE"],
@@ -92,65 +89,53 @@ const timetable = {
         ["7","3:10-4:00","DS"]
     ]
 };
-
-// 📊 LOAD TABLE
+ 
 const table = document.getElementById("tableBody");
-
+ 
 if(timetable[day]){
-
     timetable[day].forEach(row => {
-
-        let period = row[0];   // ✅ IMPORTANT
+        let period = row[0];
         let subject = row[2];
-
         let tr = document.createElement("tr");
-
+ 
         if(teacherSubject && subject.toLowerCase().includes(teacherSubject.toLowerCase())){
             tr.classList.add("allowed");
-
             tr.innerHTML = `
                 <td>${period}</td>
                 <td>${row[1]}</td>
                 <td>${subject}</td>
                 <td>
-                    <button onclick="goMark('${subject}', '${period}')">
-    ✅ Mark
-</button>
+                    <button onclick="goMark('${subject}', '${period}')">✅ Mark</button>
                 </td>
             `;
         } else {
             tr.classList.add("blocked");
-
             tr.innerHTML = `
                 <td>${period}</td>
                 <td>${row[1]}</td>
                 <td>${subject}</td>
                 <td>
-                    <button class="btn-lock">
-                        ❌ No Access
-                    </button>
+                    <button class="btn-lock">❌ No Access</button>
                 </td>
             `;
         }
-
+ 
         table.appendChild(tr);
     });
-
 }
-
-// 🚀 GO TO MARK
+ 
 function goMark(subject, period){
     localStorage.setItem("selectedSubject", subject);
-    localStorage.setItem("period", period);   // ✅ THIS FIXES YOUR PROBLEM
+    localStorage.setItem("period", period);
     window.location.href = "mark.html";
 }
-
+ 
 </script>
-<script src="utils.js"></script>
 <!-- 🔄 LOADER -->
 <div id="loader" style="display:none;">
   <div class="spinner"></div>
 </div>
+<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
 <script src="utils.js"></script>
 </body>
 </html>

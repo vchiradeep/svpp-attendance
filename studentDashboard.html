@@ -71,7 +71,10 @@
 </div>
 
 <script>
-const API = "http://localhost:3000";
+// ✅ FIXED: Use window.location.origin instead of hardcoded localhost
+// was: const API = "http://localhost:3000";  ❌ BREAKS ON RENDER
+const API = window.location.origin;
+
 const roll = localStorage.getItem("studentRoll");
 
 if(!roll){
@@ -123,7 +126,7 @@ function showNotification(msg, color="#4caf50"){
 
 // 🔥 MAIN FUNCTION
 async function loadAttendance(showLoad = true){
-     if(showLoad) showLoader();
+  if(showLoad) showLoader();
 
   const res = await fetch(API + "/attendance?studentName=" + roll);
   const data = await res.json();
@@ -157,7 +160,7 @@ async function loadAttendance(showLoad = true){
     if(item.status === "Present") subjectMap[item.subject].p++;
 
     let parts = item.date.split("/");
-let month = parts[1] + "/" + parts[2]; // mm/yyyy
+    let month = parts[1] + "/" + parts[2]; // mm/yyyy
 
     if(!monthMap[month]){
       monthMap[month] = {p:0,t:0};
@@ -252,12 +255,14 @@ function showDateDetails(date){
 
   document.getElementById("dateDetails").innerHTML = html;
 }
+
 function convertToDDMMYYYY(dateStr){
   const d = new Date(dateStr);
   return String(d.getDate()).padStart(2, '0') + '/' +
          String(d.getMonth() + 1).padStart(2, '0') + '/' +
          d.getFullYear();
 }
+
 // 📅 CALENDAR FILTER
 function filterByDate(){
 
@@ -296,14 +301,15 @@ function toggleDark(){
 setInterval(() => {
   loadAttendance(false);
 }, 10000);
-loadAttendance();
 
+loadAttendance();
 </script>
-<script src="utils.js"></script>
+
 <!-- 🔄 LOADER -->
 <div id="loader" style="display:none;">
   <div class="spinner"></div>
 </div>
+<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
 <script src="utils.js"></script>
 </body>
 </html>

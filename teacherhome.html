@@ -4,55 +4,55 @@
     <title>SVPCET - Faculty Home</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
+ 
 <body class="teacher-bg">
-
+ 
 <!-- 🔝 TOP HEADER -->
 <div class="top-bar">
     📞 9390505457 | ✉️ principal@svcet.org
 </div>
-
+ 
 <!-- 🏫 COLLEGE HEADER -->
 <div class="college-header">
-
+ 
    <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="logo">
-
+ 
     <div class="college-title">
         <h1>SRI VENKATESA PERUMAL COLLEGE OF ENGINEERING & TECHNOLOGY</h1>
         <p class="sub">(AUTONOMOUS | NAAC & NBA Accredited)</p>
         <p>RVS Nagar, K.N Road, Puttur, Chittoor (D), Andhra Pradesh</p>
     </div>
 </div>
-
+ 
 <!-- 🔝 NAVBAR -->
 <div class="navbar">
     <h2>Faculty Dashboard</h2>
-
+ 
     <div class="nav-buttons">
    <button onclick="goMark()">📝 Mark Attendance</button>
    <button onclick="goRanking()">🏆 Ranking</button>
 </div>
 </div>
-
+ 
 <!-- 🏫 MAIN CONTENT -->
 <div class="container center">
-
+ 
     <img src="https://assets.allegiance-educare.com/colleges/1480077652001.jpg" class="big-img">
-
+ 
     <h2>Welcome to SVPCET</h2>
-
+ 
     <p>
         Sri Venkatesa Perumal College of Engineering & Technology (SVCET) is a premier engineering institution.
     </p>
-
+ 
 </div>
-
+ 
 <script>
 function goMark(){
-    window.location.href = "dateSelect.html";
+    // ✅ FIXED: was "dateSelect.html" (capital S) — file is "dateselect.html" (all lowercase)
+    window.location.href = "dateselect.html";
 }
-
-// ✅ NEW FUNCTION
+ 
 function goRanking(){
     window.location.href = "ranking.html";
 }
