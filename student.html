@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="student-bg">
+
+<div class="container">
+    <h2>👨‍🎓 Student Login</h2>
+
+    <!-- 🎯 ROLL ONLY -->
+    <input type="text" id="roll" placeholder="Enter Roll Number">
+
+    <!-- 🎯 SECTION DROPDOWN -->
+    <select id="section">
+        <option value="">Select Section</option>
+        <option>CSE - A</option>
+        <option>CSE - B</option>
+        <option>CSE - C</option>
+        <option>CSE - D</option>
+        <option>A.I - A</option>
+        <option>A.I - B</option>
+        <option>A.I - C</option>
+        <option>AIML - A</option>
+        <option>AIML - B</option>
+        <option>AIML - C</option>
+        <option>CIVIL</option>
+        <option>D.S</option>
+        <option>ECE - A</option>
+        <option>ECE - B</option>
+        <option>ECE - C</option>
+        <option>ECE - D</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="studentLogin()">Login</button>
+</div>
+
+<!-- ✅ CORRECT SCRIPT (VERY IMPORTANT FIX) -->
+<script src="student.js"></script>
+<script src="utils.js"></script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

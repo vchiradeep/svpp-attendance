@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Date & Section</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="teacher-bg">
+
+<div class="container">
+
+    <h2>📅 Select Date & Section</h2>
+
+    <!-- 📅 DATE -->
+    <input type="date" id="date">
+
+    <!-- 📅 DISPLAY -->
+    <p id="displayDate" style="font-weight:bold; color:#0d47a1;"></p>
+
+    <br>
+
+    <!-- 🏫 SECTION DROPDOWN -->
+    <select id="section">
+        <option value="">Select Section</option>
+
+        <option>CSE - A</option>
+        <option>CSE - B</option>
+        <option>CSE - C</option>
+        <option>CSE - D</option>
+
+        <option>A.I - A</option>
+        <option>A.I - B</option>
+        <option>A.I - C</option>
+
+        <option>AIML - A</option>
+        <option>AIML - B</option>
+        <option>AIML - C</option>
+
+        <option>Civil</option>
+        <option>D.S</option>
+
+        <option>ECE - A (Electronics)</option>
+        <option>ECE - B (Electronics)</option>
+        <option>ECE - C (Electrical)</option>
+        <option>ECE - D (Electrical)</option>
+
+    </select>
+
+    <br><br>
+
+    <button onclick="goToTimetable()">Next ➡️</button>
+
+</div>
+
+<script>
+
+// 📅 AUTO TODAY (INDIA SAFE)
+const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+
+const today = year + "-" + month + "-" + day;
+
+document.getElementById("date").value = today;
+
+document.getElementById("displayDate").innerText =
+    "Selected Date: " + day + "/" + month + "/" + year;
+
+
+// 👉 NEXT PAGE
+function goToTimetable(){
+
+    const date = document.getElementById("date").value;
+    const section = document.getElementById("section").value;
+
+    if(date === "" || section === ""){
+        alert("Please select date & section");
+        return;
+    }
+
+    // 🔥 SAVE BOTH
+    localStorage.setItem("selectedDate", date);
+    localStorage.setItem("section", section);
+
+    window.location.href = "timetable.html";
+}
+
+
+// 👉 FORMAT DISPLAY
+document.getElementById("date").addEventListener("change", function(){
+
+    const val = this.value;
+
+    if(val){
+        const parts = val.split("-");
+        document.getElementById("displayDate").innerText =
+            "Selected Date: " + parts[2] + "/" + parts[1] + "/" + parts[0];
+    }
+
+});
+
+</script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.eye { cursor:pointer; }
+
+.center-btns {
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+
+.scroll-box {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.green { color: green; font-weight: bold; }
+.red { color: red; font-weight: bold; }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="teacher-bg">
+
+<div class="container">
+
+<h2>🔐 Admin Login</h2>
+
+<div id="loginBox">
+<input type="password" id="adminPass" placeholder="Enter Password">
+<span class="eye" onclick="togglePassword()">👁️</span>
+<br><br>
+<button onclick="checkLogin()">Login</button>
+</div>
+
+<div id="adminPanel" style="display:none;">
+
+<h2 style="color:white;">👨‍💼 Admin Dashboard</h2>
+
+<div class="center-btns">
+  <button onclick="showSection('student')" class="nav-btn">🎓 Student Controls</button>
+  <button onclick="showSection('teacher')" class="nav-btn">👩‍🏫 Teacher Controls</button>
+</div>
+
+<!-- ================= STUDENT ================= -->
+<div id="studentSection" style="display:none;">
+
+<h3>🎓 Student Management</h3>
+
+<div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+  <input type="text" id="searchRoll" placeholder="Search Roll No" style="width:50%;">
+  
+  <button onclick="searchStudent()">Search</button>
+
+  <!-- ✅ HIDDEN INITIALLY -->
+</div>
+
+<div id="result"></div>
+
+<!-- UPDATE (hidden initially) -->
+<div class="card" id="updateBox" style="display:none;">
+<h3>✏️ Update Attendance</h3>
+
+<input type="text" id="updateRoll" placeholder="Student Roll No">
+
+<input type="date" id="updateDate" onchange="updatePeriods()">
+
+<select id="period">
+  <option>Select Date First</option>
+</select>
+
+<select id="status">
+  <option value="Present">Present</option>
+  <option value="Absent">Absent</option>
+</select>
+
+<button onclick="updateAttendance()">Update</button>
+</div>
+
+</div>
+
+<!-- ================= TEACHER ================= -->
+<div id="teacherSection" style="display:none;">
+
+<h3>👩‍🏫 Teacher Tracking</h3>
+
+<button onclick="loadTeachers()">📋 Load Teachers</button>
+
+<div id="teacherResult"></div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+/* ✅ FULL TIMETABLE (MATCHED WITH YOUR timetable.html) */
+const timetable = {
+  Monday: [
+    ["1","9:30-10:20","BEEE"],
+    ["2","10:20-11:10","BEEE"],
+    ["3","11:10-12:00","EG LAB"],
+    ["4","12:00-12:50","EG LAB"],
+    ["5","1:30-2:20","DS LAB"],
+    ["6","2:20-3:10","DS LAB"],
+    ["7","3:10-4:00","DS LAB"]
+  ],
+  Tuesday: [
+    ["1","9:30-10:20","DS"],
+    ["2","10:20-11:10","BEEE"],
+    ["3","11:10-12:00","EEE LAB"],
+    ["4","12:00-12:50","EEE LAB"],
+    ["5","1:30-2:20","PHY"],
+    ["6","2:20-3:10","PHY LAB"],
+    ["7","3:10-4:00","PHY LAB"]
+  ],
+  Wednesday: [
+    ["1","9:30-10:20","DS"],
+    ["2","10:20-11:10","DEVC"],
+    ["3","11:10-12:00","PHY"],
+    ["4","12:00-12:50","BEEE"],
+    ["5","1:30-2:20","BEEE"],
+    ["6","2:20-3:10","DEVC"],
+    ["7","3:10-4:00","DS"]
+  ],
+  Thursday: [
+    ["1","9:30-10:20","DEVC"],
+    ["2","10:20-11:10","BEEE"],
+    ["3","11:10-12:00","DS"],
+    ["4","12:00-12:50","BEEE"],
+    ["5","1:30-2:20","IT WORKSHOP"],
+    ["6","2:20-3:10","IT WORKSHOP"],
+    ["7","3:10-4:00","IT WORKSHOP"]
+  ],
+  Friday: [
+    ["1","9:30-10:20","DEVC"],
+    ["2","10:20-11:10","EG LAB"],
+    ["3","11:10-12:00","EG LAB"],
+    ["4","12:00-12:50","EG LAB"],
+    ["5","1:30-2:20","PHY"],
+    ["6","2:20-3:10","DEVC"],
+    ["7","3:10-4:00","DS"]
+  ]
+};
+
+let subjects = [
+  "Physics","Electrical","Electronics",
+  "Maths","Data Structures","IT Workshop","Engineering Graphics"
+];
+
+/* ================= BASIC ================= */
+
+function showSection(type){
+  studentSection.style.display = "none";
+  teacherSection.style.display = "none";
+
+  if(type === "student") studentSection.style.display = "block";
+  else teacherSection.style.display = "block";
+}
+
+function togglePassword(){
+  let input = adminPass;
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function checkLogin(){
+  let pass = adminPass.value;
+
+  if(pass === "chiru1122"){
+    loginBox.style.display = "none";
+    adminPanel.style.display = "block";
+    alert("✅ Login Successful");
+  } else {
+    alert("❌ Wrong Password");
+  }
+}
+
+/* ================= STUDENT ================= */
+
+async function searchStudent(){
+
+  let roll = searchRoll.value.trim();
+
+  if(!roll){
+    alert("Enter Roll No");
+    return;
+  }
+
+  showLoader();   // ✅ MOVE HERE
+
+  const res = await fetch(API + "/attendance?studentName=" + roll);
+  const data = await res.json();
+
+  hideLoader();   // ✅ correct place
+}
+
+  if(data.length === 0){
+    result.innerHTML = "No records";
+    return;
+  }
+  // ✅ SHOW BUTTON AFTER SEARCH
+
+
+  let html = `
+  <div class="card">
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h3>Student: ${roll}</h3>
+
+  <button onclick="deleteAllRecords()" 
+    style="background:red; padding:8px 14px; font-size:14px;">
+    🗑 Delete All
+  </button>
+</div>
+  <div class="scroll-box">
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Period</th>
+      <th>Status</th>
+      <th>Updated Time</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  data.forEach(d=>{
+    html += `
+    <tr>
+      <td>${new Date(d.date).toLocaleDateString()}</td>
+      <td>${d.subject}</td>
+      <td class="${d.status==="Present"?"green":"red"}">${d.status}</td>
+      <td>${new Date(d.updatedAt).toLocaleString()}</td>
+      <td>
+        <button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')">🗑</button>
+      </td>
+    </tr>
+    `;
+  });
+
+  html += "</table></div></div>";
+
+  result.innerHTML = html;
+
+  updateBox.style.display = "block";
+
+
+/* DELETE */
+async function deleteRecord(name,date,subject){
+   showLoader();  // ✅ ADD HERE
+
+  await fetch(API + "/delete", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ studentName:name, date, subject })
+  });
+   hideLoader();  // ✅ ADD HERE
+
+  alert("Deleted");
+  searchStudent();
+}
+async function deleteAllRecords(){
+
+  let confirmDelete = confirm("⚠️ Are you sure you want to delete ALL records?");
+
+  if(!confirmDelete) return;
+  showLoader();  // ✅ ADD HERE
+
+  await fetch(API + "/delete-all", {
+    method: "POST"
+  });
+   hideLoader();  // ✅ ADD HERE
+
+  alert("✅ All records deleted");
+
+  result.innerHTML = "";
+}
+
+/* UPDATE */
+async function updateAttendance(){
+  showLoader();  // ✅ ADD HERE
+
+  let roll = document.getElementById("updateRoll").value;
+  let date = document.getElementById("updateDate").value;
+  let subject = document.getElementById("period").value;
+  let status = document.getElementById("status").value;
+
+  if(!roll || !date){
+    alert("Fill all fields");
+    return;
+  }
+
+  let data = {};
+  data[roll] = status;
+
+  await fetch(API + "/submit-attendance", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      date,
+      subject,   // ✅ correct
+      data,
+      section:"A"
+    })
+  });
+   hideLoader();  // ✅ ADD HERE
+
+  alert("✅ Updated Successfully");
+  searchStudent();
+}
+
+/* 🔥 FIXED PERIOD DROPDOWN */
+function updatePeriods(){
+
+  let date = updateDate.value;
+  if(!date) return;
+
+  let day = new Date(date).toLocaleDateString('en-US',{weekday:'long'});
+
+  let dropdown = document.getElementById("period");
+  dropdown.innerHTML = "";
+
+  let dayData = timetable[day];
+
+  if(!dayData){
+    dropdown.innerHTML = "<option>No Classes</option>";
+    return;
+  }
+
+  dayData.forEach(row=>{
+    let opt = document.createElement("option");
+
+    opt.value = row[2]; // subject
+    opt.text = "Period " + row[0] + " - " + row[2];
+
+    dropdown.appendChild(opt);
+  });
+}
+
+/* ================= TEACHER ================= */
+
+function loadTeachers(){
+
+  let html = `
+  <div class="scroll-box">
+  <table>
+    <tr><th>Teacher</th><th>Action</th></tr>
+  `;
+
+  subjects.forEach(sub=>{
+    html += `
+    <tr>
+      <td>${sub} Faculty</td>
+      <td><button onclick="viewTeacher('${sub}')">👀</button></td>
+    </tr>`;
+  });
+
+  html += "</table></div><div id='teacherDetails'></div>";
+
+  teacherResult.innerHTML = html;
+}
+async function viewTeacher(subject){
+  let onTime = 0;
+  let late = 0;
+
+  const res = await fetch(API + "/attendance");
+  const data = await res.json();
+
+  let filtered = data.filter(d => d.subject === subject);
+
+  if(filtered.length === 0){
+    teacherDetails.innerHTML = "No data";
+    return;
+  }
+
+  let present = 0;
+  let absent = 0;
+
+  let dateMap = {};
+
+  filtered.forEach(d=>{
+    if(d.status === "Present") present++;
+    else absent++;
+
+    let date = new Date(d.date).toLocaleDateString();
+
+    if(!dateMap[date]){
+      dateMap[date] = { present:0, absent:0, total:0 };
+    }
+
+    dateMap[date].total++;
+
+    if(d.status === "Present"){
+      dateMap[date].present++;
+    } else {
+      dateMap[date].absent++;
+    }
+
+    // ✅ FIXED ONTIME / LATE LOGIC
+    if(d.updatedAt){
+  let time = new Date(d.updatedAt);
+
+  if(!isNaN(time.getTime())){
+    let hour = time.getHours();
+
+    if(hour <= 10) onTime++;
+    else late++;
+  } else {
+    late++;
+  }
+} else {
+  late++;   // 👈 force count if missing
+}
+  });
+
+  let percent = ((present/(present+absent))*100).toFixed(1);
+
+  let badgeClass = percent < 70 ? "badge-red" : "badge-green";
+  let badgeText = percent < 70 ? "⚠️ Needs Improvement" : "🔥 Excellent";
+
+  let html = `
+  <div class="card">
+
+    <h3>📊 ${subject} Teacher Dashboard</h3>
+
+    <!-- STATS -->
+    <div class="stats-box">
+      <div class="stat">
+        <h4>Total</h4>
+        <p>${filtered.length}</p>
+      </div>
+
+      <div class="stat">
+        <h4>Present</h4>
+        <p>${present}</p>
+      </div>
+
+      <div class="stat">
+        <h4>Absent</h4>
+        <p>${absent}</p>
+      </div>
+
+      <div class="stat">
+        <h4>Attendance</h4>
+        <p>${percent}%</p>
+      </div>
+    </div>
+
+<p>⏰ On-Time: <b>${onTime}</b></p>
+<p>🐢 Late: <b>${late}</b></p>
+
+    <!-- STATUS -->
+    <div style="margin-top:10px;">
+      <span class="${badgeClass}">${badgeText}</span>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-container">
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <h4>📅 Date-wise Performance</h4>
+
+    <div class="scroll-box">
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Present</th>
+        <th>Absent</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+  `;
+
+  for(let d in dateMap){
+
+    let p = dateMap[d].present;
+    let a = dateMap[d].absent;
+    let t = dateMap[d].total;
+
+    let status = (p === t) ? "✅ Complete" : "❌ Missing";
+
+    html += `
+    <tr>
+      <td>${d}</td>
+      <td class="green">${p}</td>
+      <td class="red">${a}</td>
+      <td>${t}</td>
+      <td class="${p===t ? 'green':'red'}">${status}</td>
+    </tr>
+    `;
+  }
+
+  html += `</table></div></div>`;
+
+  teacherDetails.innerHTML = html;
+
+  new Chart(document.getElementById("pieChart"), {
+    type: 'pie',
+    data: {
+      labels: ['Present', 'Absent'],
+      datasets: [{
+        data: [present, absent],
+        backgroundColor: ['#4CAF50', '#F44336']
+      }]
+    }
+  });
+}
+</script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

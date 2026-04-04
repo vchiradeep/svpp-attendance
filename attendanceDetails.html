@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Details</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="student-bg">
+
+<div class="container">
+
+    <h2>📊 Attendance Details</h2>
+
+    <ul id="list"></ul>
+
+</div>
+
+<script>
+
+const API = "http://localhost:3000";
+const roll = localStorage.getItem("studentRoll");
+showLoader();   // ✅ ADD HERE
+
+fetch(API + "/attendance?studentName=" + roll)
+.then(res => res.json())
+.then(data => {
+
+    const list = document.getElementById("list");
+
+    data.forEach(item => {
+
+        const li = document.createElement("li");
+
+        const date = new Date(item.date).toLocaleDateString();
+
+        li.innerText = date + " → " + item.status;
+
+        list.appendChild(li);
+    });
+     hideLoader();   // ✅ ADD HERE
+
+});
+</script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

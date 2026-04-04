@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="student-bg">
+
+<div class="container">
+
+    <h1>Student Dashboard</h1>
+
+    <!-- Student Info -->
+    <div class="card">
+        <h2>Welcome Student</h2>
+        <p><b>Roll No:</b> <span id="roll"></span></p>
+        <p><b>Section:</b> <span id="section"></span></p>
+    </div>
+
+    <!-- Attendance Summary -->
+    <div class="card">
+        <h2>Attendance Summary</h2>
+
+        <!-- ✅ PERFECT MEDIUM CHART -->
+        <div class="chart-container" style="width:250px;height:250px;margin:auto;">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <p>Total Classes: <span id="total"></span></p>
+        <p>Attended Classes: <span id="attended"></span></p>
+
+        <!-- ✅ NO EXTRA % -->
+        <p>Percentage: <span id="percentage"></span></p>
+
+        <!-- 🏆 BADGE -->
+        <h3 id="badge"></h3>
+
+        <!-- 🎯 STATUS -->
+        <h3 id="status"></h3>
+
+        <!-- 🎉 IMAGE -->
+        <img id="congratsImg"
+             src="images/congrats.png"
+             style="display:none; width:200px; margin-top:10px;">
+    </div>
+
+    <!-- Target Section -->
+    <div class="card">
+        <h2>Target Tracker</h2>
+        <p id="target75"></p>
+        <p id="target80"></p>
+        <p id="target90"></p>
+        <p id="target95"></p>
+        <p id="target100"></p>
+    </div>
+
+    <!-- View Attendance -->
+    <div class="card">
+        <h2>View Attendance by Date</h2>
+
+        <input type="date" id="datePicker">
+        <button onclick="showAttendance()">Check</button>
+
+        <table id="attendanceTable">
+            <tr>
+                <th>Subject</th>
+                <th>Status</th>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<script src="student.js"></script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

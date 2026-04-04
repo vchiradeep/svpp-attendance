@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timetable</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .allowed { background:#c8e6c9; }
+        .blocked { background:#ffcdd2; }
+        .btn-lock {
+            background:#ccc;
+            cursor:not-allowed;
+        }
+    </style>
+</head>
+
+<body class="teacher-bg">
+
+<div class="container">
+    <h2>📅 Timetable</h2>
+
+    <h3 id="selectedDay"></h3>
+
+    <table border="1" width="100%">
+        <tr>
+            <th>Period</th>
+            <th>Time</th>
+            <th>Subject</th>
+            <th>Action</th>
+        </tr>
+
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+
+// 📅 GET DATE
+const date = localStorage.getItem("selectedDate");
+const day = new Date(date).toLocaleString('en-US', { weekday: 'long' });
+
+document.getElementById("selectedDay").innerText = "Day: " + day;
+
+// 👨‍🏫 TEACHER SUBJECT
+const teacherSubject = localStorage.getItem("subject");
+
+// 🧠 TIMETABLE DATA
+const timetable = {
+    Monday: [
+        ["1","9:30-10:20","BEEE"],
+        ["2","10:20-11:10","BEEE"],
+        ["3","11:10-12:00","EG LAB"],
+        ["4","12:00-12:50","EG LAB"],
+        ["5","1:30-2:20","DS LAB"],
+        ["6","2:20-3:10","DS LAB"],
+        ["7","3:10-4:00","DS LAB"]
+    ],
+    Tuesday: [
+        ["1","9:30-10:20","DS"],
+        ["2","10:20-11:10","BEEE"],
+        ["3","11:10-12:00","EEE LAB"],
+        ["4","12:00-12:50","EEE LAB"],
+        ["5","1:30-2:20","PHY"],
+        ["6","2:20-3:10","PHY LAB"],
+        ["7","3:10-4:00","PHY LAB"]
+    ],
+    Wednesday: [
+        ["1","9:30-10:20","DS"],
+        ["2","10:20-11:10","DEVC"],
+        ["3","11:10-12:00","PHY"],
+        ["4","12:00-12:50","BEEE"],
+        ["5","1:30-2:20","BEEE"],
+        ["6","2:20-3:10","DEVC"],
+        ["7","3:10-4:00","DS"]
+    ],
+    Thursday: [
+        ["1","9:30-10:20","DEVC"],
+        ["2","10:20-11:10","BEEE"],
+        ["3","11:10-12:00","DS"],
+        ["4","12:00-12:50","BEEE"],
+        ["5","1:30-2:20","IT WORKSHOP"],
+        ["6","2:20-3:10","IT WORKSHOP"],
+        ["7","3:10-4:00","IT WORKSHOP"]
+    ],
+    Friday: [
+        ["1","9:30-10:20","DEVC"],
+        ["2","10:20-11:10","EG LAB"],
+        ["3","11:10-12:00","EG LAB"],
+        ["4","12:00-12:50","EG LAB"],
+        ["5","1:30-2:20","PHY"],
+        ["6","2:20-3:10","DEVC"],
+        ["7","3:10-4:00","DS"]
+    ]
+};
+
+// 📊 LOAD TABLE
+const table = document.getElementById("tableBody");
+
+if(timetable[day]){
+
+    timetable[day].forEach(row => {
+
+        let period = row[0];   // ✅ IMPORTANT
+        let subject = row[2];
+
+        let tr = document.createElement("tr");
+
+        if(teacherSubject && subject.toLowerCase().includes(teacherSubject.toLowerCase())){
+            tr.classList.add("allowed");
+
+            tr.innerHTML = `
+                <td>${period}</td>
+                <td>${row[1]}</td>
+                <td>${subject}</td>
+                <td>
+                    <button onclick="goMark('${subject}', '${period}')">
+    ✅ Mark
+</button>
+                </td>
+            `;
+        } else {
+            tr.classList.add("blocked");
+
+            tr.innerHTML = `
+                <td>${period}</td>
+                <td>${row[1]}</td>
+                <td>${subject}</td>
+                <td>
+                    <button class="btn-lock">
+                        ❌ No Access
+                    </button>
+                </td>
+            `;
+        }
+
+        table.appendChild(tr);
+    });
+
+}
+
+// 🚀 GO TO MARK
+function goMark(subject, period){
+    localStorage.setItem("selectedSubject", subject);
+    localStorage.setItem("period", period);   // ✅ THIS FIXES YOUR PROBLEM
+    window.location.href = "mark.html";
+}
+
+</script>
+<script src="utils.js"></script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

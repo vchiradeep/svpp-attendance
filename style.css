@@ -1,0 +1,377 @@
+/* 🌍 GLOBAL */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.6s ease;
+}
+
+/* ✨ PAGE FADE */
+@keyframes fadeIn {
+    from {opacity:0; transform:translateY(10px);}
+    to {opacity:1; transform:translateY(0);}
+}
+
+/* 🌈 LIGHT BACKGROUNDS */
+.home-bg {
+    background: linear-gradient(to right, #fdfbfb, #ebedee);
+}
+
+.teacher-bg {
+    background: linear-gradient(to right, #e3f2fd, #ffffff);
+}
+
+.student-bg {
+    background: linear-gradient(to right, #e0f7fa, #ffffff);
+}
+
+.report-bg {
+    background: #ffffff;
+}
+
+/* 🔝 NAVBAR */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 15px 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar h2 {
+    margin: 0;
+    color: #0d47a1;
+}
+
+/* 📦 CONTAINER */
+.container {
+    background: #ffffff;
+    margin: 30px auto;
+    padding: 25px;
+    width: 85%;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+/* 🔥 INPUT CENTER FIX ONLY */
+input, select {
+    width: 60%;
+    padding: 12px;
+    margin: 10px auto;   /* ✅ THIS LINE CENTERS */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    display: block;
+}
+
+/* 🔘 BUTTON */
+button {
+  width: 100%;
+  max-width: 320px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px auto;
+  display: block;
+
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  color: white;
+
+  /* 🎨 keep your nice gradient colors */
+  background: linear-gradient(135deg, #667eea, #764ba2);
+
+  /* ✨ modern shadow */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+  transition: all 0.3s ease;
+}
+
+/* 🔥 hover effect (previous style) */
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* 👇 click effect */
+button:active {
+  transform: scale(0.95);
+}
+.student-btn {
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+
+.teacher-btn {
+  background: linear-gradient(135deg, #ff9966, #ff5e62);
+}
+
+.admin-btn {
+  background: linear-gradient(135deg, #00c9ff, #92fe9d);
+}
+
+/* 🏫 HEADER */
+.top-bar {
+    background: #0d47a1;
+    color: white;
+    text-align: center;
+    padding: 8px;
+}
+
+/* 🏫 COLLEGE HEADER */
+.college-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #f1f5f9;
+}
+
+/* 🖼️ LOGO */
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    margin-right: 15px;
+}
+
+/* 🖼️ SMALL IMAGE */
+.login-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  display: block;
+  margin: 15px auto;
+  border-radius: 12px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* ✅ moved here */
+
+  transition: transform 0.3s ease;
+}
+
+/* hover effect */
+.login-img:hover {
+  transform: scale(1.05);
+}
+
+/* 🖼️ BIG IMAGE */
+.big-img {
+    width: 95%;
+    max-width: 750px;
+    border-radius: 15px;
+    margin: 20px auto;
+    display: block;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+/* 🧩 CARDS */
+.card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  margin: 15px auto;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  transition: 0.3s;
+  width: 85%;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* 📊 TABLE */
+table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: collapse;
+}
+
+th {
+    background: #0d47a1;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+/* 📅 DATE INPUT */
+input[type="date"] {
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* 🎯 HEADINGS */
+h3 {
+    color: #4CAF50;
+}
+
+/* 📊 CHART */
+.chart-container {
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+}
+
+canvas {
+    max-width: 300px;
+    max-height: 300px;
+    margin: auto;
+    display: block;
+}
+
+/* ✨ HOVER TABLE */
+tr:hover {
+    background: #f5f5f5;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 768px) {
+    .container { width: 95%; }
+    input, select { width: 90%; }
+    .college-header { flex-direction: column; }
+    .card { width: 95%; }
+}
+
+/* 🎉 SUCCESS */
+.success-box {
+    background: #e8f5e9;
+    padding: 15px;
+    border-radius: 10px;
+    color: #2e7d32;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+/* ⚠️ WARNING */
+.warning-box {
+    background: #fff3e0;
+    padding: 15px;
+    border-radius: 10px;
+    color: #e65100;
+    font-weight: bold;
+    margin-top: 15px;
+}
+.nav-btn {
+  padding: 12px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  transition: 0.3s;
+}
+
+.nav-btn:hover {
+  transform: scale(1.05);
+}
+.stats-box {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.stat {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  width: 120px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.badge-green {
+  background:#e8f5e9;
+  color:#2e7d32;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:600;
+}
+
+.badge-red {
+  background:#ffebee;
+  color:#c62828;
+  padding:6px 10px;
+  border-radius:8px;
+  font-weight:600;
+}
+.stat h4 {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.stat p {
+  font-size: 22px;
+  margin: 5px 0 0;
+  font-weight: bold;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th {
+  background: linear-gradient(45deg, #0d47a1, #1976d2);
+}
+
+td {
+  background: #fafafa;
+}
+
+tr:nth-child(even) td {
+  background: #f1f5f9;
+}
+.nav-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+/* 🔄 FULL SCREEN LOADER */
+#loader {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ background: rgba(0,0,0,0.4);
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ z-index: 1000;
+}
+
+/* 🔄 SPINNER */
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #ccc;
+  border-top:5px solid #4CAF50;
+  border-radius:50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+  0%{ transform: rotate(0deg); }
+  100%{ transform: rotate(360deg); }
+}
