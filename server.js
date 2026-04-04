@@ -10,13 +10,10 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // SERVE FRONTEND
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 app.use(express.static(path.join(__dirname, "public")));
 
 // CONNECT DB
-mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep12@attendance-cluster.iakzknl.mongodb.net/?appName=attendance-cluster")
+mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep1122@attendance-cluster.iakzknl.mongodb.net/attendanceDB?retryWrites=true&w=majority")
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log(err));
 
