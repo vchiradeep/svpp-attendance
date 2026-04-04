@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 // CONNECT DB
-mongoose.connect("mongodb://127.0.0.1:27017/attendanceDB")
+mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep12@attendance-cluster.iakzknl.mongodb.net/?appName=attendance-cluster")
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log(err));
 
@@ -123,6 +123,8 @@ app.post("/deleteTeacher", async (req, res) => {
 });
 
 // START
-app.listen(3000, '0.0.0.0', () => {
-    console.log("🚀 Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server running");
 });
