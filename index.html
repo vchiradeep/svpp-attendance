@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance System</title>
+    <link rel="icon" type="image/png" href="/svpp-logo.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-bg">
+
+<div class="container">
+
+    <h1>🎓 Attendance System</h1>
+    <!-- 🔥 SMALL IMAGE (YOU ASKED) -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5meuW9gzfJ5UB-KyM0AMgGAyozQwk-1dQg&s"
+     class="login-img">
+    <button onclick="teacher()">👨‍🏫 Teacher</button>
+    <button onclick="student()">👨‍🎓 Student</button>
+    <button onclick="goAdmin()">👨‍💼 Admin Panel</button>
+
+</div>
+
+<script>
+function teacher(){
+    window.location.href = "teacher.html";
+}
+function student(){
+    window.location.href = "student.html";
+}
+function goAdmin(){
+    window.location.href = "admin.html";
+}
+</script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>
