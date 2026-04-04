@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 // ✅ GET DATA FROM LOGIN
 const roll = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
@@ -18,7 +16,7 @@ let fullData = [];
 
 // 📊 LOAD ATTENDANCE
 function loadStudentAttendance(){
-    fetch(API + "/attendance")
+    fetch("/attendance")
     .then(res => res.json())
     .then(data => {
 

@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 /* =========================
    ✅ LOGIN FUNCTION (LOGIN PAGE)
 ========================= */
@@ -7,6 +5,7 @@ function studentLogin(){
 
     const roll = document.getElementById("roll").value.trim();
     const section = document.getElementById("section").value;
+    
 
     if(!roll){
         alert("Enter Roll Number");
@@ -19,18 +18,18 @@ function studentLogin(){
     }
 
     localStorage.setItem("studentRoll", roll);
-    localStorage.setItem("studentSection", section);
+    localStorage.setItem("section", section);
 
-    window.location.href = "studentHome.html";
+    window.location.href = "student_home.html";
 }
 
 /* =========================
    ✅ BELOW CODE ONLY FOR STUDENT HOME PAGE
 ========================= */
 
-if(window.location.pathname.includes("studentHome")){
-     const roll = document.getElementById("roll").value.trim();
-    const section = document.getElementById("section").value;
+if(window.location.pathname.includes("student_home")){
+     const roll = localStorage.getItem("studentRoll");
+const section = localStorage.getItem("section");
 
     if(!roll || !section){
         alert("Please login first");
@@ -45,7 +44,7 @@ if(window.location.pathname.includes("studentHome")){
     // 📊 LOAD ATTENDANCE
     function loadStudentAttendance(){
         showLoader();
-        fetch(API + "/attendance?studentName=" + roll)
+       fetch("/attendance?studentName=" + roll)
         .then(res => res.json())
         .then(data => {
 

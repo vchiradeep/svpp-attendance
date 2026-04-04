@@ -4,7 +4,8 @@ function login() {
 
     // Sample validation
     if (roll === "123" && section === "A") {
-        localStorage.setItem("student", roll);
+       localStorage.setItem("studentRoll", roll);
+localStorage.setItem("section", section);
         window.location.href = "student_home.html";
     } else {
         document.getElementById("error").innerText = "Invalid Details!";
