@@ -20,14 +20,14 @@ function studentLogin(){
     localStorage.setItem("studentRoll", roll);
     localStorage.setItem("section", section);
 
-    window.location.href = "student_home.html";
+    window.location.href = "studenthome.html";
 }
 
 /* =========================
    ✅ BELOW CODE ONLY FOR STUDENT HOME PAGE
 ========================= */
 
-if(window.location.pathname.includes("student_home")){
+if(window.location.pathname.includes("studenthome")){
      const roll = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
 

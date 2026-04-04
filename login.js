@@ -6,7 +6,7 @@ function login() {
     if (roll === "123" && section === "A") {
        localStorage.setItem("studentRoll", roll);
 localStorage.setItem("section", section);
-        window.location.href = "student_home.html";
+        window.location.href = "studenthome.html";
     } else {
         document.getElementById("error").innerText = "Invalid Details!";
     }
