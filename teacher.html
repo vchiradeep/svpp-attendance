@@ -4,113 +4,202 @@
     <title>Faculty Login — SVPCET</title>
     <link rel="stylesheet" href="style.css">
     <style>
-      body.teacher-bg {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
+ 
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+      body {
         min-height: 100vh;
-        background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
-      }
-      body.teacher-bg > .container {
-        max-width: 440px;
-        width: 100%;
-        border-top: 5px solid #1a56db;
-      }
-      .login-icon {
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #1a56db, #3b82f6);
-        border-radius: 18px;
+        background: linear-gradient(145deg, #eff6ff, #dbeafe, #eff6ff);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
-        margin: 0 auto 20px;
-        box-shadow: 0 8px 24px rgba(26,86,219,0.3);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        padding: 24px;
       }
+ 
+      .login-wrapper {
+        width: 100%;
+        max-width: 400px;
+        background: white;
+        border-radius: 22px;
+        padding: 40px 36px;
+        box-shadow: 0 20px 60px rgba(26,86,219,0.12);
+        border-top: 5px solid #1a56db;
+        animation: fadeUp 0.5s ease;
+      }
+ 
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(20px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+ 
+      .login-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #1a56db, #3b82f6);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 22px rgba(26,86,219,0.28);
+      }
+ 
+      h2 {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #1e3a8a;
+        margin-bottom: 6px;
+      }
+ 
+      .subtitle {
+        text-align: center;
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 28px;
+      }
+ 
       .input-label {
+        display: block;
         font-size: 12px;
         font-weight: 700;
-        color: #1e293b;
+        color: #1e3a8a;
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        margin-bottom: 4px;
-        display: block;
+        margin-bottom: 6px;
       }
-      .input-group { margin-bottom: 16px; }
+ 
+      .input-group { margin-bottom: 18px; }
+ 
+      input, select {
+        width: 100%;
+        padding: 13px 15px;
+        border: 2px solid #dbeafe;
+        border-radius: 11px;
+        font-size: 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: #1e293b;
+        background: #eff6ff;
+        outline: none;
+        transition: all 0.25s ease;
+      }
+ 
+      input:focus, select:focus {
+        border-color: #1a56db;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(26,86,219,0.09);
+      }
+ 
+      .pass-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+ 
+      .pass-wrap input { padding-right: 46px; }
+ 
+      .toggle-eye {
+        position: absolute;
+        right: 14px;
+        cursor: pointer;
+        font-size: 18px;
+        user-select: none;
+        color: #94a3b8;
+      }
+ 
       .login-btn {
         width: 100%;
         padding: 14px;
-        font-size: 15px;
-        border-radius: 12px;
-        margin-top: 8px;
         background: linear-gradient(135deg, #1a56db, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        margin-top: 6px;
         letter-spacing: 0.3px;
       }
-      .login-footer {
+ 
+      .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(26,86,219,0.35);
+        background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      }
+ 
+      .back-link {
+        display: block;
         text-align: center;
         margin-top: 20px;
         font-size: 13px;
+        color: #1a56db;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
       }
-      .password-container { position: relative; display: flex; align-items: center; }
-      .password-container input { flex: 1; padding-right: 44px; }
-      .toggle-password { position: absolute; right: 14px; cursor: pointer; font-size: 18px; user-select: none; }
+ 
+      .back-link:hover { color: #1d4ed8; }
+ 
+      @media (max-width: 480px) {
+        .login-wrapper { padding: 32px 24px; }
+        h2 { font-size: 22px; }
+      }
     </style>
 </head>
-<body class="teacher-bg">
+<body>
  
-<div class="container">
-    <div class="login-icon">👨‍🏫</div>
-    <h2 style="text-align:center; margin-bottom:6px;">Faculty Login</h2>
-    <p style="text-align:center; color:#64748b; font-size:13px; margin-bottom:24px;">Select your subject and enter password</p>
+<div class="login-wrapper">
+  <div class="login-icon">👨‍🏫</div>
+  <h2>Faculty Login</h2>
+  <p class="subtitle">Select your subject and enter password</p>
  
-    <div class="input-group">
-        <label class="input-label">Subject</label>
-        <select id="subject">
-            <option value="">Select Subject</option>
-            <option value="PHY">Physics</option>
-            <option value="BEEE">Electrical (BEEE)</option>
-            <option value="ECE">Electronics</option>
-            <option value="MATHS">Maths</option>
-            <option value="DS">Data Structures</option>
-            <option value="IT WORKSHOP">IT Workshop</option>
-            <option value="EG LAB">Engineering Graphics</option>
-            <option value="DEVC">DEVC</option>
-        </select>
+  <div class="input-group">
+    <label class="input-label">Subject</label>
+    <select id="subject">
+      <option value="">Select Subject</option>
+      <option value="PHY">Physics</option>
+      <option value="BEEE">Electrical (BEEE)</option>
+      <option value="ECE">Electronics</option>
+      <option value="MATHS">Maths</option>
+      <option value="DS">Data Structures</option>
+      <option value="IT WORKSHOP">IT Workshop</option>
+      <option value="EG LAB">Engineering Graphics</option>
+      <option value="DEVC">DEVC</option>
+    </select>
+  </div>
+ 
+  <div class="input-group">
+    <label class="input-label">Password</label>
+    <div class="pass-wrap">
+      <input type="password" id="password" placeholder="Enter your password">
+      <span class="toggle-eye" onclick="togglePassword()">👁️</span>
     </div>
+  </div>
  
-    <div class="input-group">
-        <label class="input-label">Password</label>
-        <div class="password-container">
-            <input type="password" id="password" placeholder="Enter password">
-            <span class="toggle-password" onclick="togglePassword()">👁️</span>
-        </div>
-    </div>
- 
-    <button class="login-btn" onclick="login()">Login →</button>
- 
-    <div class="login-footer">
-        <a href="index.html" style="color:#1a56db; text-decoration:none; font-weight:600;">← Back to Home</a>
-    </div>
+  <button class="login-btn" onclick="login()">Login →</button>
+  <a href="index.html" class="back-link">← Back to Home</a>
 </div>
  
 <script>
 function login(){
-    const subject = document.getElementById("subject").value;
-    const password = document.getElementById("password").value;
- 
-    if(!subject){ alert("Please select subject"); return; }
-    if(!password){ alert("Enter password"); return; }
- 
-    localStorage.setItem("subject", subject);
-    window.location.href = "teacherhome.html";
+  const subject = document.getElementById("subject").value;
+  const password = document.getElementById("password").value;
+  if(!subject){ alert("Please select subject"); return; }
+  if(!password){ alert("Enter password"); return; }
+  localStorage.setItem("subject", subject);
+  window.location.href = "teacherhome.html";
 }
- 
-function togglePassword() {
-    const pwd = document.getElementById("password");
-    pwd.type = (pwd.type === "password") ? "text" : "password";
+function togglePassword(){
+  const pwd = document.getElementById("password");
+  pwd.type = (pwd.type === "password") ? "text" : "password";
 }
 </script>
+ 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>

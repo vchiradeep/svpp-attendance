@@ -5,114 +5,188 @@
     <link rel="icon" type="image/png" href="/svpp-logo.png">
     <link rel="stylesheet" href="style.css">
     <style>
-      body.home-bg {
-        flex-direction: column;
-        gap: 0;
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
+ 
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+      body {
+        min-height: 100vh;
+        background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        padding: 24px;
       }
+ 
+      .home-wrapper {
+        width: 100%;
+        max-width: 420px;
+      }
+ 
+      /* LOGO + TITLE */
+      .home-header {
+        text-align: center;
+        margin-bottom: 36px;
+      }
+ 
       .home-logo {
-        width: 80px;
-        height: 80px;
+        width: 76px;
+        height: 76px;
         border-radius: 50%;
         object-fit: cover;
-        margin: 0 auto 16px;
-        display: block;
-        border: 3px solid rgba(255,255,255,0.25);
-        box-shadow: 0 0 40px rgba(139,92,246,0.5);
+        border: 3px solid rgba(255,255,255,0.2);
+        box-shadow: 0 0 36px rgba(139,92,246,0.45);
+        margin-bottom: 16px;
       }
+ 
+      .home-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 30px;
+        color: #fff;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+ 
       .home-subtitle {
-        color: #94a3b8;
         font-size: 13px;
-        margin-bottom: 30px;
-        letter-spacing: 1px;
+        color: #94a3b8;
         text-transform: uppercase;
+        letter-spacing: 1.2px;
+        font-weight: 500;
       }
+ 
+      /* DIVIDER */
+      .divider {
+        height: 1px;
+        background: rgba(255,255,255,0.1);
+        margin: 0 0 28px;
+        border-radius: 2px;
+      }
+ 
+      /* ROLE BUTTONS */
       .role-btn {
         display: flex;
         align-items: center;
-        gap: 14px;
+        gap: 16px;
         width: 100%;
-        padding: 16px 20px;
-        margin: 8px 0;
+        padding: 18px 20px;
+        margin-bottom: 14px;
         border: none;
-        border-radius: 14px;
-        font-size: 15px;
-        font-weight: 700;
+        border-radius: 16px;
         font-family: 'Plus Jakarta Sans', sans-serif;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
         text-align: left;
-        letter-spacing: 0.2px;
       }
-      .role-btn .btn-icon {
-        font-size: 22px;
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
+ 
+      .role-btn:last-child { margin-bottom: 0; }
+ 
+      .btn-icon {
+        font-size: 24px;
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: rgba(255,255,255,0.15);
         flex-shrink: 0;
       }
-      .role-btn .btn-label { flex: 1; }
-      .role-btn .btn-label span {
+ 
+      .btn-text { flex: 1; }
+ 
+      .btn-text strong {
         display: block;
-        font-size: 11px;
-        font-weight: 500;
-        opacity: 0.75;
-        margin-top: 2px;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
+        font-size: 15px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 3px;
       }
-      .role-btn .arrow { font-size: 18px; opacity: 0.6; }
-      .btn-teacher { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; }
-      .btn-student { background: linear-gradient(135deg, #059669, #10b981); color: white; }
-      .btn-admin { background: linear-gradient(135deg, #be123c, #f43f5e); color: white; }
-      .role-btn:hover { transform: translateX(6px) translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-      .divider {
-        width: 40px;
-        height: 2px;
-        background: rgba(255,255,255,0.15);
-        margin: 12px auto;
-        border-radius: 2px;
+ 
+      .btn-text span {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.65);
+        letter-spacing: 0.3px;
+      }
+ 
+      .btn-arrow {
+        font-size: 18px;
+        color: rgba(255,255,255,0.5);
+        transition: transform 0.25s ease;
+      }
+ 
+      .role-btn:hover .btn-arrow { transform: translateX(4px); color: white; }
+ 
+      .role-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+      }
+ 
+      .btn-teacher { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+      .btn-student { background: linear-gradient(135deg, #047857, #10b981); }
+      .btn-admin   { background: linear-gradient(135deg, #be123c, #f43f5e); }
+ 
+      /* FOOTER TEXT */
+      .home-footer {
+        text-align: center;
+        margin-top: 28px;
+        font-size: 12px;
+        color: #475569;
+      }
+ 
+      /* RESPONSIVE */
+      @media (max-width: 480px) {
+        .home-header h1 { font-size: 26px; }
+        .role-btn { padding: 16px 16px; }
+        .btn-icon { width: 44px; height: 44px; font-size: 20px; }
       }
     </style>
 </head>
-<body class="home-bg">
+<body>
  
-<div class="container">
+<div class="home-wrapper">
+ 
+  <!-- HEADER -->
+  <div class="home-header">
     <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="home-logo">
     <h1>SVPCET</h1>
     <p class="home-subtitle">Attendance Management System</p>
+  </div>
  
-    <div class="divider"></div>
+  <div class="divider"></div>
  
-    <button class="role-btn btn-teacher" onclick="window.location.href='teacher.html'">
-        <div class="btn-icon">👨‍🏫</div>
-        <div class="btn-label">
-            Faculty Login
-            <span>Mark & manage attendance</span>
-        </div>
-        <div class="arrow">→</div>
-    </button>
+  <!-- ROLE BUTTONS -->
+  <button class="role-btn btn-teacher" onclick="window.location.href='teacher.html'">
+    <div class="btn-icon">👨‍🏫</div>
+    <div class="btn-text">
+      <strong>Faculty Login</strong>
+      <span>Mark & manage attendance</span>
+    </div>
+    <div class="btn-arrow">→</div>
+  </button>
  
-    <button class="role-btn btn-student" onclick="window.location.href='student.html'">
-        <div class="btn-icon">👨‍🎓</div>
-        <div class="btn-label">
-            Student Login
-            <span>View your attendance</span>
-        </div>
-        <div class="arrow">→</div>
-    </button>
+  <button class="role-btn btn-student" onclick="window.location.href='student.html'">
+    <div class="btn-icon">👨‍🎓</div>
+    <div class="btn-text">
+      <strong>Student Login</strong>
+      <span>View your attendance records</span>
+    </div>
+    <div class="btn-arrow">→</div>
+  </button>
  
-    <button class="role-btn btn-admin" onclick="window.location.href='admin.html'">
-        <div class="btn-icon">🛡️</div>
-        <div class="btn-label">
-            Admin Panel
-            <span>Manage system & records</span>
-        </div>
-        <div class="arrow">→</div>
-    </button>
+  <button class="role-btn btn-admin" onclick="window.location.href='admin.html'">
+    <div class="btn-icon">🛡️</div>
+    <div class="btn-text">
+      <strong>Admin Panel</strong>
+      <span>Manage system & records</span>
+    </div>
+    <div class="btn-arrow">→</div>
+  </button>
+ 
+  <div class="home-footer">© 2025 SVPCET · Puttur, Andhra Pradesh</div>
 </div>
  
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
