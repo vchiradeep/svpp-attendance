@@ -1,39 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Attendance System</title>
+    <title>SVPCET Attendance System</title>
     <link rel="icon" type="image/png" href="/svpp-logo.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+      body.home-bg {
+        flex-direction: column;
+        gap: 0;
+      }
+      .home-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 16px;
+        display: block;
+        border: 3px solid rgba(255,255,255,0.25);
+        box-shadow: 0 0 40px rgba(139,92,246,0.5);
+      }
+      .home-subtitle {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .role-btn {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        padding: 16px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        text-align: left;
+        letter-spacing: 0.2px;
+      }
+      .role-btn .btn-icon {
+        font-size: 22px;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.15);
+        flex-shrink: 0;
+      }
+      .role-btn .btn-label { flex: 1; }
+      .role-btn .btn-label span {
+        display: block;
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.75;
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .role-btn .arrow { font-size: 18px; opacity: 0.6; }
+      .btn-teacher { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; }
+      .btn-student { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+      .btn-admin { background: linear-gradient(135deg, #be123c, #f43f5e); color: white; }
+      .role-btn:hover { transform: translateX(6px) translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+      .divider {
+        width: 40px;
+        height: 2px;
+        background: rgba(255,255,255,0.15);
+        margin: 12px auto;
+        border-radius: 2px;
+      }
+    </style>
 </head>
 <body class="home-bg">
-
+ 
 <div class="container">
-
-    <h1>🎓 Attendance System</h1>
-    <!-- 🔥 SMALL IMAGE (YOU ASKED) -->
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5meuW9gzfJ5UB-KyM0AMgGAyozQwk-1dQg&s"
-     class="login-img">
-    <button onclick="teacher()">👨‍🏫 Teacher</button>
-    <button onclick="student()">👨‍🎓 Student</button>
-    <button onclick="goAdmin()">👨‍💼 Admin Panel</button>
-
+    <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="home-logo">
+    <h1>SVPCET</h1>
+    <p class="home-subtitle">Attendance Management System</p>
+ 
+    <div class="divider"></div>
+ 
+    <button class="role-btn btn-teacher" onclick="window.location.href='teacher.html'">
+        <div class="btn-icon">👨‍🏫</div>
+        <div class="btn-label">
+            Faculty Login
+            <span>Mark & manage attendance</span>
+        </div>
+        <div class="arrow">→</div>
+    </button>
+ 
+    <button class="role-btn btn-student" onclick="window.location.href='student.html'">
+        <div class="btn-icon">👨‍🎓</div>
+        <div class="btn-label">
+            Student Login
+            <span>View your attendance</span>
+        </div>
+        <div class="arrow">→</div>
+    </button>
+ 
+    <button class="role-btn btn-admin" onclick="window.location.href='admin.html'">
+        <div class="btn-icon">🛡️</div>
+        <div class="btn-label">
+            Admin Panel
+            <span>Manage system & records</span>
+        </div>
+        <div class="arrow">→</div>
+    </button>
 </div>
-
-<script>
-function teacher(){
-    window.location.href = "teacher.html";
-}
-function student(){
-    window.location.href = "student.html";
-}
-function goAdmin(){
-    window.location.href = "admin.html";
-}
-</script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+ 
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

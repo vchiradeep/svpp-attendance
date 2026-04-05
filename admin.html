@@ -1,471 +1,538 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Panel</title>
+<title>Admin Panel — SVPCET</title>
 <link rel="stylesheet" href="style.css">
- 
-<style>
-.eye { cursor:pointer; }
- 
-.center-btns {
-  display:flex;
-  justify-content:center;
-  gap:20px;
-}
- 
-.scroll-box {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-top: 10px;
-}
- 
-.green { color: green; font-weight: bold; }
-.red { color: red; font-weight: bold; }
-</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    background: #0f172a;
+    min-height: 100vh;
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+ 
+  .admin-header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+  }
+ 
+  .admin-header h1 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+ 
+  .admin-badge {
+    background: #f43f5e;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+ 
+  .admin-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+ 
+  /* LOGIN BOX */
+  .login-box {
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 44px 40px;
+    max-width: 420px;
+    margin: 60px auto;
+    border: 1px solid #334155;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    animation: fadeUp 0.5s ease;
+  }
+ 
+  .admin-login-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #f43f5e, #be123c);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(244,63,94,0.4);
+  }
+ 
+  .login-box h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+ 
+  .login-box p {
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+ 
+  .admin-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #f1f5f9;
+    background: #0f172a;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+  }
+ 
+  .admin-input:focus { border-color: #f43f5e; box-shadow: 0 0 0 4px rgba(244,63,94,0.1); }
+ 
+  .admin-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #f43f5e, #be123c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+  }
+ 
+  .admin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,63,94,0.4); }
+ 
+  /* PANEL */
+  #adminPanel { animation: fadeUp 0.4s ease; }
+ 
+  .panel-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+ 
+  .tab-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: 2px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+ 
+  .tab-btn:hover, .tab-btn.active {
+    background: #f43f5e;
+    color: white;
+    border-color: #f43f5e;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(244,63,94,0.3);
+  }
+ 
+  /* DARK CARDS */
+  .dark-card {
+    background: #1e293b;
+    border-radius: 14px;
+    padding: 22px;
+    margin: 14px 0;
+    border: 1px solid #334155;
+    animation: fadeUp 0.4s ease;
+  }
+ 
+  .dark-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 14px;
+  }
+ 
+  /* DARK INPUTS */
+  .dark-card input,
+  .dark-card select {
+    background: #0f172a;
+    border: 2px solid #334155;
+    color: #f1f5f9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    margin: 6px 0;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+ 
+  .dark-card input:focus, .dark-card select:focus {
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 3px rgba(244,63,94,0.1);
+  }
+ 
+  .dark-card button {
+    background: #f43f5e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 4px 4px 4px 0;
+  }
+ 
+  .dark-card button:hover { background: #be123c; transform: translateY(-1px); }
+ 
+  .dark-card button.secondary {
+    background: #334155;
+    color: #e2e8f0;
+  }
+ 
+  .dark-card button.secondary:hover { background: #475569; }
+ 
+  /* SEARCH ROW */
+  .search-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+ 
+  .search-row input { flex: 1; min-width: 200px; }
+ 
+  /* DARK TABLE */
+  .dark-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #0f172a;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+ 
+  .dark-table th {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+  }
+ 
+  .dark-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #1e293b;
+    color: #cbd5e1;
+  }
+ 
+  .dark-table tr:hover td { background: #1e293b; }
+  .dark-table tr:last-child td { border-bottom: none; }
+ 
+  .scroll-box { max-height: 320px; overflow-y: auto; border-radius: 10px; }
+  .scroll-box::-webkit-scrollbar { width: 4px; }
+  .scroll-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+ 
+  .green { color: #34d399; font-weight: 700; }
+  .red { color: #f87171; font-weight: 700; }
+ 
+  .eye { cursor: pointer; font-size: 18px; }
+ 
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+ 
+  .mini-stat {
+    background: #0f172a;
+    border-radius: 10px;
+    padding: 14px 20px;
+    text-align: center;
+    border: 1px solid #334155;
+    min-width: 90px;
+  }
+ 
+  .mini-stat p { font-size: 22px; font-weight: 800; color: #f1f5f9; margin-bottom: 3px; }
+  .mini-stat span { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; }
+</style>
 </head>
  
-<body class="teacher-bg">
+<body>
  
-<div class="container">
- 
-<h2>🔐 Admin Login</h2>
- 
-<div id="loginBox">
-<input type="password" id="adminPass" placeholder="Enter Password">
-<span class="eye" onclick="togglePassword()">👁️</span>
-<br><br>
-<button onclick="checkLogin()">Login</button>
+<div class="admin-header">
+    <h1>🛡️ Admin Panel <span class="admin-badge">Secure</span></h1>
+    <a href="index.html" style="color:#64748b; text-decoration:none; font-size:13px; font-weight:600;">← Back to Home</a>
 </div>
  
+<div class="admin-container">
+ 
+<!-- LOGIN -->
+<div id="loginBox" class="login-box">
+    <div class="admin-login-icon">🛡️</div>
+    <h2>Admin Login</h2>
+    <p>Enter your admin password to continue</p>
+ 
+    <div style="position:relative; display:flex; align-items:center;">
+        <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
+        <span class="eye" onclick="togglePassword()" style="position:absolute; right:14px;">👁️</span>
+    </div>
+ 
+    <button class="admin-btn" onclick="checkLogin()">Login →</button>
+</div>
+ 
+<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
  
-<h2 style="color:white;">👨‍💼 Admin Dashboard</h2>
+    <div class="panel-tabs">
+        <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
+        <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
+    </div>
  
-<div class="center-btns">
-  <button onclick="showSection('student')" class="nav-btn">🎓 Student Controls</button>
-  <button onclick="showSection('teacher')" class="nav-btn">👩‍🏫 Teacher Controls</button>
-</div>
+    <!-- STUDENT SECTION -->
+    <div id="studentSection">
+        <div class="dark-card">
+            <h3>🔍 Search Student Records</h3>
+            <div class="search-row">
+                <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+                <button onclick="searchStudent()">Search</button>
+            </div>
+        </div>
  
-<!-- ================= STUDENT ================= -->
-<div id="studentSection" style="display:none;">
+        <div id="result"></div>
  
-<h3>🎓 Student Management</h3>
+        <div class="dark-card" id="updateBox" style="display:none;">
+            <h3>✏️ Update Attendance</h3>
+            <input type="text" id="updateRoll" placeholder="Student Roll No">
+            <input type="date" id="updateDate" onchange="updatePeriods()">
+            <select id="period"><option>Select Date First</option></select>
+            <select id="status">
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+            </select>
+            <button onclick="updateAttendance()">✅ Update</button>
+        </div>
+    </div>
  
-<div style="display:flex; justify-content:center; align-items:center; gap:10px;">
-  <input type="text" id="searchRoll" placeholder="Search Roll No" style="width:50%;">
-  <button onclick="searchStudent()">Search</button>
-</div>
- 
-<div id="result"></div>
- 
-<!-- UPDATE (hidden initially) -->
-<div class="card" id="updateBox" style="display:none;">
-<h3>✏️ Update Attendance</h3>
- 
-<input type="text" id="updateRoll" placeholder="Student Roll No">
-<input type="date" id="updateDate" onchange="updatePeriods()">
- 
-<select id="period">
-  <option>Select Date First</option>
-</select>
- 
-<select id="status">
-  <option value="Present">Present</option>
-  <option value="Absent">Absent</option>
-</select>
- 
-<button onclick="updateAttendance()">Update</button>
-</div>
- 
-</div>
- 
-<!-- ================= TEACHER ================= -->
-<div id="teacherSection" style="display:none;">
- 
-<h3>👩‍🏫 Teacher Tracking</h3>
- 
-<button onclick="loadTeachers()">📋 Load Teachers</button>
- 
-<div id="teacherResult"></div>
- 
-</div>
+    <!-- TEACHER SECTION -->
+    <div id="teacherSection" style="display:none;">
+        <div class="dark-card">
+            <h3>👩‍🏫 Teacher Performance Tracking</h3>
+            <button onclick="loadTeachers()">📋 Load All Teachers</button>
+        </div>
+        <div id="teacherResult"></div>
+    </div>
  
 </div>
 </div>
  
 <script>
-// ✅ FIXED: was "http://localhost:3000" — breaks on Render
 const API = window.location.origin;
  
-/* ✅ FULL TIMETABLE */
 const timetable = {
-  Monday: [
-    ["1","9:30-10:20","BEEE"],
-    ["2","10:20-11:10","BEEE"],
-    ["3","11:10-12:00","EG LAB"],
-    ["4","12:00-12:50","EG LAB"],
-    ["5","1:30-2:20","DS LAB"],
-    ["6","2:20-3:10","DS LAB"],
-    ["7","3:10-4:00","DS LAB"]
-  ],
-  Tuesday: [
-    ["1","9:30-10:20","DS"],
-    ["2","10:20-11:10","BEEE"],
-    ["3","11:10-12:00","EEE LAB"],
-    ["4","12:00-12:50","EEE LAB"],
-    ["5","1:30-2:20","PHY"],
-    ["6","2:20-3:10","PHY LAB"],
-    ["7","3:10-4:00","PHY LAB"]
-  ],
-  Wednesday: [
-    ["1","9:30-10:20","DS"],
-    ["2","10:20-11:10","DEVC"],
-    ["3","11:10-12:00","PHY"],
-    ["4","12:00-12:50","BEEE"],
-    ["5","1:30-2:20","BEEE"],
-    ["6","2:20-3:10","DEVC"],
-    ["7","3:10-4:00","DS"]
-  ],
-  Thursday: [
-    ["1","9:30-10:20","DEVC"],
-    ["2","10:20-11:10","BEEE"],
-    ["3","11:10-12:00","DS"],
-    ["4","12:00-12:50","BEEE"],
-    ["5","1:30-2:20","IT WORKSHOP"],
-    ["6","2:20-3:10","IT WORKSHOP"],
-    ["7","3:10-4:00","IT WORKSHOP"]
-  ],
-  Friday: [
-    ["1","9:30-10:20","DEVC"],
-    ["2","10:20-11:10","EG LAB"],
-    ["3","11:10-12:00","EG LAB"],
-    ["4","12:00-12:50","EG LAB"],
-    ["5","1:30-2:20","PHY"],
-    ["6","2:20-3:10","DEVC"],
-    ["7","3:10-4:00","DS"]
-  ]
+  Monday: [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
+  Tuesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
+  Wednesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","DEVC"],["3","11:10-12:00","PHY"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","BEEE"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]],
+  Thursday: [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
+  Friday: [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
 };
  
-let subjects = [
-  "Physics","Electrical","Electronics",
-  "Maths","Data Structures","IT Workshop","Engineering Graphics"
-];
- 
-/* ================= BASIC ================= */
- 
-function showSection(type){
-  document.getElementById("studentSection").style.display = "none";
-  document.getElementById("teacherSection").style.display = "none";
- 
-  if(type === "student") document.getElementById("studentSection").style.display = "block";
-  else document.getElementById("teacherSection").style.display = "block";
-}
+let subjects = ["Physics","Electrical","Electronics","Maths","Data Structures","IT Workshop","Engineering Graphics"];
  
 function togglePassword(){
-  let input = document.getElementById("adminPass");
-  input.type = input.type === "password" ? "text" : "password";
+  let i = document.getElementById("adminPass");
+  i.type = i.type === "password" ? "text" : "password";
 }
  
 function checkLogin(){
-  let pass = document.getElementById("adminPass").value;
- 
-  if(pass === "chiru1122"){
+  if(document.getElementById("adminPass").value === "chiru1122"){
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
-    alert("✅ Login Successful");
   } else {
     alert("❌ Wrong Password");
   }
 }
  
-/* ================= STUDENT ================= */
+function showSection(type){
+  document.getElementById("studentSection").style.display = "none";
+  document.getElementById("teacherSection").style.display = "none";
+  document.getElementById("tab-student").classList.remove("active");
+  document.getElementById("tab-teacher").classList.remove("active");
+  document.getElementById(type+"Section").style.display = "block";
+  document.getElementById("tab-"+type).classList.add("active");
+}
  
 async function searchStudent(){
- 
   let roll = document.getElementById("searchRoll").value.trim();
- 
-  if(!roll){
-    alert("Enter Roll No");
-    return;
-  }
+  if(!roll){ alert("Enter Roll No"); return; }
  
   showLoader();
- 
   const res = await fetch(API + "/attendance?studentName=" + roll);
   const data = await res.json();
- 
   hideLoader();
  
   const result = document.getElementById("result");
-  const updateBox = document.getElementById("updateBox");
  
   if(data.length === 0){
-    result.innerHTML = "No records";
+    result.innerHTML = `<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b></p></div>`;
     return;
   }
  
+  let present = data.filter(d => d.status === "Present").length;
+  let absent = data.length - present;
+  let pct = ((present/data.length)*100).toFixed(1);
+ 
   let html = `
-  <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3>Student: ${roll}</h3>
-      <button onclick="deleteAllRecords()" 
-        style="background:red; padding:8px 14px; font-size:14px;">
-        🗑 Delete All
-      </button>
+  <div class="dark-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+      <h3 style="margin:0;">🎓 ${roll}</h3>
+      <button onclick="deleteAllRecords()" style="background:#7f1d1d; font-size:12px; padding:8px 14px;">🗑 Delete All</button>
+    </div>
+    <div class="stats-row">
+      <div class="mini-stat"><p>${data.length}</p><span>Total</span></div>
+      <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
+      <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
+      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Percentage</span></div>
     </div>
     <div class="scroll-box">
-    <table>
-      <tr>
-        <th>Date</th>
-        <th>Period</th>
-        <th>Status</th>
-        <th>Updated Time</th>
-        <th>Action</th>
-      </tr>
+    <table class="dark-table">
+      <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>
   `;
  
   data.forEach(d => {
-    html += `
-    <tr>
+    html += `<tr>
       <td>${new Date(d.date).toLocaleDateString()}</td>
       <td>${d.subject}</td>
       <td class="${d.status==="Present"?"green":"red"}">${d.status}</td>
       <td>${new Date(d.updatedAt).toLocaleString()}</td>
-      <td>
-        <button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')">🗑</button>
-      </td>
-    </tr>
-    `;
+      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" style="padding:6px 10px; font-size:12px; background:#7f1d1d;">🗑</button></td>
+    </tr>`;
   });
  
-  html += "</table></div></div>";
- 
+  html += `</table></div></div>`;
   result.innerHTML = html;
-  updateBox.style.display = "block";
+  document.getElementById("updateBox").style.display = "block";
 }
  
-/* DELETE */
 async function deleteRecord(name, date, subject){
   showLoader();
- 
-  await fetch(API + "/delete", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ studentName:name, date, subject })
-  });
- 
+  await fetch(API + "/delete", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ studentName:name, date, subject }) });
   hideLoader();
   alert("Deleted");
   searchStudent();
 }
  
 async function deleteAllRecords(){
-  let confirmDelete = confirm("⚠️ Are you sure you want to delete ALL records?");
-  if(!confirmDelete) return;
- 
+  if(!confirm("⚠️ Delete ALL records?")) return;
   showLoader();
- 
-  await fetch(API + "/delete-all", {
-    method: "POST"
-  });
- 
+  await fetch(API + "/delete-all", { method:"POST" });
   hideLoader();
   alert("✅ All records deleted");
   document.getElementById("result").innerHTML = "";
 }
  
-/* UPDATE */
 async function updateAttendance(){
-  showLoader();
- 
   let roll = document.getElementById("updateRoll").value;
   let date = document.getElementById("updateDate").value;
   let subject = document.getElementById("period").value;
   let status = document.getElementById("status").value;
- 
-  if(!roll || !date){
-    alert("Fill all fields");
-    hideLoader();
-    return;
-  }
- 
-  let data = {};
-  data[roll] = status;
- 
-  await fetch(API + "/submit-attendance", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      date,
-      subject,
-      data,
-      section:"A"
-    })
-  });
- 
+  if(!roll || !date){ alert("Fill all fields"); return; }
+  showLoader();
+  let data = {}; data[roll] = status;
+  await fetch(API + "/submit-attendance", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ date, subject, data, section:"A" }) });
   hideLoader();
   alert("✅ Updated Successfully");
   searchStudent();
 }
  
-/* PERIOD DROPDOWN */
 function updatePeriods(){
   let date = document.getElementById("updateDate").value;
   if(!date) return;
- 
   let day = new Date(date).toLocaleDateString('en-US',{weekday:'long'});
   let dropdown = document.getElementById("period");
   dropdown.innerHTML = "";
- 
   let dayData = timetable[day];
- 
-  if(!dayData){
-    dropdown.innerHTML = "<option>No Classes</option>";
-    return;
-  }
- 
+  if(!dayData){ dropdown.innerHTML = "<option>No Classes</option>"; return; }
   dayData.forEach(row => {
     let opt = document.createElement("option");
     opt.value = row[2];
-    opt.text = "Period " + row[0] + " - " + row[2];
+    opt.text = "Period " + row[0] + " — " + row[2];
     dropdown.appendChild(opt);
   });
 }
  
-/* ================= TEACHER ================= */
- 
 function loadTeachers(){
-  let html = `
-  <div class="scroll-box">
-  <table>
-    <tr><th>Teacher</th><th>Action</th></tr>
-  `;
- 
+  let html = `<div class="dark-card"><h3>👩‍🏫 Faculty List</h3><div class="scroll-box"><table class="dark-table"><tr><th>Faculty</th><th>Subject</th><th>Action</th></tr>`;
   subjects.forEach(sub => {
-    html += `
-    <tr>
-      <td>${sub} Faculty</td>
-      <td><button onclick="viewTeacher('${sub}')">👀</button></td>
-    </tr>`;
+    html += `<tr><td>${sub} Faculty</td><td>${sub}</td><td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px; font-size:12px;">👀 View</button></td></tr>`;
   });
- 
-  html += "</table></div><div id='teacherDetails'></div>";
+  html += `</table></div></div><div id="teacherDetails"></div>`;
   document.getElementById("teacherResult").innerHTML = html;
 }
  
 async function viewTeacher(subject){
-  let onTime = 0;
-  let late = 0;
- 
   const res = await fetch(API + "/attendance");
   const data = await res.json();
- 
   let filtered = data.filter(d => d.subject === subject);
- 
-  if(filtered.length === 0){
-    document.getElementById("teacherDetails").innerHTML = "No data";
-    return;
-  }
- 
-  let present = 0;
-  let absent = 0;
-  let dateMap = {};
- 
+  if(filtered.length === 0){ document.getElementById("teacherDetails").innerHTML = `<div class="dark-card"><p style="color:#64748b;">No data available</p></div>`; return; }
+  let present = 0, absent = 0, onTime = 0, late = 0, dateMap = {};
   filtered.forEach(d => {
-    if(d.status === "Present") present++;
-    else absent++;
- 
+    if(d.status==="Present") present++; else absent++;
     let date = new Date(d.date).toLocaleDateString();
- 
-    if(!dateMap[date]){
-      dateMap[date] = { present:0, absent:0, total:0 };
-    }
- 
+    if(!dateMap[date]) dateMap[date]={present:0,absent:0,total:0};
     dateMap[date].total++;
-    if(d.status === "Present") dateMap[date].present++;
+    if(d.status==="Present") dateMap[date].present++;
     else dateMap[date].absent++;
- 
-    if(d.updatedAt){
-      let time = new Date(d.updatedAt);
-      if(!isNaN(time.getTime())){
-        let hour = time.getHours();
-        if(hour <= 10) onTime++;
-        else late++;
-      } else {
-        late++;
-      }
-    } else {
-      late++;
-    }
+    if(d.updatedAt){ let t=new Date(d.updatedAt); if(!isNaN(t.getTime())){ if(t.getHours()<=10) onTime++; else late++; } else late++; } else late++;
   });
- 
-  let percent = ((present/(present+absent))*100).toFixed(1);
-  let badgeClass = percent < 70 ? "badge-red" : "badge-green";
-  let badgeText = percent < 70 ? "⚠️ Needs Improvement" : "🔥 Excellent";
- 
-  let html = `
-  <div class="card">
-    <h3>📊 ${subject} Teacher Dashboard</h3>
-    <div class="stats-box">
-      <div class="stat"><h4>Total</h4><p>${filtered.length}</p></div>
-      <div class="stat"><h4>Present</h4><p>${present}</p></div>
-      <div class="stat"><h4>Absent</h4><p>${absent}</p></div>
-      <div class="stat"><h4>Attendance</h4><p>${percent}%</p></div>
+  let pct = ((present/(present+absent))*100).toFixed(1);
+  let html = `<div class="dark-card">
+    <h3>📊 ${subject} — Performance Dashboard</h3>
+    <div class="stats-row">
+      <div class="mini-stat"><p>${filtered.length}</p><span>Total</span></div>
+      <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
+      <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
+      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Attendance</span></div>
+      <div class="mini-stat"><p style="color:#60a5fa">${onTime}</p><span>On-Time</span></div>
+      <div class="mini-stat"><p style="color:#f97316">${late}</p><span>Late</span></div>
     </div>
-    <p>⏰ On-Time: <b>${onTime}</b></p>
-    <p>🐢 Late: <b>${late}</b></p>
-    <div style="margin-top:10px;">
-      <span class="${badgeClass}">${badgeText}</span>
-    </div>
-    <div class="chart-container">
-      <canvas id="pieChart"></canvas>
-    </div>
-    <h4>📅 Date-wise Performance</h4>
-    <div class="scroll-box">
-    <table>
-      <tr>
-        <th>Date</th><th>Present</th><th>Absent</th><th>Total</th><th>Status</th>
-      </tr>
-  `;
- 
+    <h4 style="color:#94a3b8; font-size:13px; margin:14px 0 10px; text-transform:uppercase; letter-spacing:0.8px;">Date-wise Performance</h4>
+    <div class="scroll-box"><table class="dark-table">
+      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Total</th><th>Status</th></tr>`;
   for(let d in dateMap){
-    let p = dateMap[d].present;
-    let a = dateMap[d].absent;
-    let t = dateMap[d].total;
-    let status = (p === t) ? "✅ Complete" : "❌ Missing";
- 
-    html += `
-    <tr>
-      <td>${d}</td>
-      <td class="green">${p}</td>
-      <td class="red">${a}</td>
-      <td>${t}</td>
-      <td class="${p===t ? 'green':'red'}">${status}</td>
-    </tr>
-    `;
+    let p=dateMap[d].present, a=dateMap[d].absent, t=dateMap[d].total;
+    html += `<tr><td>${d}</td><td class="green">${p}</td><td class="red">${a}</td><td>${t}</td><td class="${p===t?"green":"red"}">${p===t?"✅ Complete":"❌ Missing"}</td></tr>`;
   }
- 
   html += `</table></div></div>`;
   document.getElementById("teacherDetails").innerHTML = html;
- 
-  new Chart(document.getElementById("pieChart"), {
-    type: 'pie',
-    data: {
-      labels: ['Present', 'Absent'],
-      datasets: [{
-        data: [present, absent],
-        backgroundColor: ['#4CAF50', '#F44336']
-      }]
-    }
-  });
 }
 </script>
  
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

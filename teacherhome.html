@@ -1,288 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SVPCET - Faculty Home</title>
+    <title>SVPCET — Faculty Dashboard</title>
     <link rel="stylesheet" href="style.css">
- 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #f1f5f9; }
  
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a237e, #283593);
-            color: #fff;
-        }
+      .placement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
  
-        .top-bar {
-            background: #0d1b6e;
-            text-align: center;
-            padding: 8px;
-            font-size: 13px;
-            color: #ccc;
-            letter-spacing: 0.5px;
-        }
+      .placement-stat {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+        border-bottom: 3px solid #1a56db;
+        transition: all 0.3s ease;
+      }
  
-        .college-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 15px 30px;
-            background: white;
-            color: #1a237e;
-        }
+      .placement-stat:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+      .placement-stat .p-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+      .placement-stat .p-value { font-size: 26px; font-weight: 800; color: #1e293b; display: block; }
+      .placement-stat .p-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 4px; display: block; }
  
-        .college-header .logo {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
+      .recruiter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+      }
  
-        .college-title h1 {
-            font-size: 18px;
-            color: #1a237e;
-            font-weight: 800;
-        }
+      .recruiter-card {
+        background: white;
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        border: 1.5px solid #e2e8f0;
+        transition: all 0.25s ease;
+      }
  
-        .college-title .sub {
-            font-size: 13px;
-            color: #c62828;
-            font-weight: 600;
-            margin: 3px 0;
-        }
+      .recruiter-card:hover {
+        border-color: #1a56db;
+        color: #1a56db;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26,86,219,0.12);
+      }
  
-        .college-title p { font-size: 12px; color: #555; }
+      .recruiter-card .r-icon { font-size: 20px; display: block; margin-bottom: 5px; }
  
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 30px;
-            background: #1565c0;
-        }
+      .highlight-strip {
+        background: linear-gradient(135deg, #1a56db, #2563eb);
+        color: white;
+        border-radius: 14px;
+        padding: 20px 28px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 8px 24px rgba(26,86,219,0.25);
+      }
  
-        .navbar h2 { font-size: 18px; }
- 
-        .nav-buttons button {
-            margin-left: 10px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            background: white;
-            color: #1a237e;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
- 
-        .nav-buttons button:hover {
-            background: #e3f2fd;
-            transform: scale(1.05);
-        }
- 
-        .hero {
-            position: relative;
-            text-align: center;
-            overflow: hidden;
-        }
- 
-        .hero img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            opacity: 0.5;
-        }
- 
-        .hero-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
- 
-        .hero-text h2 {
-            font-size: 32px;
-            font-weight: 800;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-        }
- 
-        .hero-text p {
-            font-size: 15px;
-            margin-top: 8px;
-            color: #e3f2fd;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-        }
- 
-        .stats-strip {
-            display: flex;
-            justify-content: center;
-            background: #0d47a1;
-            flex-wrap: wrap;
-        }
- 
-        .stat-item {
-            text-align: center;
-            padding: 18px 35px;
-            border-right: 1px solid rgba(255,255,255,0.2);
-        }
- 
-        .stat-item:last-child { border-right: none; }
- 
-        .stat-item h3 {
-            font-size: 26px;
-            color: #ffeb3b;
-            margin-bottom: 4px;
-        }
- 
-        .stat-item p {
-            font-size: 12px;
-            color: #bbdefb;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
- 
-        .section {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
- 
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 18px;
-            color: #ffeb3b;
-            border-left: 4px solid #ffeb3b;
-            padding-left: 12px;
-        }
- 
-        .about-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px 25px;
-            line-height: 1.8;
-            font-size: 14.5px;
-            color: #e3f2fd;
-            backdrop-filter: blur(5px);
-        }
- 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
- 
-        .info-card {
-            background: rgba(255,255,255,0.12);
-            border-radius: 10px;
-            padding: 18px;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            transition: 0.2s;
-        }
- 
-        .info-card:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-3px);
-        }
- 
-        .info-card .icon { font-size: 32px; margin-bottom: 8px; }
-        .info-card h4 { font-size: 14px; color: #ffeb3b; margin-bottom: 5px; }
-        .info-card p { font-size: 13px; color: #bbdefb; }
- 
-        .facilities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-        }
- 
-        .facility-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            font-size: 13px;
-            color: #e3f2fd;
-        }
- 
-        .facility-card .icon { font-size: 28px; display: block; margin-bottom: 6px; }
- 
-        .courses-list, .recruiters-list, .accred-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
- 
-        .course-tag {
-            background: rgba(255,235,59,0.2);
-            border: 1px solid #ffeb3b;
-            color: #ffeb3b;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
- 
-        .recruiter-tag {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            padding: 7px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-        }
- 
-        .accred-badge {
-            background: #c62828;
-            color: white;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
-        }
- 
-        .contact-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px 25px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
- 
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #e3f2fd;
-        }
- 
-        .contact-item span { font-size: 20px; }
- 
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #0d1b6e;
-            color: #90caf9;
-            font-size: 13px;
-            margin-top: 40px;
-        }
- 
-        @media(max-width: 600px){
-            .college-header { flex-direction: column; text-align: center; }
-            .stat-item { padding: 12px 20px; }
-            .hero-text h2 { font-size: 22px; }
-            .navbar { flex-direction: column; gap: 10px; }
-        }
+      .highlight-strip .hs-icon { font-size: 36px; flex-shrink: 0; }
+      .highlight-strip h4 { font-size: 16px; font-weight: 700; margin-bottom: 3px; }
+      .highlight-strip p { font-size: 13px; opacity: 0.85; }
     </style>
 </head>
- 
 <body>
  
 <!-- TOP BAR -->
 <div class="top-bar">
-    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ admission@svpcet.org &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, Chittoor (D), Andhra Pradesh
+    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ admission@svpcet.org &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, Chittoor (D), AP
 </div>
  
 <!-- COLLEGE HEADER -->
@@ -291,7 +86,7 @@
     <div class="college-title">
         <h1>SRI VENKATESA PERUMAL COLLEGE OF ENGINEERING & TECHNOLOGY</h1>
         <p class="sub">AUTONOMOUS | NAAC Accredited | NBA Approved | AICTE Approved | Affiliated to JNTUA</p>
-        <p>RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh - 517583</p>
+        <p>RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh — 517583</p>
     </div>
 </div>
  
@@ -301,7 +96,7 @@
     <div class="nav-buttons">
         <button onclick="goMark()">📝 Mark Attendance</button>
         <button onclick="goRanking()">🏆 Ranking</button>
-        <button onclick="logout()">🚪 Logout</button>
+        <button onclick="logout()" style="background:#ef4444;">🚪 Logout</button>
     </div>
 </div>
  
@@ -310,16 +105,16 @@
     <img src="https://assets.allegiance-educare.com/colleges/1480077652001.jpg" alt="SVPCET Campus">
     <div class="hero-text">
         <h2>Welcome to SVPCET</h2>
-        <p>Shaping Engineers, Building Futures Since 2001</p>
+        <p>Shaping Engineers · Building Futures Since 2001</p>
     </div>
 </div>
  
 <!-- STATS STRIP -->
 <div class="stats-strip">
     <div class="stat-item"><h3>2001</h3><p>Established</p></div>
-    <div class="stat-item"><h3>25 Acres</h3><p>Campus Area</p></div>
-    <div class="stat-item"><h3>30+</h3><p>Courses Offered</p></div>
-    <div class="stat-item"><h3>283+</h3><p>Students Placed 2024</p></div>
+    <div class="stat-item"><h3>25 Acres</h3><p>Campus</p></div>
+    <div class="stat-item"><h3>30+</h3><p>Courses</p></div>
+    <div class="stat-item"><h3>1361</h3><p>Students</p></div>
     <div class="stat-item"><h3>7.6 LPA</h3><p>Highest Package</p></div>
 </div>
  
@@ -327,14 +122,12 @@
 <div class="section">
     <div class="section-title">🏫 About SVPCET</div>
     <div class="about-card">
-        Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in 2001, is promoted by the
-        Tamilian Education Academy. Located in Puttur, Chittoor District, Andhra Pradesh, it has grown into a premier
-        integrated interdisciplinary technological institute spread across 25 acres. The campus features well-ventilated
-        classrooms, state-of-the-art laboratories, and well-maintained outdoor and indoor sports facilities.<br><br>
-        SVPCET is affiliated to Jawaharlal Nehru Technological University Anantapur (JNTUA) and recognized by UGC
-        and AICTE. It is accredited by NAAC and approved by NBA, reflecting its commitment to quality education.
-        The college recruits only distinguished academicians, research scientists and experienced faculty —
-        with 70% of faculty ratified by the affiliating university.
+        Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in <strong>2001</strong> and promoted by the
+        <strong>Tamilian Education Academy</strong>, is a premier integrated interdisciplinary technological institute spread
+        across <strong>25 acres</strong> in Puttur, Chittoor District, Andhra Pradesh. Affiliated to <strong>JNTUA</strong>
+        and recognized by <strong>UGC & AICTE</strong>, the college is accredited by <strong>NAAC</strong> and approved by <strong>NBA</strong>.
+        With 70% of faculty ratified by the affiliating university, SVPCET recruits only distinguished academicians,
+        research scientists, and experienced faculty committed to academic excellence.
     </div>
 </div>
  
@@ -342,36 +135,12 @@
 <div class="section">
     <div class="section-title">ℹ️ Key Information</div>
     <div class="info-grid">
-        <div class="info-card">
-            <div class="icon">🏛️</div>
-            <h4>Established</h4>
-            <p>2001 by Tamilian Education Academy</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">🎓</div>
-            <h4>Affiliation</h4>
-            <p>JNTUA, Anantapur</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">✅</div>
-            <h4>Accreditation</h4>
-            <p>NAAC | NBA | AICTE | UGC Autonomous</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">🗺️</div>
-            <h4>Location</h4>
-            <p>Puttur, Chittoor Dist., Andhra Pradesh</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">📚</div>
-            <h4>Programs</h4>
-            <p>Diploma, B.Tech, M.Tech, MBA, MCA</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">✈️</div>
-            <h4>Nearest Airport</h4>
-            <p>Tirupati International (25 km)</p>
-        </div>
+        <div class="info-card"><span class="icon">🏛️</span><h4>Established</h4><p>2001 — Tamilian Education Academy</p></div>
+        <div class="info-card"><span class="icon">🎓</span><h4>Affiliation</h4><p>JNTUA, Anantapur</p></div>
+        <div class="info-card"><span class="icon">✅</span><h4>Accreditation</h4><p>NAAC | NBA | AICTE | UGC Autonomous</p></div>
+        <div class="info-card"><span class="icon">🗺️</span><h4>Location</h4><p>Puttur, Chittoor Dist., AP — 517583</p></div>
+        <div class="info-card"><span class="icon">📚</span><h4>Programs</h4><p>Diploma · B.Tech · M.Tech · MBA · MCA</p></div>
+        <div class="info-card"><span class="icon">✈️</span><h4>Nearest Airport</h4><p>Tirupati International — 25 km</p></div>
     </div>
 </div>
  
@@ -381,11 +150,11 @@
     <div class="courses-list">
         <span class="course-tag">B.Tech CSE</span>
         <span class="course-tag">B.Tech AI & ML</span>
+        <span class="course-tag">B.Tech Data Science</span>
         <span class="course-tag">B.Tech ECE</span>
         <span class="course-tag">B.Tech EEE</span>
         <span class="course-tag">B.Tech Civil</span>
         <span class="course-tag">B.Tech Mechanical</span>
-        <span class="course-tag">B.Tech Data Science</span>
         <span class="course-tag">B.Tech Embedded Systems</span>
         <span class="course-tag">M.Tech</span>
         <span class="course-tag">MBA</span>
@@ -399,7 +168,7 @@
     <div class="section-title">🏢 Campus Facilities</div>
     <div class="facilities-grid">
         <div class="facility-card"><span class="icon">📚</span>Central Library</div>
-        <div class="facility-card"><span class="icon">🔬</span>State-of-the-art Labs</div>
+        <div class="facility-card"><span class="icon">🔬</span>Modern Labs</div>
         <div class="facility-card"><span class="icon">🏠</span>Boys & Girls Hostel</div>
         <div class="facility-card"><span class="icon">🏋️</span>Gymnasium</div>
         <div class="facility-card"><span class="icon">🏏</span>Sports Complex</div>
@@ -415,19 +184,46 @@
  
 <!-- PLACEMENTS -->
 <div class="section">
-    <div class="section-title">💼 Placements</div>
-    <div class="about-card" style="margin-bottom:15px;">
-        SVPCET has a dedicated Training & Placement Cell that organises campus recruitment drives, mock interviews,
-        group discussions, resume building, aptitude training, seminars, and industry visits. In 2024, 283 students
-        were placed with a median package of ₹5.76 LPA and the highest package reaching ₹7.6 LPA.
+    <div class="section-title">💼 Placements 2024</div>
+ 
+    <div class="highlight-strip">
+        <div class="hs-icon">🏆</div>
+        <div>
+            <h4>Outstanding Placement Record</h4>
+            <p>SVPCET's dedicated Training & Placement Cell has consistently delivered results through mock interviews, aptitude training, group discussions, resume building, and industry partnerships.</p>
+        </div>
     </div>
-    <div class="recruiters-list">
-        <span class="recruiter-tag">🏢 TCS</span>
-        <span class="recruiter-tag">🏢 Infosys</span>
-        <span class="recruiter-tag">🏢 Tech Mahindra</span>
-        <span class="recruiter-tag">🏢 Bosch</span>
-        <span class="recruiter-tag">🏢 Wipro</span>
-        <span class="recruiter-tag">🏢 Alchemy Techsol</span>
+ 
+    <div class="placement-grid">
+        <div class="placement-stat">
+            <span class="p-icon">👨‍🎓</span>
+            <span class="p-value">283</span>
+            <span class="p-label">Students Placed</span>
+        </div>
+        <div class="placement-stat">
+            <span class="p-icon">💰</span>
+            <span class="p-value">₹5.76 LPA</span>
+            <span class="p-label">Median Package</span>
+        </div>
+        <div class="placement-stat">
+            <span class="p-icon">🚀</span>
+            <span class="p-value">₹7.6 LPA</span>
+            <span class="p-label">Highest Package</span>
+        </div>
+        <div class="placement-stat">
+            <span class="p-icon">🏢</span>
+            <span class="p-value">50+</span>
+            <span class="p-label">Recruiting Companies</span>
+        </div>
+    </div>
+ 
+    <div class="recruiter-grid">
+        <div class="recruiter-card"><span class="r-icon">🔵</span>TCS</div>
+        <div class="recruiter-card"><span class="r-icon">🟣</span>Infosys</div>
+        <div class="recruiter-card"><span class="r-icon">🟠</span>Tech Mahindra</div>
+        <div class="recruiter-card"><span class="r-icon">🔴</span>Bosch</div>
+        <div class="recruiter-card"><span class="r-icon">🟡</span>Wipro</div>
+        <div class="recruiter-card"><span class="r-icon">🟢</span>Alchemy Techsol</div>
     </div>
 </div>
  
@@ -447,7 +243,7 @@
 <div class="section">
     <div class="section-title">📞 Contact Us</div>
     <div class="contact-card">
-        <div class="contact-item"><span>📍</span> RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh - 517583</div>
+        <div class="contact-item"><span>📍</span> RVS Nagar, K.N Road, Puttur, Chittoor District, AP — 517583</div>
         <div class="contact-item"><span>📞</span> +91 93905 05445 &nbsp;|&nbsp; +91 93905 05456</div>
         <div class="contact-item"><span>✉️</span> admission@svpcet.org</div>
         <div class="contact-item"><span>🌐</span> www.svpcet.org</div>
@@ -456,28 +252,14 @@
     </div>
 </div>
  
-<!-- FOOTER -->
-<footer>
-    © 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur. All rights reserved.
-</footer>
+<footer>© 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur. All rights reserved.</footer>
  
 <script>
-function goMark(){
-    window.location.href = "dateselect.html";
-}
-function goRanking(){
-    window.location.href = "ranking.html";
-}
-function logout(){
-    localStorage.clear();
-    window.location.href = "index.html";
-}
+function goMark(){ window.location.href = "dateselect.html"; }
+function goRanking(){ window.location.href = "ranking.html"; }
+function logout(){ localStorage.clear(); window.location.href = "index.html"; }
 </script>
- 
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

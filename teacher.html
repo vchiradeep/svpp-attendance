@@ -1,80 +1,117 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Faculty Login — SVPCET</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .password-container input {
-            flex: 1;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            user-select: none;
-        }
+      body.teacher-bg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+      }
+      body.teacher-bg > .container {
+        max-width: 440px;
+        width: 100%;
+        border-top: 5px solid #1a56db;
+      }
+      .login-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #1a56db, #3b82f6);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 24px rgba(26,86,219,0.3);
+      }
+      .input-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .input-group { margin-bottom: 16px; }
+      .login-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        border-radius: 12px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, #1a56db, #3b82f6);
+        letter-spacing: 0.3px;
+      }
+      .login-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 13px;
+      }
+      .password-container { position: relative; display: flex; align-items: center; }
+      .password-container input { flex: 1; padding-right: 44px; }
+      .toggle-password { position: absolute; right: 14px; cursor: pointer; font-size: 18px; user-select: none; }
     </style>
 </head>
 <body class="teacher-bg">
-
+ 
 <div class="container">
-    <h2>🎓 Faculty Login</h2>
-
-    <select id="subject">
-    <option value="">Select Subject</option>
-    <option value="PHY">Physics</option>
-    <option value="BEEE">Electrical</option>
-    <option value="ECE">Electronics</option>
-    <option value="MATHS">Maths</option>
-    <option value="DS">Data Structures</option>
-    <option value="IT WORKSHOP">IT Workshop</option>
-    <option value="EG LAB">Engineering Graphics</option>
-</select>
-    <div class="password-container">
-        <input type="password" id="password" placeholder="Password">
-        <span class="toggle-password" onclick="togglePassword()">👁️</span>
+    <div class="login-icon">👨‍🏫</div>
+    <h2 style="text-align:center; margin-bottom:6px;">Faculty Login</h2>
+    <p style="text-align:center; color:#64748b; font-size:13px; margin-bottom:24px;">Select your subject and enter password</p>
+ 
+    <div class="input-group">
+        <label class="input-label">Subject</label>
+        <select id="subject">
+            <option value="">Select Subject</option>
+            <option value="PHY">Physics</option>
+            <option value="BEEE">Electrical (BEEE)</option>
+            <option value="ECE">Electronics</option>
+            <option value="MATHS">Maths</option>
+            <option value="DS">Data Structures</option>
+            <option value="IT WORKSHOP">IT Workshop</option>
+            <option value="EG LAB">Engineering Graphics</option>
+            <option value="DEVC">DEVC</option>
+        </select>
     </div>
-
-    <button onclick="login()">Login</button>
+ 
+    <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="password-container">
+            <input type="password" id="password" placeholder="Enter password">
+            <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+    </div>
+ 
+    <button class="login-btn" onclick="login()">Login →</button>
+ 
+    <div class="login-footer">
+        <a href="index.html" style="color:#1a56db; text-decoration:none; font-weight:600;">← Back to Home</a>
+    </div>
 </div>
-
+ 
 <script>
 function login(){
-
     const subject = document.getElementById("subject").value;
     const password = document.getElementById("password").value;
-
-    if(subject === ""){
-        alert("Please select subject");
-        return;
-    }
-
-    if(password === ""){
-        alert("Enter password");
-        return;
-    }
-
-    // 🔥 SAVE SUBJECT
+ 
+    if(!subject){ alert("Please select subject"); return; }
+    if(!password){ alert("Enter password"); return; }
+ 
     localStorage.setItem("subject", subject);
-
     window.location.href = "teacherhome.html";
 }
-
+ 
 function togglePassword() {
     const pwd = document.getElementById("password");
     pwd.type = (pwd.type === "password") ? "text" : "password";
 }
 </script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

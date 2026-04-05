@@ -1,50 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Login</title>
+    <title>Student Login — SVPCET</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+      body.student-bg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      body.student-bg .container {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(5,150,105,0.15);
+        border-top: 5px solid #059669;
+        animation: fadeUp 0.5s ease;
+        width: 100%;
+        max-width: 440px;
+      }
+      .login-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #059669, #34d399);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 24px rgba(5,150,105,0.3);
+      }
+      .input-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #064e3b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+        display: block;
+      }
+      .input-group { margin-bottom: 16px; }
+      body.student-bg h2 {
+        font-size: 26px;
+        text-align: center;
+        margin-bottom: 6px;
+      }
+      .login-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        border-radius: 12px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, #059669, #10b981) !important;
+        letter-spacing: 0.3px;
+      }
+      .login-btn:hover {
+        background: linear-gradient(135deg, #047857, #059669) !important;
+      }
+      .login-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 13px;
+      }
+    </style>
 </head>
- 
 <body class="student-bg">
  
 <div class="container">
-    <h2>👨‍🎓 Student Login</h2>
+    <div class="login-icon">👨‍🎓</div>
+    <h2>Student Login</h2>
+    <p style="text-align:center; color:#64748b; font-size:13px; margin-bottom:24px;">Enter your details to view attendance</p>
  
-    <!-- 🎯 ROLL ONLY -->
-    <input type="text" id="roll" placeholder="Enter Roll Number">
+    <div class="input-group">
+        <label class="input-label">Roll Number</label>
+        <input type="text" id="roll" placeholder="e.g. 25G01A0501">
+    </div>
  
-    <!-- 🎯 SECTION DROPDOWN -->
-    <select id="section">
-        <option value="">Select Section</option>
-        <option>CSE - A</option>
-        <option>CSE - B</option>
-        <option>CSE - C</option>
-        <option>CSE - D</option>
-        <option>A.I - A</option>
-        <option>A.I - B</option>
-        <option>A.I - C</option>
-        <option>AIML - A</option>
-        <option>AIML - B</option>
-        <option>AIML - C</option>
-        <option>CIVIL</option>
-        <option>D.S</option>
-        <option>ECE - A</option>
-        <option>ECE - B</option>
-        <option>ECE - C</option>
-        <option>ECE - D</option>
-    </select>
+    <div class="input-group">
+        <label class="input-label">Section</label>
+        <select id="section">
+            <option value="">Select your section</option>
+            <option>CSE - A</option>
+            <option>CSE - B</option>
+            <option>CSE - C</option>
+            <option>CSE - D</option>
+            <option>A.I - A</option>
+            <option>A.I - B</option>
+            <option>A.I - C</option>
+            <option>AIML - A</option>
+            <option>AIML - B</option>
+            <option>AIML - C</option>
+            <option>CIVIL</option>
+            <option>D.S</option>
+            <option>ECE - A</option>
+            <option>ECE - B</option>
+            <option>ECE - C</option>
+            <option>ECE - D</option>
+        </select>
+    </div>
  
-    <br><br>
+    <button class="login-btn" onclick="studentLogin()">Login →</button>
  
-    <button onclick="studentLogin()">Login</button>
+    <div class="login-footer">
+        <a href="index.html" style="color:#059669; text-decoration:none; font-weight:600;">← Back to Home</a>
+    </div>
 </div>
  
 <script src="student.js"></script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
-<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>
