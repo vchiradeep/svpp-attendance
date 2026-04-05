@@ -1,141 +1,226 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Timetable</title>
+    <title>Timetable — SVPCET</title>
     <link rel="stylesheet" href="style.css">
- 
     <style>
-        .allowed { background:#c8e6c9; }
-        .blocked { background:#ffcdd2; }
-        .btn-lock {
-            background:#ccc;
-            cursor:not-allowed;
-        }
+      body { background:#f1f5f9; }
+      .page-header {
+        background:white;
+        padding:20px 30px;
+        border-bottom:2px solid #e2e8f0;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:12px;
+      }
+      .page-header h2 { font-size:18px; font-weight:800; color:#1e293b; }
+      .page-header .sub { font-size:13px; color:#64748b; margin-top:3px; }
+      .back-btn {
+        padding:9px 18px; background:#f1f5f9;
+        border:2px solid #e2e8f0; border-radius:10px;
+        font-weight:700; font-size:13px; color:#475569;
+        cursor:pointer; transition:all 0.2s;
+        font-family:'Plus Jakarta Sans',sans-serif;
+      }
+      .back-btn:hover { background:#e2e8f0; }
+      .tt-container { max-width:800px; margin:30px auto; padding:0 20px; }
+      .day-badge {
+        display:inline-block;
+        background:#1a56db;
+        color:white;
+        padding:8px 20px;
+        border-radius:20px;
+        font-size:14px;
+        font-weight:700;
+        margin-bottom:20px;
+      }
+      .remark-banner {
+        background:#fef3c7;
+        border:2px solid #f59e0b;
+        border-radius:12px;
+        padding:14px 18px;
+        margin-bottom:20px;
+        font-size:13px;
+        color:#92400e;
+        font-weight:600;
+        display:none;
+      }
+      .period-card {
+        background:white;
+        border-radius:14px;
+        padding:18px 20px;
+        margin-bottom:12px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        box-shadow:0 2px 10px rgba(0,0,0,0.06);
+        border-left:4px solid #e2e8f0;
+        flex-wrap:wrap;
+        gap:12px;
+        transition:all 0.2s;
+      }
+      .period-card.allowed  { border-left-color:#1a56db; }
+      .period-card.blocked  { border-left-color:#e2e8f0; opacity:0.6; }
+      .period-card.holiday  { border-left-color:#f59e0b; background:#fffbeb; }
+      .period-info strong { font-size:15px; color:#1e293b; display:block; margin-bottom:3px; }
+      .period-info span   { font-size:12px; color:#64748b; }
+      .period-num {
+        width:38px; height:38px;
+        background:#f1f5f9;
+        border-radius:10px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:14px; font-weight:800; color:#475569;
+        flex-shrink:0;
+      }
+      .period-left { display:flex; align-items:center; gap:14px; }
+      .mark-btn {
+        padding:10px 20px;
+        background:linear-gradient(135deg,#1a56db,#3b82f6);
+        color:white; border:none; border-radius:10px;
+        font-weight:700; font-size:13px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        cursor:pointer; transition:all 0.2s;
+      }
+      .mark-btn:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(26,86,219,0.3); }
+      .no-access {
+        padding:10px 20px;
+        background:#f1f5f9;
+        color:#94a3b8; border:none; border-radius:10px;
+        font-weight:700; font-size:13px;
+        cursor:not-allowed;
+        font-family:'Plus Jakarta Sans',sans-serif;
+      }
+      .no-classes {
+        text-align:center; padding:60px 20px;
+        color:#64748b; font-size:15px;
+      }
+      .no-classes .big { font-size:48px; margin-bottom:12px; }
     </style>
 </head>
+<body>
  
-<body class="teacher-bg">
+<div class="page-header">
+  <div>
+    <h2>📅 Period Timetable</h2>
+    <div class="sub" id="headerSub">Loading...</div>
+  </div>
+  <button class="back-btn" onclick="window.location.href='teacherhome.html'">← Back</button>
+</div>
  
-<div class="container">
-    <h2>📅 Timetable</h2>
+<div class="tt-container">
  
-    <h3 id="selectedDay"></h3>
+  <div class="remark-banner" id="remarkBanner">
+    🔓 Admin has unlocked this date for re-marking. Please mark the attendance carefully.
+  </div>
  
-    <table border="1" width="100%">
-        <tr>
-            <th>Period</th>
-            <th>Time</th>
-            <th>Subject</th>
-            <th>Action</th>
-        </tr>
+  <div class="day-badge" id="dayBadge">Loading...</div>
  
-        <tbody id="tableBody"></tbody>
-    </table>
+  <div id="periodsContainer"></div>
+ 
 </div>
  
 <script>
- 
-const date = localStorage.getItem("selectedDate");
-const day = new Date(date).toLocaleString('en-US', { weekday: 'long' });
- 
-document.getElementById("selectedDay").innerText = "Day: " + day;
- 
-const teacherSubject = localStorage.getItem("subject");
- 
-const timetable = {
-    Monday: [
-        ["1","9:30-10:20","BEEE"],
-        ["2","10:20-11:10","BEEE"],
-        ["3","11:10-12:00","EG LAB"],
-        ["4","12:00-12:50","EG LAB"],
-        ["5","1:30-2:20","DS LAB"],
-        ["6","2:20-3:10","DS LAB"],
-        ["7","3:10-4:00","DS LAB"]
-    ],
-    Tuesday: [
-        ["1","9:30-10:20","DS"],
-        ["2","10:20-11:10","BEEE"],
-        ["3","11:10-12:00","EEE LAB"],
-        ["4","12:00-12:50","EEE LAB"],
-        ["5","1:30-2:20","PHY"],
-        ["6","2:20-3:10","PHY LAB"],
-        ["7","3:10-4:00","PHY LAB"]
-    ],
-    Wednesday: [
-        ["1","9:30-10:20","DS"],
-        ["2","10:20-11:10","DEVC"],
-        ["3","11:10-12:00","PHY"],
-        ["4","12:00-12:50","BEEE"],
-        ["5","1:30-2:20","BEEE"],
-        ["6","2:20-3:10","DEVC"],
-        ["7","3:10-4:00","DS"]
-    ],
-    Thursday: [
-        ["1","9:30-10:20","DEVC"],
-        ["2","10:20-11:10","BEEE"],
-        ["3","11:10-12:00","DS"],
-        ["4","12:00-12:50","BEEE"],
-        ["5","1:30-2:20","IT WORKSHOP"],
-        ["6","2:20-3:10","IT WORKSHOP"],
-        ["7","3:10-4:00","IT WORKSHOP"]
-    ],
-    Friday: [
-        ["1","9:30-10:20","DEVC"],
-        ["2","10:20-11:10","EG LAB"],
-        ["3","11:10-12:00","EG LAB"],
-        ["4","12:00-12:50","EG LAB"],
-        ["5","1:30-2:20","PHY"],
-        ["6","2:20-3:10","DEVC"],
-        ["7","3:10-4:00","DS"]
-    ]
+// ✅ SUBJECT DISPLAY NAMES — fixed names as per requirement
+const subjectNames = {
+  "PHY":          "Physics",
+  "BEEE":         "Electrical (BEEE)",
+  "ECE":          "Electronics (BEEE)",
+  "DS":           "Data Structures",
+  "DS LAB":       "Data Structures Lab",
+  "DEVC":         "DE&VC",
+  "EG LAB":       "Engineering Graphics Lab",
+  "IT WORKSHOP":  "IT Workshop",
+  "PHY LAB":      "Physics Lab",
+  "EEE LAB":      "EEE Lab"
 };
  
-const table = document.getElementById("tableBody");
+function getDisplayName(sub){ return subjectNames[sub] || sub; }
  
-if(timetable[day]){
-    timetable[day].forEach(row => {
-        let period = row[0];
-        let subject = row[2];
-        let tr = document.createElement("tr");
+const timetable = {
+  Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
+  Tuesday:   [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
+  Wednesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","DEVC"],["3","11:10-12:00","PHY"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","BEEE"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]],
+  Thursday:  [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
+  Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
+};
  
-        if(teacherSubject && subject.toLowerCase().includes(teacherSubject.toLowerCase())){
-            tr.classList.add("allowed");
-            tr.innerHTML = `
-                <td>${period}</td>
-                <td>${row[1]}</td>
-                <td>${subject}</td>
-                <td>
-                    <button onclick="goMark('${subject}', '${period}')">✅ Mark</button>
-                </td>
-            `;
-        } else {
-            tr.classList.add("blocked");
-            tr.innerHTML = `
-                <td>${period}</td>
-                <td>${row[1]}</td>
-                <td>${subject}</td>
-                <td>
-                    <button class="btn-lock">❌ No Access</button>
-                </td>
-            `;
-        }
+const date          = localStorage.getItem("selectedDate");
+const teacherSubject = localStorage.getItem("subject");
+const isRemark       = localStorage.getItem("isRemark") === "true";
+const unlockId       = localStorage.getItem("reMarkUnlockId");
+const section        = localStorage.getItem("section") || "";
  
-        table.appendChild(tr);
-    });
+const dateObj = new Date(date);
+const dayName = dateObj.toLocaleString('en-US', { weekday:'long' });
+const dateStr = dateObj.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+ 
+document.getElementById("dayBadge").textContent = dayName;
+document.getElementById("headerSub").textContent = `${dateStr} · Section: ${section}`;
+ 
+// Show remark banner if admin unlocked
+if(isRemark){
+  document.getElementById("remarkBanner").style.display = "block";
+}
+ 
+const container = document.getElementById("periodsContainer");
+ 
+// Weekend check
+if(dayName === "Saturday" || dayName === "Sunday"){
+  container.innerHTML = `
+    <div class="no-classes">
+      <div class="big">🎉</div>
+      <strong>It's a Weekend!</strong>
+      <p style="margin-top:8px;">No classes scheduled for ${dayName}.</p>
+    </div>`;
+} else if(!timetable[dayName]){
+  container.innerHTML = `<div class="no-classes"><div class="big">📋</div><p>No timetable found for ${dayName}</p></div>`;
+} else {
+  timetable[dayName].forEach(row => {
+    const period      = row[0];
+    const time        = row[1];
+    const subject     = row[2];
+    const displayName = getDisplayName(subject);
+ 
+    // Check if this period belongs to the logged-in teacher
+    const isMySubject = teacherSubject &&
+      subject.toLowerCase() === teacherSubject.toLowerCase();
+ 
+    const card = document.createElement("div");
+    card.className = `period-card ${isMySubject ? "allowed" : "blocked"}`;
+ 
+    card.innerHTML = `
+      <div class="period-left">
+        <div class="period-num">P${period}</div>
+        <div class="period-info">
+          <strong>${displayName}</strong>
+          <span>🕐 ${time}</span>
+        </div>
+      </div>
+      ${isMySubject
+        ? `<button class="mark-btn" onclick="goMark('${subject}','${period}')">
+             ${isRemark ? "✏️ Re-Mark" : "✅ Mark Attendance"}
+           </button>`
+        : `<button class="no-access">🔒 Not Your Subject</button>`
+      }
+    `;
+ 
+    container.appendChild(card);
+  });
 }
  
 function goMark(subject, period){
-    localStorage.setItem("selectedSubject", subject);
-    localStorage.setItem("period", period);
-    window.location.href = "mark.html";
+  localStorage.setItem("selectedSubject", subject);
+  localStorage.setItem("period", period);
+  if(isRemark && unlockId){
+    localStorage.setItem("reMarkUnlockId", unlockId);
+  }
+  window.location.href = "mark.html";
 }
- 
 </script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
-<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
+ 
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

@@ -35,7 +35,7 @@ mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep1122@attendance-clus
 // ===================== MODELS =====================
 const Attendance    = require("./models/Attendance");
 const Teacher       = require("./models/teacher");
-const UnlockRequest = require("./models/unlockrequest");
+const UnlockRequest = require("./models/UnlockRequest");
  
 // ===================== TIMETABLE =====================
 const timetable = {
@@ -425,4 +425,3 @@ app.post("/admin/auto-mark-absent", async (req, res) => {
 });
  
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

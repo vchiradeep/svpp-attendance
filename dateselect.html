@@ -3,108 +3,160 @@
 <head>
     <title>Select Date & Section</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+      body.teacher-bg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(145deg, #eff6ff, #dbeafe);
+      }
+      body.teacher-bg > .container {
+        background: white;
+        border-radius: 22px;
+        padding: 40px 36px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(26,86,219,0.12);
+        border-top: 5px solid #1a56db;
+        animation: fadeUp 0.5s ease;
+      }
+      @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+      .page-icon {
+        width: 64px; height: 64px;
+        background: linear-gradient(135deg, #1a56db, #3b82f6);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 22px rgba(26,86,219,0.28);
+      }
+      h2 { text-align:center; font-size:22px; font-weight:800; color:#1e3a8a; margin-bottom:6px; }
+      .subtitle { text-align:center; font-size:13px; color:#6b7280; margin-bottom:28px; }
+      .input-label { display:block; font-size:12px; font-weight:700; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+      .input-group { margin-bottom:18px; }
+      input, select {
+        width:100%; padding:13px 15px;
+        border:2px solid #dbeafe; border-radius:11px;
+        font-size:14px; font-family:'Plus Jakarta Sans',sans-serif;
+        color:#1e293b; background:#eff6ff; outline:none;
+        transition:all 0.25s;
+      }
+      input:focus, select:focus { border-color:#1a56db; background:white; box-shadow:0 0 0 4px rgba(26,86,219,0.09); }
+      .date-display { font-size:13px; font-weight:600; color:#1a56db; margin-top:6px; min-height:18px; }
+      .next-btn {
+        width:100%; padding:14px;
+        background:linear-gradient(135deg,#1a56db,#3b82f6);
+        color:white; border:none; border-radius:12px;
+        font-size:15px; font-weight:700;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        cursor:pointer; transition:all 0.25s;
+        margin-top:6px;
+      }
+      .next-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,86,219,0.35); }
+      .back-link { display:block; text-align:center; margin-top:20px; font-size:13px; color:#1a56db; text-decoration:none; font-weight:600; }
+    </style>
 </head>
-
 <body class="teacher-bg">
-
+ 
 <div class="container">
-
-    <h2>📅 Select Date & Section</h2>
-
-    <!-- 📅 DATE -->
+  <div class="page-icon">📅</div>
+  <h2>Select Date & Section</h2>
+  <p class="subtitle">Choose the date and section to mark attendance</p>
+ 
+  <div class="input-group">
+    <label class="input-label">Date</label>
     <input type="date" id="date">
-
-    <!-- 📅 DISPLAY -->
-    <p id="displayDate" style="font-weight:bold; color:#0d47a1;"></p>
-
-    <br>
-
-    <!-- 🏫 SECTION DROPDOWN -->
+    <p class="date-display" id="displayDate"></p>
+  </div>
+ 
+  <div class="input-group">
+    <label class="input-label">Section</label>
     <select id="section">
-        <option value="">Select Section</option>
-
-        <option>CSE - A</option>
-        <option>CSE - B</option>
-        <option>CSE - C</option>
-        <option>CSE - D</option>
-
-        <option>A.I - A</option>
-        <option>A.I - B</option>
-        <option>A.I - C</option>
-
-        <option>AIML - A</option>
-        <option>AIML - B</option>
-        <option>AIML - C</option>
-
-        <option>Civil</option>
-        <option>D.S</option>
-
-        <option>ECE - A (Electronics)</option>
-        <option>ECE - B (Electronics)</option>
-        <option>ECE - C (Electrical)</option>
-        <option>ECE - D (Electrical)</option>
-
+      <option value="">Select Section</option>
+      <option>CSE - A</option>
+      <option>CSE - B</option>
+      <option>CSE - C</option>
+      <option>CSE - D</option>
+      <option>A.I - A</option>
+      <option>A.I - B</option>
+      <option>A.I - C</option>
+      <option>AIML - A</option>
+      <option>AIML - B</option>
+      <option>AIML - C</option>
+      <option>CIVIL</option>
+      <option>D.S</option>
+      <option>ECE - A</option>
+      <option>ECE - B</option>
+      <option>ECE - C</option>
+      <option>ECE - D</option>
     </select>
-
-    <br><br>
-
-    <button onclick="goToTimetable()">Next ➡️</button>
-
+  </div>
+ 
+  <button class="next-btn" onclick="goToTimetable()">Next ➡️</button>
+  <a href="teacherhome.html" class="back-link">← Back to Dashboard</a>
 </div>
-
+ 
 <script>
-
-// 📅 AUTO TODAY (INDIA SAFE)
-const now = new Date();
-const year = now.getFullYear();
+// Auto-set today's date (IST safe)
+const now   = new Date();
+const year  = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
-const day = String(now.getDate()).padStart(2, '0');
-
-const today = year + "-" + month + "-" + day;
-
+const day   = String(now.getDate()).padStart(2, '0');
+const today = `${year}-${month}-${day}`;
+ 
 document.getElementById("date").value = today;
-
-document.getElementById("displayDate").innerText =
-    "Selected Date: " + day + "/" + month + "/" + year;
-
-
-// 👉 NEXT PAGE
-function goToTimetable(){
-
-    const date = document.getElementById("date").value;
-    const section = document.getElementById("section").value;
-
-    if(date === "" || section === ""){
-        alert("Please select date & section");
-        return;
-    }
-
-    // 🔥 SAVE BOTH
-    localStorage.setItem("selectedDate", date);
-    localStorage.setItem("section", section);
-
-    window.location.href = "timetable.html";
-}
-
-
-// 👉 FORMAT DISPLAY
+updateDisplay(day, month, year);
+ 
 document.getElementById("date").addEventListener("change", function(){
-
-    const val = this.value;
-
-    if(val){
-        const parts = val.split("-");
-        document.getElementById("displayDate").innerText =
-            "Selected Date: " + parts[2] + "/" + parts[1] + "/" + parts[0];
-    }
-
+  if(this.value){
+    const parts = this.value.split("-");
+    updateDisplay(parts[2], parts[1], parts[0]);
+  }
 });
-
+ 
+function updateDisplay(d, m, y){
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const dateObj = new Date(`${y}-${m}-${d}`);
+  document.getElementById("displayDate").textContent =
+    `${days[dateObj.getDay()]}, ${d} ${months[parseInt(m)-1]} ${y}`;
+}
+ 
+function goToTimetable(){
+  const date    = document.getElementById("date").value;
+  const section = document.getElementById("section").value;
+ 
+  if(!date || !section){
+    alert("Please select both date and section");
+    return;
+  }
+ 
+  // Check if it's a remark (admin unlocked previous day)
+  const isRemark = localStorage.getItem("isRemark") === "true";
+ 
+  if(!isRemark){
+    // Only allow today's date for normal marking
+    if(date > today){
+      alert("❌ Cannot mark attendance for a future date");
+      return;
+    }
+    if(date < today){
+      alert("❌ Cannot mark past attendance. Contact admin to unlock.");
+      return;
+    }
+  }
+ 
+  localStorage.setItem("selectedDate", date);
+  localStorage.setItem("section", section);
+  // Clear remark flag
+  localStorage.removeItem("isRemark");
+ 
+  window.location.href = "timetable.html";
+}
 </script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+ 
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

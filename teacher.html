@@ -5,9 +5,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
- 
       * { box-sizing: border-box; margin: 0; padding: 0; }
- 
       body {
         min-height: 100vh;
         background: linear-gradient(145deg, #eff6ff, #dbeafe, #eff6ff);
@@ -17,7 +15,6 @@
         font-family: 'Plus Jakarta Sans', sans-serif;
         padding: 24px;
       }
- 
       .login-wrapper {
         width: 100%;
         max-width: 400px;
@@ -28,127 +25,44 @@
         border-top: 5px solid #1a56db;
         animation: fadeUp 0.5s ease;
       }
- 
-      @keyframes fadeUp {
-        from { opacity:0; transform:translateY(20px); }
-        to   { opacity:1; transform:translateY(0); }
-      }
- 
+      @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
       .login-icon {
-        width: 64px;
-        height: 64px;
+        width: 64px; height: 64px;
         background: linear-gradient(135deg, #1a56db, #3b82f6);
         border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
         font-size: 28px;
         margin: 0 auto 20px;
         box-shadow: 0 8px 22px rgba(26,86,219,0.28);
       }
- 
-      h2 {
-        text-align: center;
-        font-family: 'Playfair Display', serif;
-        font-size: 24px;
-        color: #1e3a8a;
-        margin-bottom: 6px;
-      }
- 
-      .subtitle {
-        text-align: center;
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 28px;
-      }
- 
-      .input-label {
-        display: block;
-        font-size: 12px;
-        font-weight: 700;
-        color: #1e3a8a;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 6px;
-      }
- 
-      .input-group { margin-bottom: 18px; }
- 
+      h2 { text-align:center; font-family:'Playfair Display',serif; font-size:24px; color:#1e3a8a; margin-bottom:6px; }
+      .subtitle { text-align:center; font-size:13px; color:#6b7280; margin-bottom:28px; }
+      .input-label { display:block; font-size:12px; font-weight:700; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+      .input-group { margin-bottom:18px; }
       input, select {
-        width: 100%;
-        padding: 13px 15px;
-        border: 2px solid #dbeafe;
-        border-radius: 11px;
-        font-size: 14px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        color: #1e293b;
-        background: #eff6ff;
-        outline: none;
-        transition: all 0.25s ease;
+        width:100%; padding:13px 15px;
+        border:2px solid #dbeafe; border-radius:11px;
+        font-size:14px; font-family:'Plus Jakarta Sans',sans-serif;
+        color:#1e293b; background:#eff6ff; outline:none;
+        transition:all 0.25s;
       }
- 
-      input:focus, select:focus {
-        border-color: #1a56db;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(26,86,219,0.09);
-      }
- 
-      .pass-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
- 
-      .pass-wrap input { padding-right: 46px; }
- 
-      .toggle-eye {
-        position: absolute;
-        right: 14px;
-        cursor: pointer;
-        font-size: 18px;
-        user-select: none;
-        color: #94a3b8;
-      }
- 
+      input:focus, select:focus { border-color:#1a56db; background:white; box-shadow:0 0 0 4px rgba(26,86,219,0.09); }
+      .pass-wrap { position:relative; display:flex; align-items:center; }
+      .pass-wrap input { padding-right:46px; }
+      .toggle-eye { position:absolute; right:14px; cursor:pointer; font-size:18px; user-select:none; color:#94a3b8; }
       .login-btn {
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, #1a56db, #3b82f6);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 700;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        margin-top: 6px;
-        letter-spacing: 0.3px;
+        width:100%; padding:14px;
+        background:linear-gradient(135deg,#1a56db,#3b82f6);
+        color:white; border:none; border-radius:12px;
+        font-size:15px; font-weight:700;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        cursor:pointer; transition:all 0.25s;
+        margin-top:6px; letter-spacing:0.3px;
       }
- 
-      .login-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(26,86,219,0.35);
-        background: linear-gradient(135deg, #1d4ed8, #2563eb);
-      }
- 
-      .back-link {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        font-size: 13px;
-        color: #1a56db;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.2s;
-      }
- 
-      .back-link:hover { color: #1d4ed8; }
- 
-      @media (max-width: 480px) {
-        .login-wrapper { padding: 32px 24px; }
-        h2 { font-size: 22px; }
-      }
+      .login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,86,219,0.35); }
+      .error-msg { color:#dc2626; font-size:13px; font-weight:600; margin-top:10px; text-align:center; display:none; }
+      .back-link { display:block; text-align:center; margin-top:20px; font-size:13px; color:#1a56db; text-decoration:none; font-weight:600; }
+      .back-link:hover { color:#1d4ed8; }
     </style>
 </head>
 <body>
@@ -164,12 +78,14 @@
       <option value="">Select Subject</option>
       <option value="PHY">Physics</option>
       <option value="BEEE">Electrical (BEEE)</option>
-      <option value="ECE">Electronics</option>
-      <option value="MATHS">Maths</option>
+      <option value="ECE">Electronics (BEEE)</option>
       <option value="DS">Data Structures</option>
       <option value="IT WORKSHOP">IT Workshop</option>
-      <option value="EG LAB">Engineering Graphics</option>
-      <option value="DEVC">DEVC</option>
+      <option value="EG LAB">Engineering Graphics (EG LAB)</option>
+      <option value="DEVC">DE&VC</option>
+      <option value="PHY LAB">Physics Lab</option>
+      <option value="EEE LAB">EEE Lab</option>
+      <option value="DS LAB">DS Lab</option>
     </select>
   </div>
  
@@ -181,23 +97,50 @@
     </div>
   </div>
  
+  <p class="error-msg" id="errorMsg">❌ Wrong password. Please try again.</p>
+ 
   <button class="login-btn" onclick="login()">Login →</button>
   <a href="index.html" class="back-link">← Back to Home</a>
 </div>
  
 <script>
 function login(){
-  const subject = document.getElementById("subject").value;
+  const subject  = document.getElementById("subject").value;
   const password = document.getElementById("password").value;
-  if(!subject){ alert("Please select subject"); return; }
-  if(!password){ alert("Enter password"); return; }
+  const errorMsg = document.getElementById("errorMsg");
+ 
+  errorMsg.style.display = "none";
+ 
+  if(!subject){
+    alert("Please select subject");
+    return;
+  }
+  if(!password){
+    alert("Enter password");
+    return;
+  }
+ 
+  // ✅ FIXED: Password must be "svpp"
+  if(password !== "svpp"){
+    errorMsg.style.display = "block";
+    document.getElementById("password").value = "";
+    document.getElementById("password").focus();
+    return;
+  }
+ 
   localStorage.setItem("subject", subject);
   window.location.href = "teacherhome.html";
 }
+ 
 function togglePassword(){
   const pwd = document.getElementById("password");
   pwd.type = (pwd.type === "password") ? "text" : "password";
 }
+ 
+// Allow Enter key to login
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter") login();
+});
 </script>
  
 <div id="loader" style="display:none;"><div class="spinner"></div></div>

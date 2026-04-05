@@ -66,14 +66,14 @@
 </style>
 </head>
 <body>
- 
+
 <div class="admin-header">
   <h1>🛡️ Admin Panel <span class="admin-badge">Secure</span></h1>
   <a href="index.html" style="color:#64748b;text-decoration:none;font-size:13px;font-weight:600;">← Home</a>
 </div>
- 
+
 <div class="admin-container">
- 
+
 <!-- LOGIN -->
 <div id="loginBox" class="login-box">
   <div class="admin-login-icon">🛡️</div>
@@ -85,15 +85,15 @@
   </div>
   <button class="admin-btn" onclick="checkLogin()">Login →</button>
 </div>
- 
+
 <!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
- 
+
   <div class="panel-tabs">
     <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
     <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
   </div>
- 
+
   <!-- ===================== STUDENT SECTION ===================== -->
   <div id="studentSection">
     <div class="dark-card">
@@ -113,10 +113,10 @@
       <button onclick="updateAttendance()">✅ Update</button>
     </div>
   </div>
- 
+
   <!-- ===================== TEACHER SECTION ===================== -->
   <div id="teacherSection" style="display:none;">
- 
+
     <!-- MISSED MONITOR -->
     <div class="dark-card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
@@ -130,7 +130,7 @@
         <p style="color:#64748b;font-size:13px;">Click Refresh to load missed dates.</p>
       </div>
     </div>
- 
+
     <!-- UNLOCK FOR TEACHER -->
     <div class="dark-card">
       <h3>🔓 Unlock Date for Teacher to Re-mark</h3>
@@ -141,7 +141,8 @@
           <select id="unlockSubject">
             <option value="">Select Subject</option>
             <option value="PHY">Physics</option>
-            <option value="BEEE">BEEE</option>
+            <option value="BEEE">Electrical (BEEE)</option>
+            <option value="ECE">Electronics (BEEE)</option>
             <option value="DS">Data Structures</option>
             <option value="DEVC">DEVC</option>
             <option value="EG LAB">EG LAB</option>
@@ -172,7 +173,7 @@
       </div>
       <div id="unlockResult" style="margin-top:12px;display:none;font-size:13px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155;"></div>
     </div>
- 
+
     <!-- MARK ON BEHALF FORM -->
     <div class="dark-card" id="adminMarkForm" style="display:none;">
       <h3>👑 Admin Marks Attendance on Teacher's Behalf</h3>
@@ -181,19 +182,19 @@
       <button onclick="submitAdminMark()" style="margin-top:14px;">✅ Submit Attendance</button>
       <button class="secondary" onclick="document.getElementById('adminMarkForm').style.display='none';" style="margin-top:14px;">Cancel</button>
     </div>
- 
+
     <!-- TEACHER PERFORMANCE -->
     <div class="dark-card">
       <h3>📊 Teacher Performance</h3>
       <button onclick="loadTeachers()" style="font-size:13px;padding:9px 16px;">📋 Load All Teachers</button>
     </div>
     <div id="teacherResult"></div>
- 
+
   </div>
- 
+
 </div>
 </div>
- 
+
 <script>
 const API = window.location.origin;
 const timetable = {
@@ -203,18 +204,18 @@ const timetable = {
   Thursday:  [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
   Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
 };
- 
+
 let adminMarkData = {};
- 
+
 function togglePassword(){ let i=document.getElementById("adminPass"); i.type=i.type==="password"?"text":"password"; }
- 
+
 function checkLogin(){
   if(document.getElementById("adminPass").value==="chiru1122"){
     document.getElementById("loginBox").style.display="none";
     document.getElementById("adminPanel").style.display="block";
   } else { alert("❌ Wrong Password"); }
 }
- 
+
 function showSection(type){
   ["student","teacher"].forEach(t=>{
     document.getElementById(t+"Section").style.display="none";
@@ -223,7 +224,7 @@ function showSection(type){
   document.getElementById(type+"Section").style.display="block";
   document.getElementById("tab-"+type).classList.add("active");
 }
- 
+
 // ===== STUDENT =====
 async function searchStudent(){
   let roll=document.getElementById("searchRoll").value.trim();
@@ -267,7 +268,7 @@ async function searchStudent(){
   result.innerHTML=html;
   document.getElementById("updateBox").style.display="block";
 }
- 
+
 async function deleteRecord(name,date,subject){
   showLoader();
   await fetch(API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
@@ -299,7 +300,7 @@ function updatePeriods(){
   if(!dayData){dropdown.innerHTML="<option>No Classes</option>";return;}
   dayData.forEach(row=>{let opt=document.createElement("option");opt.value=row[2];opt.text="Period "+row[0]+" — "+row[2];dropdown.appendChild(opt);});
 }
- 
+
 // ===== MISSED MONITOR =====
 async function loadMissedSummary(){
   const box=document.getElementById("missedSummary");
@@ -326,7 +327,7 @@ async function loadMissedSummary(){
     </div>`;
   }).join("");
 }
- 
+
 // Quick unlock from missed monitor
 async function quickUnlock(subject, section, date){
   showLoader();
@@ -336,7 +337,7 @@ async function quickUnlock(subject, section, date){
   alert(data.success?"✅ "+data.message:"❌ "+data.message);
   loadMissedSummary();
 }
- 
+
 // ===== UNLOCK FOR TEACHER =====
 async function unlockForTeacher(){
   const subject=document.getElementById("unlockSubject").value;
@@ -352,14 +353,14 @@ async function unlockForTeacher(){
   box.style.color=data.success?"#34d399":"#f87171";
   box.textContent=data.success?"✅ "+data.message:"❌ "+data.message;
 }
- 
+
 // ===== ADMIN MARK ON BEHALF =====
 function adminMarkOnBehalf(){
   const subject=document.getElementById("unlockSubject").value;
   const section=document.getElementById("unlockSection").value;
   const date=document.getElementById("unlockDate").value;
   if(!subject||!section||!date){alert("Fill all fields first");return;}
- 
+
   // Generate student list for section
   const sectionMap={
     "CSE - A":{prefix:"25G01A05",s:1,e:75},"CSE - B":{prefix:"25G01A05",s:76,e:120},
@@ -369,17 +370,17 @@ function adminMarkOnBehalf(){
     "ECE - A":{prefix:"25G01A04",s:1,e:75},"ECE - B":{prefix:"25G01A04",s:76,e:120},
     "ECE - C":{prefix:"25G01A02",s:1,e:19},"ECE - D":{prefix:"25G01A03",s:1,e:12}
   };
- 
+
   const sec=sectionMap[section];
   if(!sec){alert("Invalid section");return;}
   let students=[];
   for(let i=sec.s;i<=sec.e;i++) students.push(sec.prefix+String(i).padStart(2,'0'));
- 
+
   document.getElementById("adminMarkInfo").textContent=`Marking ${subject} for ${section} on ${new Date(date).toLocaleDateString()}`;
- 
+
   const listEl=document.getElementById("adminMarkStudentList");
   adminMarkData={};
- 
+
   listEl.innerHTML=`
     <div style="display:flex;gap:10px;margin-bottom:12px;">
       <button class="amber" onclick="markAllAdmin('Present')">✅ All Present</button>
@@ -396,25 +397,25 @@ function adminMarkOnBehalf(){
         </tr>
       `).join("")}
     </table></div>`;
- 
+
   // Default all present
   students.forEach(r=>adminMarkData[r]="Present");
   document.getElementById("adminMarkForm").style.display="block";
   document.getElementById("adminMarkForm").scrollIntoView({behavior:"smooth"});
- 
+
   // Store for submit
   document.getElementById("adminMarkForm").dataset.subject=subject;
   document.getElementById("adminMarkForm").dataset.section=section;
   document.getElementById("adminMarkForm").dataset.date=date;
 }
- 
+
 function markAllAdmin(status){
   document.querySelectorAll(`[name^="atd_"]`).forEach(r=>{
     if(r.value===status)r.checked=true;
   });
   Object.keys(adminMarkData).forEach(k=>adminMarkData[k]=status);
 }
- 
+
 async function submitAdminMark(){
   const form=document.getElementById("adminMarkForm");
   const subject=form.dataset.subject;
@@ -432,10 +433,10 @@ async function submitAdminMark(){
     alert("❌ Error: "+data.message);
   }
 }
- 
+
 // ===== TEACHER PERFORMANCE =====
 function loadTeachers(){
-  const subjects=["PHY","BEEE","DS","DEVC","EG LAB","IT WORKSHOP","PHY LAB","EEE LAB","DS LAB"];
+  const subjects=["PHY","BEEE","ECE","DS","DEVC","EG LAB","IT WORKSHOP","PHY LAB","EEE LAB","DS LAB"];
   let html=`<div class="dark-card"><h3>👩‍🏫 Faculty List</h3><div class="scroll-box"><table class="dark-table">
     <tr><th>Subject</th><th>Action</th></tr>`;
   subjects.forEach(sub=>{
@@ -444,7 +445,7 @@ function loadTeachers(){
   html+=`</table></div></div><div id="teacherDetails"></div>`;
   document.getElementById("teacherResult").innerHTML=html;
 }
- 
+
 async function viewTeacher(subject){
   const res=await fetch(API+"/attendance");
   const data=await res.json();
@@ -495,7 +496,7 @@ async function viewTeacher(subject){
   document.getElementById("teacherDetails").innerHTML=html;
 }
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
