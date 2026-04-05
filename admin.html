@@ -5,530 +5,494 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-  body {
-    background: #0f172a;
-    min-height: 100vh;
-    color: #e2e8f0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
- 
-  .admin-header {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    padding: 20px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #334155;
-  }
- 
-  .admin-header h1 {
-    font-size: 20px;
-    font-weight: 800;
-    color: #f1f5f9;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
- 
-  .admin-badge {
-    background: #f43f5e;
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
- 
-  .admin-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px 20px;
-  }
- 
-  /* LOGIN BOX */
-  .login-box {
-    background: #1e293b;
-    border-radius: 20px;
-    padding: 44px 40px;
-    max-width: 420px;
-    margin: 60px auto;
-    border: 1px solid #334155;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-    animation: fadeUp 0.5s ease;
-  }
- 
-  .admin-login-icon {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #f43f5e, #be123c);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    margin: 0 auto 20px;
-    box-shadow: 0 8px 24px rgba(244,63,94,0.4);
-  }
- 
-  .login-box h2 {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 800;
-    color: #f1f5f9;
-    margin-bottom: 6px;
-  }
- 
-  .login-box p {
-    text-align: center;
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 24px;
-  }
- 
-  .admin-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #334155;
-    border-radius: 10px;
-    font-size: 14px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: #f1f5f9;
-    background: #0f172a;
-    outline: none;
-    transition: all 0.3s ease;
-    margin-bottom: 12px;
-  }
- 
-  .admin-input:focus { border-color: #f43f5e; box-shadow: 0 0 0 4px rgba(244,63,94,0.1); }
- 
-  .admin-btn {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #f43f5e, #be123c);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    letter-spacing: 0.3px;
-  }
- 
-  .admin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,63,94,0.4); }
- 
-  /* PANEL */
-  #adminPanel { animation: fadeUp 0.4s ease; }
- 
-  .panel-tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
- 
-  .tab-btn {
-    padding: 12px 24px;
-    border-radius: 12px;
-    border: 2px solid #334155;
-    background: #1e293b;
-    color: #94a3b8;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
- 
-  .tab-btn:hover, .tab-btn.active {
-    background: #f43f5e;
-    color: white;
-    border-color: #f43f5e;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(244,63,94,0.3);
-  }
- 
-  /* DARK CARDS */
-  .dark-card {
-    background: #1e293b;
-    border-radius: 14px;
-    padding: 22px;
-    margin: 14px 0;
-    border: 1px solid #334155;
-    animation: fadeUp 0.4s ease;
-  }
- 
-  .dark-card h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin-bottom: 14px;
-  }
- 
-  /* DARK INPUTS */
-  .dark-card input,
-  .dark-card select {
-    background: #0f172a;
-    border: 2px solid #334155;
-    color: #f1f5f9;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    width: 100%;
-    margin: 6px 0;
-    outline: none;
-    transition: all 0.3s ease;
-  }
- 
-  .dark-card input:focus, .dark-card select:focus {
-    border-color: #f43f5e;
-    box-shadow: 0 0 0 3px rgba(244,63,94,0.1);
-  }
- 
-  .dark-card button {
-    background: #f43f5e;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 4px 4px 4px 0;
-  }
- 
-  .dark-card button:hover { background: #be123c; transform: translateY(-1px); }
- 
-  .dark-card button.secondary {
-    background: #334155;
-    color: #e2e8f0;
-  }
- 
-  .dark-card button.secondary:hover { background: #475569; }
- 
-  /* SEARCH ROW */
-  .search-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
- 
-  .search-row input { flex: 1; min-width: 200px; }
- 
-  /* DARK TABLE */
-  .dark-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    background: #0f172a;
-    border-radius: 10px;
-    overflow: hidden;
-  }
- 
-  .dark-table th {
-    background: #1e293b;
-    color: #94a3b8;
-    padding: 11px 14px;
-    text-align: left;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 700;
-  }
- 
-  .dark-table td {
-    padding: 11px 14px;
-    border-bottom: 1px solid #1e293b;
-    color: #cbd5e1;
-  }
- 
-  .dark-table tr:hover td { background: #1e293b; }
-  .dark-table tr:last-child td { border-bottom: none; }
- 
-  .scroll-box { max-height: 320px; overflow-y: auto; border-radius: 10px; }
-  .scroll-box::-webkit-scrollbar { width: 4px; }
-  .scroll-box::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
- 
-  .green { color: #34d399; font-weight: 700; }
-  .red { color: #f87171; font-weight: 700; }
- 
-  .eye { cursor: pointer; font-size: 18px; }
- 
-  .stats-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 14px 0;
-  }
- 
-  .mini-stat {
-    background: #0f172a;
-    border-radius: 10px;
-    padding: 14px 20px;
-    text-align: center;
-    border: 1px solid #334155;
-    min-width: 90px;
-  }
- 
-  .mini-stat p { font-size: 22px; font-weight: 800; color: #f1f5f9; margin-bottom: 3px; }
-  .mini-stat span { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; }
+  body { background:#0f172a; min-height:100vh; color:#e2e8f0; font-family:'Plus Jakarta Sans',sans-serif; }
+  .admin-header { background:linear-gradient(135deg,#1e293b,#0f172a); padding:20px 30px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #334155; }
+  .admin-header h1 { font-size:20px; font-weight:800; color:#f1f5f9; display:flex; align-items:center; gap:10px; }
+  .admin-badge { background:#f43f5e; color:white; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:1px; }
+  .admin-container { max-width:960px; margin:0 auto; padding:30px 20px; }
+  .login-box { background:#1e293b; border-radius:20px; padding:44px 40px; max-width:420px; margin:60px auto; border:1px solid #334155; box-shadow:0 25px 60px rgba(0,0,0,0.5); animation:fadeUp 0.5s ease; }
+  .admin-login-icon { width:70px; height:70px; background:linear-gradient(135deg,#f43f5e,#be123c); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 20px; box-shadow:0 8px 24px rgba(244,63,94,0.4); }
+  .login-box h2 { text-align:center; font-size:24px; font-weight:800; color:#f1f5f9; margin-bottom:6px; }
+  .login-box p { text-align:center; font-size:13px; color:#64748b; margin-bottom:24px; }
+  .admin-input { width:100%; padding:12px 16px; border:2px solid #334155; border-radius:10px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; color:#f1f5f9; background:#0f172a; outline:none; transition:all 0.3s; margin-bottom:12px; }
+  .admin-input:focus { border-color:#f43f5e; box-shadow:0 0 0 4px rgba(244,63,94,0.1); }
+  .admin-btn { width:100%; padding:14px; background:linear-gradient(135deg,#f43f5e,#be123c); color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:all 0.3s; }
+  .admin-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(244,63,94,0.4); }
+  #adminPanel { animation:fadeUp 0.4s ease; }
+  .panel-tabs { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+  .tab-btn { padding:12px 24px; border-radius:12px; border:2px solid #334155; background:#1e293b; color:#94a3b8; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; cursor:pointer; transition:all 0.3s; }
+  .tab-btn:hover,.tab-btn.active { background:#f43f5e; color:white; border-color:#f43f5e; transform:translateY(-1px); box-shadow:0 4px 16px rgba(244,63,94,0.3); }
+  .dark-card { background:#1e293b; border-radius:14px; padding:22px; margin:14px 0; border:1px solid #334155; animation:fadeUp 0.4s ease; }
+  .dark-card h3 { font-size:16px; font-weight:700; color:#f1f5f9; margin-bottom:14px; }
+  .dark-card input,.dark-card select { background:#0f172a; border:2px solid #334155; color:#f1f5f9; border-radius:10px; padding:10px 14px; font-family:'Plus Jakarta Sans',sans-serif; font-size:14px; width:100%; margin:6px 0; outline:none; transition:all 0.3s; }
+  .dark-card input:focus,.dark-card select:focus { border-color:#f43f5e; box-shadow:0 0 0 3px rgba(244,63,94,0.1); }
+  .dark-card button { background:#f43f5e; color:white; padding:10px 20px; border:none; border-radius:10px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; cursor:pointer; transition:all 0.3s; margin:4px 4px 4px 0; }
+  .dark-card button:hover { background:#be123c; transform:translateY(-1px); }
+  .dark-card button.secondary { background:#334155; color:#e2e8f0; }
+  .dark-card button.secondary:hover { background:#475569; }
+  .dark-card button.amber { background:#f59e0b; color:#1c1917; }
+  .dark-card button.amber:hover { background:#d97706; }
+  .dark-card button.purple { background:#7c3aed; color:white; }
+  .dark-card button.purple:hover { background:#6d28d9; }
+  .search-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-row input { flex:1; min-width:200px; }
+  .dark-table { width:100%; border-collapse:collapse; font-size:13px; background:#0f172a; border-radius:10px; overflow:hidden; }
+  .dark-table th { background:#1e293b; color:#94a3b8; padding:11px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; font-weight:700; }
+  .dark-table td { padding:11px 14px; border-bottom:1px solid #1e293b; color:#cbd5e1; }
+  .dark-table tr:hover td { background:#1e293b; }
+  .dark-table tr:last-child td { border-bottom:none; }
+  .scroll-box { max-height:320px; overflow-y:auto; border-radius:10px; }
+  .scroll-box::-webkit-scrollbar { width:4px; }
+  .scroll-box::-webkit-scrollbar-thumb { background:#334155; border-radius:4px; }
+  .green { color:#34d399; font-weight:700; }
+  .red { color:#f87171; font-weight:700; }
+  .amber { color:#fbbf24; font-weight:700; }
+  .eye { cursor:pointer; font-size:18px; }
+  .stats-row { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+  .mini-stat { background:#0f172a; border-radius:10px; padding:14px 20px; text-align:center; border:1px solid #334155; min-width:90px; }
+  .mini-stat p { font-size:22px; font-weight:800; color:#f1f5f9; margin-bottom:3px; }
+  .mini-stat span { font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; }
+  .missed-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid #334155; flex-wrap:wrap; gap:10px; }
+  .missed-row:last-child { border-bottom:none; }
+  .pill { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+  .pill-warn    { background:#78350f; color:#fcd34d; }
+  .pill-success { background:#14532d; color:#86efac; }
+  .pill-gray    { background:#334155; color:#94a3b8; }
+  .pill-blue    { background:#1e3a8a; color:#93c5fd; }
+  .input-label { font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; display:block; margin-bottom:4px; margin-top:10px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:580px){ .form-grid{grid-template-columns:1fr;} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
- 
 <body>
  
 <div class="admin-header">
-    <h1>🛡️ Admin Panel <span class="admin-badge">Secure</span></h1>
-    <a href="index.html" style="color:#64748b; text-decoration:none; font-size:13px; font-weight:600;">← Back to Home</a>
+  <h1>🛡️ Admin Panel <span class="admin-badge">Secure</span></h1>
+  <a href="index.html" style="color:#64748b;text-decoration:none;font-size:13px;font-weight:600;">← Home</a>
 </div>
  
 <div class="admin-container">
  
 <!-- LOGIN -->
 <div id="loginBox" class="login-box">
-    <div class="admin-login-icon">🛡️</div>
-    <h2>Admin Login</h2>
-    <p>Enter your admin password to continue</p>
- 
-    <div style="position:relative; display:flex; align-items:center;">
-        <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
-        <span class="eye" onclick="togglePassword()" style="position:absolute; right:14px;">👁️</span>
-    </div>
- 
-    <button class="admin-btn" onclick="checkLogin()">Login →</button>
+  <div class="admin-login-icon">🛡️</div>
+  <h2>Admin Login</h2>
+  <p>Enter your admin password to continue</p>
+  <div style="position:relative;display:flex;align-items:center;">
+    <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
+    <span class="eye" onclick="togglePassword()" style="position:absolute;right:14px;">👁️</span>
+  </div>
+  <button class="admin-btn" onclick="checkLogin()">Login →</button>
 </div>
  
 <!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
  
-    <div class="panel-tabs">
-        <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
-        <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
+  <div class="panel-tabs">
+    <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
+    <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
+  </div>
+ 
+  <!-- ===================== STUDENT SECTION ===================== -->
+  <div id="studentSection">
+    <div class="dark-card">
+      <h3>🔍 Search Student Records</h3>
+      <div class="search-row">
+        <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+        <button onclick="searchStudent()">Search</button>
+      </div>
+    </div>
+    <div id="result"></div>
+    <div class="dark-card" id="updateBox" style="display:none;">
+      <h3>✏️ Update Attendance</h3>
+      <input type="text" id="updateRoll" placeholder="Student Roll No">
+      <input type="date" id="updateDate" onchange="updatePeriods()">
+      <select id="period"><option>Select Date First</option></select>
+      <select id="status"><option value="Present">Present</option><option value="Absent">Absent</option></select>
+      <button onclick="updateAttendance()">✅ Update</button>
+    </div>
+  </div>
+ 
+  <!-- ===================== TEACHER SECTION ===================== -->
+  <div id="teacherSection" style="display:none;">
+ 
+    <!-- MISSED MONITOR -->
+    <div class="dark-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h3 style="margin-bottom:4px;">⚠️ Missed Marking Monitor</h3>
+          <p style="font-size:13px;color:#64748b;">Dates where teachers forgot to mark attendance</p>
+        </div>
+        <button class="secondary" onclick="loadMissedSummary()" style="font-size:13px;padding:9px 16px;">🔄 Refresh</button>
+      </div>
+      <div id="missedSummary" style="margin-top:16px;">
+        <p style="color:#64748b;font-size:13px;">Click Refresh to load missed dates.</p>
+      </div>
     </div>
  
-    <!-- STUDENT SECTION -->
-    <div id="studentSection">
-        <div class="dark-card">
-            <h3>🔍 Search Student Records</h3>
-            <div class="search-row">
-                <input type="text" id="searchRoll" placeholder="Enter Roll Number">
-                <button onclick="searchStudent()">Search</button>
-            </div>
+    <!-- UNLOCK FOR TEACHER -->
+    <div class="dark-card">
+      <h3>🔓 Unlock Date for Teacher to Re-mark</h3>
+      <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Give a teacher permission to mark attendance for a missed date</p>
+      <div class="form-grid">
+        <div>
+          <label class="input-label">Subject</label>
+          <select id="unlockSubject">
+            <option value="">Select Subject</option>
+            <option value="PHY">Physics</option>
+            <option value="BEEE">BEEE</option>
+            <option value="DS">Data Structures</option>
+            <option value="DEVC">DEVC</option>
+            <option value="EG LAB">EG LAB</option>
+            <option value="IT WORKSHOP">IT Workshop</option>
+            <option value="PHY LAB">PHY LAB</option>
+            <option value="EEE LAB">EEE LAB</option>
+            <option value="DS LAB">DS LAB</option>
+          </select>
         </div>
- 
-        <div id="result"></div>
- 
-        <div class="dark-card" id="updateBox" style="display:none;">
-            <h3>✏️ Update Attendance</h3>
-            <input type="text" id="updateRoll" placeholder="Student Roll No">
-            <input type="date" id="updateDate" onchange="updatePeriods()">
-            <select id="period"><option>Select Date First</option></select>
-            <select id="status">
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-            </select>
-            <button onclick="updateAttendance()">✅ Update</button>
+        <div>
+          <label class="input-label">Section</label>
+          <select id="unlockSection">
+            <option value="">Select Section</option>
+            <option>CSE - A</option><option>CSE - B</option>
+            <option>A.I - A</option><option>A.I - B</option>
+            <option>AIML - A</option><option>AIML - B</option>
+            <option>CIVIL</option><option>D.S</option>
+            <option>ECE - A</option><option>ECE - B</option>
+            <option>ECE - C</option><option>ECE - D</option>
+          </select>
         </div>
+      </div>
+      <label class="input-label">Date to Unlock</label>
+      <input type="date" id="unlockDate">
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="amber" onclick="unlockForTeacher()">🔓 Unlock for Teacher</button>
+        <button class="purple" onclick="adminMarkOnBehalf()">👑 Admin Mark on Behalf</button>
+      </div>
+      <div id="unlockResult" style="margin-top:12px;display:none;font-size:13px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155;"></div>
     </div>
  
-    <!-- TEACHER SECTION -->
-    <div id="teacherSection" style="display:none;">
-        <div class="dark-card">
-            <h3>👩‍🏫 Teacher Performance Tracking</h3>
-            <button onclick="loadTeachers()">📋 Load All Teachers</button>
-        </div>
-        <div id="teacherResult"></div>
+    <!-- MARK ON BEHALF FORM -->
+    <div class="dark-card" id="adminMarkForm" style="display:none;">
+      <h3>👑 Admin Marks Attendance on Teacher's Behalf</h3>
+      <p style="font-size:13px;color:#64748b;margin-bottom:14px;" id="adminMarkInfo"></p>
+      <div id="adminMarkStudentList"></div>
+      <button onclick="submitAdminMark()" style="margin-top:14px;">✅ Submit Attendance</button>
+      <button class="secondary" onclick="document.getElementById('adminMarkForm').style.display='none';" style="margin-top:14px;">Cancel</button>
     </div>
+ 
+    <!-- TEACHER PERFORMANCE -->
+    <div class="dark-card">
+      <h3>📊 Teacher Performance</h3>
+      <button onclick="loadTeachers()" style="font-size:13px;padding:9px 16px;">📋 Load All Teachers</button>
+    </div>
+    <div id="teacherResult"></div>
+ 
+  </div>
  
 </div>
 </div>
  
 <script>
 const API = window.location.origin;
- 
 const timetable = {
-  Monday: [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
-  Tuesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
+  Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
+  Tuesday:   [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
   Wednesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","DEVC"],["3","11:10-12:00","PHY"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","BEEE"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]],
-  Thursday: [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
-  Friday: [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
+  Thursday:  [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
+  Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
 };
  
-let subjects = ["Physics","Electrical","Electronics","Maths","Data Structures","IT Workshop","Engineering Graphics"];
+let adminMarkData = {};
  
-function togglePassword(){
-  let i = document.getElementById("adminPass");
-  i.type = i.type === "password" ? "text" : "password";
-}
+function togglePassword(){ let i=document.getElementById("adminPass"); i.type=i.type==="password"?"text":"password"; }
  
 function checkLogin(){
-  if(document.getElementById("adminPass").value === "chiru1122"){
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-  } else {
-    alert("❌ Wrong Password");
-  }
+  if(document.getElementById("adminPass").value==="chiru1122"){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+  } else { alert("❌ Wrong Password"); }
 }
  
 function showSection(type){
-  document.getElementById("studentSection").style.display = "none";
-  document.getElementById("teacherSection").style.display = "none";
-  document.getElementById("tab-student").classList.remove("active");
-  document.getElementById("tab-teacher").classList.remove("active");
-  document.getElementById(type+"Section").style.display = "block";
+  ["student","teacher"].forEach(t=>{
+    document.getElementById(t+"Section").style.display="none";
+    document.getElementById("tab-"+t).classList.remove("active");
+  });
+  document.getElementById(type+"Section").style.display="block";
   document.getElementById("tab-"+type).classList.add("active");
 }
  
+// ===== STUDENT =====
 async function searchStudent(){
-  let roll = document.getElementById("searchRoll").value.trim();
-  if(!roll){ alert("Enter Roll No"); return; }
- 
+  let roll=document.getElementById("searchRoll").value.trim();
+  if(!roll){alert("Enter Roll No");return;}
   showLoader();
-  const res = await fetch(API + "/attendance?studentName=" + roll);
-  const data = await res.json();
+  const res=await fetch(API+"/attendance?studentName="+roll);
+  const data=await res.json();
   hideLoader();
- 
-  const result = document.getElementById("result");
- 
-  if(data.length === 0){
-    result.innerHTML = `<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b></p></div>`;
-    return;
-  }
- 
-  let present = data.filter(d => d.status === "Present").length;
-  let absent = data.length - present;
-  let pct = ((present/data.length)*100).toFixed(1);
- 
-  let html = `
-  <div class="dark-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+  const result=document.getElementById("result");
+  if(data.length===0){result.innerHTML=`<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b></p></div>`;return;}
+  let present=data.filter(d=>d.status==="Present").length;
+  let absent=data.filter(d=>d.status==="Absent").length;
+  let notMarked=data.filter(d=>d.status==="NotMarked").length;
+  let pct=((present/(present+absent||1))*100).toFixed(1);
+  let html=`<div class="dark-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
       <h3 style="margin:0;">🎓 ${roll}</h3>
-      <button onclick="deleteAllRecords()" style="background:#7f1d1d; font-size:12px; padding:8px 14px;">🗑 Delete All</button>
+      <button onclick="deleteAllRecords()" style="background:#7f1d1d;font-size:12px;padding:8px 14px;">🗑 Delete All</button>
     </div>
     <div class="stats-row">
-      <div class="mini-stat"><p>${data.length}</p><span>Total</span></div>
+      <div class="mini-stat"><p>${present+absent}</p><span>Counted</span></div>
       <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
       <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
       <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Percentage</span></div>
+      <div class="mini-stat"><p style="color:#94a3b8">${notMarked}</p><span>Not Marked</span></div>
     </div>
-    <div class="scroll-box">
-    <table class="dark-table">
-      <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>
-  `;
- 
-  data.forEach(d => {
-    html += `<tr>
+    <div class="scroll-box"><table class="dark-table">
+      <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>`;
+  data.forEach(d=>{
+    const autoTag=d.autoMarked?`<span style="font-size:10px;background:#78350f;color:#fcd34d;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:5px;">AUTO</span>`:'';
+    const statusClass=d.status==="Present"?"green":d.status==="Absent"?"red":"amber";
+    html+=`<tr>
       <td>${new Date(d.date).toLocaleDateString()}</td>
       <td>${d.subject}</td>
-      <td class="${d.status==="Present"?"green":"red"}">${d.status}</td>
+      <td class="${statusClass}">${d.status}${autoTag}</td>
       <td>${new Date(d.updatedAt).toLocaleString()}</td>
-      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" style="padding:6px 10px; font-size:12px; background:#7f1d1d;">🗑</button></td>
+      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" style="padding:6px 10px;font-size:12px;background:#7f1d1d;">🗑</button></td>
     </tr>`;
   });
- 
-  html += `</table></div></div>`;
-  result.innerHTML = html;
-  document.getElementById("updateBox").style.display = "block";
+  html+=`</table></div></div>`;
+  result.innerHTML=html;
+  document.getElementById("updateBox").style.display="block";
 }
  
-async function deleteRecord(name, date, subject){
+async function deleteRecord(name,date,subject){
   showLoader();
-  await fetch(API + "/delete", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ studentName:name, date, subject }) });
-  hideLoader();
-  alert("Deleted");
-  searchStudent();
+  await fetch(API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
+  hideLoader();alert("Deleted");searchStudent();
 }
- 
 async function deleteAllRecords(){
-  if(!confirm("⚠️ Delete ALL records?")) return;
-  showLoader();
-  await fetch(API + "/delete-all", { method:"POST" });
-  hideLoader();
-  alert("✅ All records deleted");
-  document.getElementById("result").innerHTML = "";
+  if(!confirm("⚠️ Delete ALL records?"))return;
+  showLoader();await fetch(API+"/delete-all",{method:"POST"});hideLoader();
+  alert("✅ All records deleted");document.getElementById("result").innerHTML="";
 }
- 
 async function updateAttendance(){
-  let roll = document.getElementById("updateRoll").value;
-  let date = document.getElementById("updateDate").value;
-  let subject = document.getElementById("period").value;
-  let status = document.getElementById("status").value;
-  if(!roll || !date){ alert("Fill all fields"); return; }
+  let roll=document.getElementById("updateRoll").value;
+  let date=document.getElementById("updateDate").value;
+  let subject=document.getElementById("period").value;
+  let status=document.getElementById("status").value;
+  if(!roll||!date){alert("Fill all fields");return;}
   showLoader();
-  let data = {}; data[roll] = status;
-  await fetch(API + "/submit-attendance", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ date, subject, data, section:"A" }) });
-  hideLoader();
-  alert("✅ Updated Successfully");
-  searchStudent();
+  let data={};data[roll]=status;
+  await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data,section:"A"})});
+  hideLoader();alert("✅ Updated");searchStudent();
 }
- 
 function updatePeriods(){
-  let date = document.getElementById("updateDate").value;
-  if(!date) return;
-  let day = new Date(date).toLocaleDateString('en-US',{weekday:'long'});
-  let dropdown = document.getElementById("period");
-  dropdown.innerHTML = "";
-  let dayData = timetable[day];
-  if(!dayData){ dropdown.innerHTML = "<option>No Classes</option>"; return; }
-  dayData.forEach(row => {
-    let opt = document.createElement("option");
-    opt.value = row[2];
-    opt.text = "Period " + row[0] + " — " + row[2];
-    dropdown.appendChild(opt);
-  });
+  let date=document.getElementById("updateDate").value;
+  if(!date)return;
+  let day=new Date(date).toLocaleDateString('en-US',{weekday:'long'});
+  let dropdown=document.getElementById("period");
+  dropdown.innerHTML="";
+  let dayData=timetable[day];
+  if(!dayData){dropdown.innerHTML="<option>No Classes</option>";return;}
+  dayData.forEach(row=>{let opt=document.createElement("option");opt.value=row[2];opt.text="Period "+row[0]+" — "+row[2];dropdown.appendChild(opt);});
 }
  
-function loadTeachers(){
-  let html = `<div class="dark-card"><h3>👩‍🏫 Faculty List</h3><div class="scroll-box"><table class="dark-table"><tr><th>Faculty</th><th>Subject</th><th>Action</th></tr>`;
-  subjects.forEach(sub => {
-    html += `<tr><td>${sub} Faculty</td><td>${sub}</td><td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px; font-size:12px;">👀 View</button></td></tr>`;
+// ===== MISSED MONITOR =====
+async function loadMissedSummary(){
+  const box=document.getElementById("missedSummary");
+  box.innerHTML=`<p style="color:#64748b;font-size:13px;">Loading...</p>`;
+  const res=await fetch(API+"/admin/missed-summary");
+  const data=await res.json();
+  if(!data.missed||data.missed.length===0){
+    box.innerHTML=`<p style="color:#34d399;font-size:13px;">✅ No missed marking found! All teachers are up to date.</p>`;return;
+  }
+  box.innerHTML=data.missed.map(item=>{
+    const date=new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    let pillClass="pill-warn", pillText="⚠️ Not Marked";
+    if(item.used)   {pillClass="pill-success";pillText="✅ Re-marked";}
+    if(item.unlocked){pillClass="pill-blue";   pillText="🔓 Unlocked";}
+    return `<div class="missed-row">
+      <div>
+        <strong style="color:#f1f5f9;font-size:14px;">${item.subject} — ${item.section}</strong>
+        <p style="color:#64748b;font-size:12px;margin-top:2px;">${date} · ${item.count} students affected</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="pill ${pillClass}">${pillText}</span>
+        ${!item.used?`<button class="amber" onclick="quickUnlock('${item.subject}','${item.section}','${new Date(item.date).toISOString().split('T')[0]}')" style="padding:6px 12px;font-size:12px;">🔓 Unlock</button>`:''}
+      </div>
+    </div>`;
+  }).join("");
+}
+ 
+// Quick unlock from missed monitor
+async function quickUnlock(subject, section, date){
+  showLoader();
+  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const data=await res.json();
+  hideLoader();
+  alert(data.success?"✅ "+data.message:"❌ "+data.message);
+  loadMissedSummary();
+}
+ 
+// ===== UNLOCK FOR TEACHER =====
+async function unlockForTeacher(){
+  const subject=document.getElementById("unlockSubject").value;
+  const section=document.getElementById("unlockSection").value;
+  const date=document.getElementById("unlockDate").value;
+  if(!subject||!section||!date){alert("Fill all fields");return;}
+  showLoader();
+  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const data=await res.json();
+  hideLoader();
+  const box=document.getElementById("unlockResult");
+  box.style.display="block";
+  box.style.color=data.success?"#34d399":"#f87171";
+  box.textContent=data.success?"✅ "+data.message:"❌ "+data.message;
+}
+ 
+// ===== ADMIN MARK ON BEHALF =====
+function adminMarkOnBehalf(){
+  const subject=document.getElementById("unlockSubject").value;
+  const section=document.getElementById("unlockSection").value;
+  const date=document.getElementById("unlockDate").value;
+  if(!subject||!section||!date){alert("Fill all fields first");return;}
+ 
+  // Generate student list for section
+  const sectionMap={
+    "CSE - A":{prefix:"25G01A05",s:1,e:75},"CSE - B":{prefix:"25G01A05",s:76,e:120},
+    "A.I - A":{prefix:"25G01A43",s:1,e:75},"A.I - B":{prefix:"25G01A43",s:76,e:120},
+    "AIML - A":{prefix:"25G01A42",s:1,e:75},"AIML - B":{prefix:"25G01A42",s:76,e:120},
+    "CIVIL":{prefix:"25G01A01",s:2,e:9},"D.S":{prefix:"25G01A32",s:1,e:41},
+    "ECE - A":{prefix:"25G01A04",s:1,e:75},"ECE - B":{prefix:"25G01A04",s:76,e:120},
+    "ECE - C":{prefix:"25G01A02",s:1,e:19},"ECE - D":{prefix:"25G01A03",s:1,e:12}
+  };
+ 
+  const sec=sectionMap[section];
+  if(!sec){alert("Invalid section");return;}
+  let students=[];
+  for(let i=sec.s;i<=sec.e;i++) students.push(sec.prefix+String(i).padStart(2,'0'));
+ 
+  document.getElementById("adminMarkInfo").textContent=`Marking ${subject} for ${section} on ${new Date(date).toLocaleDateString()}`;
+ 
+  const listEl=document.getElementById("adminMarkStudentList");
+  adminMarkData={};
+ 
+  listEl.innerHTML=`
+    <div style="display:flex;gap:10px;margin-bottom:12px;">
+      <button class="amber" onclick="markAllAdmin('Present')">✅ All Present</button>
+      <button style="background:#ef4444;" onclick="markAllAdmin('Absent')">❌ All Absent</button>
+    </div>
+    <div class="scroll-box" style="max-height:280px;">
+    <table class="dark-table">
+      <tr><th>Roll No</th><th>Present</th><th>Absent</th></tr>
+      ${students.map(roll=>`
+        <tr>
+          <td>${roll}</td>
+          <td><input type="radio" name="atd_${roll}" value="Present" onchange="adminMarkData['${roll}']='Present'" checked></td>
+          <td><input type="radio" name="atd_${roll}" value="Absent"  onchange="adminMarkData['${roll}']='Absent'"></td>
+        </tr>
+      `).join("")}
+    </table></div>`;
+ 
+  // Default all present
+  students.forEach(r=>adminMarkData[r]="Present");
+  document.getElementById("adminMarkForm").style.display="block";
+  document.getElementById("adminMarkForm").scrollIntoView({behavior:"smooth"});
+ 
+  // Store for submit
+  document.getElementById("adminMarkForm").dataset.subject=subject;
+  document.getElementById("adminMarkForm").dataset.section=section;
+  document.getElementById("adminMarkForm").dataset.date=date;
+}
+ 
+function markAllAdmin(status){
+  document.querySelectorAll(`[name^="atd_"]`).forEach(r=>{
+    if(r.value===status)r.checked=true;
   });
-  html += `</table></div></div><div id="teacherDetails"></div>`;
-  document.getElementById("teacherResult").innerHTML = html;
+  Object.keys(adminMarkData).forEach(k=>adminMarkData[k]=status);
+}
+ 
+async function submitAdminMark(){
+  const form=document.getElementById("adminMarkForm");
+  const subject=form.dataset.subject;
+  const section=form.dataset.section;
+  const date=form.dataset.date;
+  showLoader();
+  const res=await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
+  const data=await res.json();
+  hideLoader();
+  if(data.success){
+    alert("✅ Attendance marked by admin successfully!");
+    form.style.display="none";
+    loadMissedSummary();
+  } else {
+    alert("❌ Error: "+data.message);
+  }
+}
+ 
+// ===== TEACHER PERFORMANCE =====
+function loadTeachers(){
+  const subjects=["PHY","BEEE","DS","DEVC","EG LAB","IT WORKSHOP","PHY LAB","EEE LAB","DS LAB"];
+  let html=`<div class="dark-card"><h3>👩‍🏫 Faculty List</h3><div class="scroll-box"><table class="dark-table">
+    <tr><th>Subject</th><th>Action</th></tr>`;
+  subjects.forEach(sub=>{
+    html+=`<tr><td>${sub}</td><td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px;font-size:12px;">📊 View Performance</button></td></tr>`;
+  });
+  html+=`</table></div></div><div id="teacherDetails"></div>`;
+  document.getElementById("teacherResult").innerHTML=html;
 }
  
 async function viewTeacher(subject){
-  const res = await fetch(API + "/attendance");
-  const data = await res.json();
-  let filtered = data.filter(d => d.subject === subject);
-  if(filtered.length === 0){ document.getElementById("teacherDetails").innerHTML = `<div class="dark-card"><p style="color:#64748b;">No data available</p></div>`; return; }
-  let present = 0, absent = 0, onTime = 0, late = 0, dateMap = {};
-  filtered.forEach(d => {
-    if(d.status==="Present") present++; else absent++;
-    let date = new Date(d.date).toLocaleDateString();
-    if(!dateMap[date]) dateMap[date]={present:0,absent:0,total:0};
+  const res=await fetch(API+"/attendance");
+  const data=await res.json();
+  let filtered=data.filter(d=>d.subject===subject);
+  if(filtered.length===0){document.getElementById("teacherDetails").innerHTML=`<div class="dark-card"><p style="color:#64748b;">No data available for ${subject}</p></div>`;return;}
+  let present=0,absent=0,notMarked=0,onTime=0,late=0,dateMap={};
+  filtered.forEach(d=>{
+    if(d.status==="Present")present++;
+    else if(d.status==="Absent")absent++;
+    else notMarked++;
+    let date=new Date(d.date).toLocaleDateString();
+    if(!dateMap[date])dateMap[date]={present:0,absent:0,notMarked:0,total:0,teacherMarked:!d.autoMarked};
     dateMap[date].total++;
-    if(d.status==="Present") dateMap[date].present++;
-    else dateMap[date].absent++;
-    if(d.updatedAt){ let t=new Date(d.updatedAt); if(!isNaN(t.getTime())){ if(t.getHours()<=10) onTime++; else late++; } else late++; } else late++;
+    if(d.status==="Present")dateMap[date].present++;
+    else if(d.status==="Absent")dateMap[date].absent++;
+    else dateMap[date].notMarked++;
+    if(!d.autoMarked&&d.updatedAt){let t=new Date(d.updatedAt);if(!isNaN(t.getTime())){if(t.getHours()<=10)onTime++;else late++;}}
   });
-  let pct = ((present/(present+absent))*100).toFixed(1);
-  let html = `<div class="dark-card">
-    <h3>📊 ${subject} — Performance Dashboard</h3>
+  let counted=present+absent;
+  let pct=counted?((present/counted)*100).toFixed(1):0;
+  // Teacher performance = days they marked / total days they should have marked
+  let totalDays=Object.keys(dateMap).length;
+  let markedDays=Object.values(dateMap).filter(d=>d.teacherMarked).length;
+  let teacherPct=totalDays?((markedDays/totalDays)*100).toFixed(1):0;
+  let html=`<div class="dark-card">
+    <h3>📊 ${subject} — Full Performance</h3>
     <div class="stats-row">
-      <div class="mini-stat"><p>${filtered.length}</p><span>Total</span></div>
+      <div class="mini-stat"><p>${counted}</p><span>Counted</span></div>
       <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
       <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
-      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Attendance</span></div>
-      <div class="mini-stat"><p style="color:#60a5fa">${onTime}</p><span>On-Time</span></div>
-      <div class="mini-stat"><p style="color:#f97316">${late}</p><span>Late</span></div>
+      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Student Avg%</span></div>
+      <div class="mini-stat"><p style="color:#f87171">${notMarked}</p><span>Not Marked</span></div>
+      <div class="mini-stat"><p style="color:${teacherPct>=80?"#34d399":"#f87171"}">${teacherPct}%</p><span>Teacher Score</span></div>
     </div>
-    <h4 style="color:#94a3b8; font-size:13px; margin:14px 0 10px; text-transform:uppercase; letter-spacing:0.8px;">Date-wise Performance</h4>
+    <p style="font-size:13px;color:#64748b;margin-bottom:14px;">
+      Teacher marked attendance on <b style="color:#f1f5f9">${markedDays}</b> out of <b style="color:#f1f5f9">${totalDays}</b> scheduled days
+    </p>
     <div class="scroll-box"><table class="dark-table">
-      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Total</th><th>Status</th></tr>`;
+      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Teacher</th></tr>`;
   for(let d in dateMap){
-    let p=dateMap[d].present, a=dateMap[d].absent, t=dateMap[d].total;
-    html += `<tr><td>${d}</td><td class="green">${p}</td><td class="red">${a}</td><td>${t}</td><td class="${p===t?"green":"red"}">${p===t?"✅ Complete":"❌ Missing"}</td></tr>`;
+    let dm=dateMap[d];
+    let teacherStatus=dm.teacherMarked
+      ?'<span class="pill pill-success">✅ Marked</span>'
+      :'<span class="pill pill-warn">⚠️ Missed</span>';
+    html+=`<tr><td>${d}</td><td class="green">${dm.present}</td><td class="red">${dm.absent}</td><td class="amber">${dm.notMarked}</td><td>${teacherStatus}</td></tr>`;
   }
-  html += `</table></div></div>`;
-  document.getElementById("teacherDetails").innerHTML = html;
+  html+=`</table></div></div>`;
+  document.getElementById("teacherDetails").innerHTML=html;
 }
 </script>
  
