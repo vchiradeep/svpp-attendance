@@ -36,7 +36,7 @@ const Attendance    = require("./models/Attendance");
 const Teacher       = require("./models/teacher");
 const UnlockRequest = require("./models/UnlockRequest");
 const AuditLog      = require("./models/AuditLog");
-const LeaveRequest  = require("./models/LeaveRequest");
+const LeaveRequest  = require("./models/Leaverequest");
 
 // ===================== HELPERS =====================
 const timetable = {
@@ -47,27 +47,50 @@ const timetable = {
   Friday:    ["DEVC","EG LAB","EG LAB","EG LAB","PHY","DEVC","DS"]
 };
 
+// ===================== ROLL NUMBER GENERATOR =====================
+const SERIES_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function seriesToIndex(ser) {
+  if (/^[0-9]{2}$/.test(ser)) return parseInt(ser, 10);
+  return 100 + SERIES_LETTERS.indexOf(ser[0]) * 10 + parseInt(ser[1], 10);
+}
+
+function indexToSeries(n) {
+  if (n <= 99) return String(n).padStart(2, "0");
+  const offset = n - 100;
+  return SERIES_LETTERS[Math.floor(offset / 10)] + (offset % 10);
+}
+
+function generateSectionRolls(branch, startSer, endSer) {
+  const rolls = [];
+  for (let i = seriesToIndex(startSer); i <= seriesToIndex(endSer); i++)
+    rolls.push("25G01A" + branch + indexToSeries(i));
+  return rolls;
+}
+
 const sections = {
-  "CSE - A":  { prefix:"25G01A05", start:1,  end:75  },
-  "CSE - B":  { prefix:"25G01A05", start:76, end:120 },
-  "A.I - A":  { prefix:"25G01A43", start:1,  end:75  },
-  "A.I - B":  { prefix:"25G01A43", start:76, end:120 },
-  "AIML - A": { prefix:"25G01A42", start:1,  end:75  },
-  "AIML - B": { prefix:"25G01A42", start:76, end:120 },
-  "CIVIL":    { prefix:"25G01A01", start:2,  end:9   },
-  "D.S":      { prefix:"25G01A32", start:1,  end:41  },
-  "ECE - A":  { prefix:"25G01A04", start:1,  end:75  },
-  "ECE - B":  { prefix:"25G01A04", start:76, end:120 },
-  "ECE - C":  { prefix:"25G01A02", start:1,  end:19  },
-  "ECE - D":  { prefix:"25G01A03", start:1,  end:12  },
+  "CSE - A":    { branch:"05", start:"01", end:"75" },
+  "CSE - B":    { branch:"05", start:"76", end:"F0" },
+  "CSE - C":    { branch:"05", start:"F1", end:"M5" },
+  "CSE - D":    { branch:"05", start:"M6", end:"R9" },
+  "A.I - A":    { branch:"43", start:"01", end:"75" },
+  "A.I - B":    { branch:"43", start:"76", end:"F0" },
+  "A.I - C":    { branch:"43", start:"F1", end:"I2" },
+  "AIML - A":   { branch:"42", start:"01", end:"75" },
+  "AIML - B":   { branch:"42", start:"76", end:"F0" },
+  "AIML - C":   { branch:"42", start:"F1", end:"M0" },
+  "D.S":        { branch:"32", start:"01", end:"41" },
+  "ECE - A":    { branch:"04", start:"01", end:"75" },
+  "ECE - B":    { branch:"04", start:"76", end:"B5" },
+  "ECE - C":    { branch:"02", start:"01", end:"19" },
+  "CIVIL":      { branch:"01", start:"02", end:"09" },
+  "Mechanical": { branch:"03", start:"01", end:"12" },
 };
 
 function getStudentsForSection(section) {
   const s = sections[section];
   if (!s) return [];
-  const list = [];
-  for (let i = s.start; i <= s.end; i++) list.push(s.prefix + String(i).padStart(2, "0"));
-  return list;
+  return generateSectionRolls(s.branch, s.start, s.end);
 }
 
 function getISTDate(offsetDays = 0) {

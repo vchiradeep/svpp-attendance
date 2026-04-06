@@ -58,18 +58,18 @@
     </style>
 </head>
 <body class="teacher-bg">
- 
+
 <div class="container">
   <div class="page-icon">📅</div>
   <h2>Select Date & Section</h2>
   <p class="subtitle">Choose the date and section to mark attendance</p>
- 
+
   <div class="input-group">
     <label class="input-label">Date</label>
     <input type="date" id="date">
     <p class="date-display" id="displayDate"></p>
   </div>
- 
+
   <div class="input-group">
     <label class="input-label">Section</label>
     <select id="section">
@@ -89,14 +89,14 @@
       <option>ECE - A</option>
       <option>ECE - B</option>
       <option>ECE - C</option>
-      <option>ECE - D</option>
+      <option>Mechanical</option>
     </select>
   </div>
- 
+
   <button class="next-btn" onclick="goToTimetable()">Next ➡️</button>
   <a href="teacherhome.html" class="back-link">← Back to Dashboard</a>
 </div>
- 
+
 <script>
 // Auto-set today's date (IST safe)
 const now   = new Date();
@@ -104,17 +104,17 @@ const year  = now.getFullYear();
 const month = String(now.getMonth() + 1).padStart(2, '0');
 const day   = String(now.getDate()).padStart(2, '0');
 const today = `${year}-${month}-${day}`;
- 
+
 document.getElementById("date").value = today;
 updateDisplay(day, month, year);
- 
+
 document.getElementById("date").addEventListener("change", function(){
   if(this.value){
     const parts = this.value.split("-");
     updateDisplay(parts[2], parts[1], parts[0]);
   }
 });
- 
+
 function updateDisplay(d, m, y){
   const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const days   = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -122,19 +122,19 @@ function updateDisplay(d, m, y){
   document.getElementById("displayDate").textContent =
     `${days[dateObj.getDay()]}, ${d} ${months[parseInt(m)-1]} ${y}`;
 }
- 
+
 function goToTimetable(){
   const date    = document.getElementById("date").value;
   const section = document.getElementById("section").value;
- 
+
   if(!date || !section){
     alert("Please select both date and section");
     return;
   }
- 
+
   // Check if it's a remark (admin unlocked previous day)
   const isRemark = localStorage.getItem("isRemark") === "true";
- 
+
   if(!isRemark){
     // Only allow today's date for normal marking
     if(date > today){
@@ -146,16 +146,16 @@ function goToTimetable(){
       return;
     }
   }
- 
+
   localStorage.setItem("selectedDate", date);
   localStorage.setItem("section", section);
   // Clear remark flag
   localStorage.removeItem("isRemark");
- 
+
   window.location.href = "timetable.html";
 }
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
