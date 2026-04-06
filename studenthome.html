@@ -1,83 +1,747 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Dashboard</title>
+    <title>Student Dashboard — SVPCET</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body { background: linear-gradient(160deg, #ecfdf5 0%, #d1fae5 60%, #f0fdf4 100%); min-height:100vh; font-family:'Plus Jakarta Sans',sans-serif; }
+
+      /* TOP BAR */
+      .student-topbar {
+        background: #059669;
+        color: white;
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .student-topbar h2 { font-size:16px; font-weight:800; margin:0; }
+      .logout-btn {
+        padding:8px 16px; background:rgba(255,255,255,0.2);
+        border:none; border-radius:8px; color:white;
+        font-weight:700; font-size:13px; cursor:pointer;
+        font-family:'Plus Jakarta Sans',sans-serif;
+        transition:0.2s;
+      }
+      .logout-btn:hover { background:rgba(255,255,255,0.35); }
+
+      .page { max-width:860px; margin:0 auto; padding:24px 16px 50px; }
+
+      /* WELCOME CARD */
+      .welcome-card {
+        background: linear-gradient(135deg, #059669, #10b981);
+        border-radius:18px;
+        padding:24px;
+        color:white;
+        margin-bottom:20px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:16px;
+        box-shadow:0 8px 28px rgba(5,150,105,0.3);
+      }
+      .welcome-card h1 { font-size:22px; font-weight:800; margin:0 0 4px; }
+      .welcome-card p  { font-size:13px; opacity:0.85; margin:0; }
+      .welcome-avatar {
+        width:56px; height:56px;
+        background:rgba(255,255,255,0.2);
+        border-radius:14px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:28px; flex-shrink:0;
+      }
+
+      /* STATS ROW */
+      .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:14px; margin-bottom:20px; }
+      .stat-card {
+        background:white; border-radius:14px; padding:18px 16px;
+        text-align:center; box-shadow:0 2px 12px rgba(0,0,0,0.07);
+        border-top:3px solid #e2e8f0; transition:all 0.25s;
+      }
+      .stat-card:hover { transform:translateY(-3px); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+      .stat-card.green  { border-top-color:#059669; }
+      .stat-card.red    { border-top-color:#ef4444; }
+      .stat-card.blue   { border-top-color:#3b82f6; }
+      .stat-card.amber  { border-top-color:#f59e0b; }
+      .stat-card .val   { font-size:28px; font-weight:800; color:#1e293b; margin-bottom:4px; }
+      .stat-card .lbl   { font-size:12px; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
+
+      /* AI PREDICTION BOX */
+      .ai-box {
+        border-radius:16px; padding:20px 22px; margin-bottom:20px;
+        border:2px solid; animation:fadeUp 0.5s ease;
+      }
+      .ai-box.safe    { background:#f0fdf4; border-color:#22c55e; }
+      .ai-box.warning { background:#fffbeb; border-color:#f59e0b; }
+      .ai-box.danger  { background:#fef2f2; border-color:#ef4444; }
+      .ai-title { font-size:15px; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+      .ai-box.safe    .ai-title { color:#166534; }
+      .ai-box.warning .ai-title { color:#92400e; }
+      .ai-box.danger  .ai-title { color:#991b1b; }
+      .ai-body { font-size:13.5px; line-height:1.7; }
+      .ai-box.safe    .ai-body { color:#14532d; }
+      .ai-box.warning .ai-body { color:#78350f; }
+      .ai-box.danger  .ai-body { color:#7f1d1d; }
+      .ai-suggestion {
+        margin-top:12px; padding:10px 14px;
+        background:rgba(255,255,255,0.7); border-radius:10px;
+        font-size:13px; font-weight:600;
+      }
+      .ai-box.safe    .ai-suggestion { color:#059669; }
+      .ai-box.warning .ai-suggestion { color:#d97706; }
+      .ai-box.danger  .ai-suggestion { color:#dc2626; }
+
+      /* PREDICTION SLIDER */
+      .predict-section {
+        background:white; border-radius:16px; padding:20px 22px;
+        margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.07);
+      }
+      .predict-section h3 { font-size:15px; font-weight:800; color:#1e293b; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+      .slider-row { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+      .slider-row label { font-size:13px; font-weight:600; color:#475569; white-space:nowrap; }
+      .slider-row input[type=range] { flex:1; min-width:120px; accent-color:#059669; }
+      .slider-val { font-size:14px; font-weight:800; color:#059669; min-width:60px; text-align:right; }
+      .predict-result {
+        background:#f0fdf4; border-radius:10px; padding:14px 16px;
+        font-size:13.5px; color:#065f46; font-weight:600; line-height:1.6;
+      }
+      .predict-bar { height:10px; background:#e2e8f0; border-radius:10px; margin-top:10px; overflow:hidden; }
+      .predict-fill { height:100%; border-radius:10px; transition:width 0.4s ease; }
+
+      /* CHART CARD */
+      .chart-card {
+        background:white; border-radius:16px; padding:22px;
+        margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.07);
+      }
+      .chart-card h3 { font-size:15px; font-weight:800; color:#1e293b; margin-bottom:16px; }
+      .chart-wrap { width:200px; height:200px; margin:0 auto; }
+
+      /* TARGET CARDS */
+      .targets { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:20px; }
+      .target-card {
+        background:white; border-radius:14px; padding:16px;
+        box-shadow:0 2px 12px rgba(0,0,0,0.07);
+        text-align:center; transition:all 0.25s;
+      }
+      .target-card:hover { transform:translateY(-2px); }
+      .target-card .t-pct { font-size:22px; font-weight:800; margin-bottom:6px; }
+      .target-card .t-msg { font-size:12px; color:#64748b; line-height:1.4; }
+      .target-card.reached .t-pct { color:#059669; }
+      .target-card.close   .t-pct { color:#f59e0b; }
+      .target-card.far     .t-pct { color:#ef4444; }
+
+      /* DATE VIEW */
+      .date-section {
+        background:white; border-radius:16px; padding:22px;
+        margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,0.07);
+      }
+      .date-section h3 { font-size:15px; font-weight:800; color:#1e293b; margin-bottom:14px; }
+      .date-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+      .date-row input { flex:1; min-width:160px; padding:11px 14px; border:2px solid #d1fae5; border-radius:10px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; outline:none; background:#f0fdf4; color:#1e293b; }
+      .date-row input:focus { border-color:#059669; }
+      .check-btn {
+        padding:11px 20px; background:#059669; color:white;
+        border:none; border-radius:10px; font-weight:700; font-size:13px;
+        cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:0.2s;
+      }
+      .check-btn:hover { background:#047857; }
+      #attendanceTable { width:100%; border-collapse:collapse; font-size:14px; }
+      #attendanceTable th { background:#059669; color:white; padding:11px 14px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
+      #attendanceTable td { padding:11px 14px; border-bottom:1px solid #f0fdf4; color:#374151; }
+      #attendanceTable tr:last-child td { border-bottom:none; }
+      #attendanceTable tr:hover td { background:#f0fdf4; }
+      .status-present   { color:#059669; font-weight:700; }
+      .status-absent    { color:#ef4444; font-weight:700; }
+      .status-notmarked { color:#f59e0b; font-weight:700; }
+
+      /* NOT MARKED NOTE */
+      .notmarked-note {
+        background:#fffbeb; border:1.5px solid #f59e0b;
+        border-radius:10px; padding:12px 16px;
+        font-size:13px; color:#92400e; font-weight:600;
+        margin-bottom:16px; display:none;
+      }
+
+      .insight-item {
+        display:flex; align-items:flex-start; gap:12px;
+        padding:12px 14px; background:#f0fdf4;
+        border-radius:10px; margin-bottom:10px;
+        border-left:3px solid #059669;
+      }
+      .insight-item.warn { background:#fffbeb; border-left-color:#f59e0b; }
+      .insight-item.danger { background:#fef2f2; border-left-color:#ef4444; }
+      .insight-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+      .insight-text { font-size:13.5px; color:#1e293b; line-height:1.5; font-weight:500; }
+      .subject-bar-row { margin-bottom:10px; }
+      .subject-bar-label { display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#374151; margin-bottom:4px; }
+      .subject-bar-track { height:8px; background:#e2e8f0; border-radius:8px; overflow:hidden; }
+      .subject-bar-fill  { height:100%; border-radius:8px; transition:width 0.6s ease; }
+
+      @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+      @media(max-width:600px){
+        .welcome-card h1 { font-size:18px; }
+        .chart-wrap { width:160px; height:160px; }
+      }
+    </style>
 </head>
+<body>
 
-<body class="student-bg">
+<!-- TOP BAR -->
+<div class="student-topbar">
+  <h2>🎓 Student Dashboard — SVPCET</h2>
+  <button class="logout-btn" onclick="window.location.href='leaderboard.html'" style="background:rgba(255,255,255,0.15);margin-right:8px;">🏆 Leaderboard</button>
+  <button class="logout-btn" onclick="window.location.href='leaverequest.html'" style="background:rgba(255,255,255,0.15);margin-right:8px;">📋 Leave</button>
+  <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+</div>
 
-<div class="container">
+<div class="page">
 
-    <h1>Student Dashboard</h1>
-
-    <!-- Student Info -->
-    <div class="card">
-        <h2>Welcome Student</h2>
-        <p><b>Roll No:</b> <span id="roll"></span></p>
-        <p><b>Section:</b> <span id="section"></span></p>
+  <!-- WELCOME -->
+  <div class="welcome-card">
+    <div>
+      <h1>Welcome, <span id="rollName">Student</span>!</h1>
+      <p>Section: <span id="sectionName">—</span> &nbsp;·&nbsp; <span id="todayDate"></span></p>
     </div>
+    <div class="welcome-avatar">👨‍🎓</div>
+  </div>
 
-    <!-- Attendance Summary -->
-    <div class="card">
-        <h2>Attendance Summary</h2>
+  <!-- NOT MARKED NOTE -->
+  <div class="notmarked-note" id="notMarkedNote"></div>
 
-        <!-- ✅ PERFECT MEDIUM CHART -->
-        <div class="chart-container" style="width:250px;height:250px;margin:auto;">
-            <canvas id="attendanceChart"></canvas>
-        </div>
-
-        <p>Total Classes: <span id="total"></span></p>
-        <p>Attended Classes: <span id="attended"></span></p>
-
-        <!-- ✅ NO EXTRA % -->
-        <p>Percentage: <span id="percentage"></span></p>
-
-        <!-- 🏆 BADGE -->
-        <h3 id="badge"></h3>
-
-        <!-- 🎯 STATUS -->
-        <h3 id="status"></h3>
-
-        <!-- 🎉 IMAGE -->
-        <img id="congratsImg"
-             src="images/congrats.png"
-             style="display:none; width:200px; margin-top:10px;">
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="val" id="totalClasses">—</div>
+      <div class="lbl">Total Classes</div>
     </div>
-
-    <!-- Target Section -->
-    <div class="card">
-        <h2>Target Tracker</h2>
-        <p id="target75"></p>
-        <p id="target80"></p>
-        <p id="target90"></p>
-        <p id="target95"></p>
-        <p id="target100"></p>
+    <div class="stat-card green">
+      <div class="val" id="attended">—</div>
+      <div class="lbl">Attended</div>
     </div>
-
-    <!-- View Attendance -->
-    <div class="card">
-        <h2>View Attendance by Date</h2>
-
-        <input type="date" id="datePicker">
-        <button onclick="showAttendance()">Check</button>
-
-        <table id="attendanceTable">
-            <tr>
-                <th>Subject</th>
-                <th>Status</th>
-            </tr>
-        </table>
+    <div class="stat-card red">
+      <div class="val" id="absent">—</div>
+      <div class="lbl">Absent</div>
     </div>
+    <div class="stat-card blue">
+      <div class="val" id="percentage">—</div>
+      <div class="lbl">Percentage</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="val" id="notMarkedCount">—</div>
+      <div class="lbl">Not Marked</div>
+    </div>
+  </div>
+
+  <!-- 🤖 AI PREDICTION BOX -->
+  <div id="aiPredictionBox" class="ai-box safe" style="display:none;">
+    <div class="ai-title" id="aiTitle">🤖 AI Attendance Prediction</div>
+    <div class="ai-body" id="aiBody"></div>
+    <div class="ai-suggestion" id="aiSuggestion"></div>
+  </div>
+
+  <!-- 📊 CHART -->
+  <div class="chart-card">
+    <h3>📊 Attendance Overview</h3>
+    <div class="chart-wrap">
+      <canvas id="attendanceChart"></canvas>
+    </div>
+  </div>
+
+  <!-- 🔮 PREDICTION SIMULATOR -->
+  <div class="predict-section">
+    <h3>🔮 Predict Future Attendance</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Simulate how your attendance % will change based on future classes</p>
+    <div class="slider-row">
+      <label>Next classes I will attend:</label>
+      <input type="range" id="attendSlider" min="0" max="30" value="5" oninput="simulatePrediction()">
+      <span class="slider-val" id="attendSliderVal">5</span>
+    </div>
+    <div class="slider-row">
+      <label>Total upcoming classes:</label>
+      <input type="range" id="totalSlider" min="1" max="60" value="10" oninput="simulatePrediction()">
+      <span class="slider-val" id="totalSliderVal">10</span>
+    </div>
+    <div class="predict-result" id="predictResult">Set sliders above to simulate...</div>
+    <div class="predict-bar"><div class="predict-fill" id="predictBar" style="width:0%;background:#059669;"></div></div>
+  </div>
+
+  <!-- 🎯 TARGET CARDS -->
+  <h3 style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:12px;">🎯 Target Tracker</h3>
+  <div class="targets">
+    <div class="target-card" id="t75">
+      <div class="t-pct">75%</div>
+      <div class="t-msg" id="t75msg">Loading...</div>
+    </div>
+    <div class="target-card" id="t80">
+      <div class="t-pct">80%</div>
+      <div class="t-msg" id="t80msg">Loading...</div>
+    </div>
+    <div class="target-card" id="t90">
+      <div class="t-pct">90%</div>
+      <div class="t-msg" id="t90msg">Loading...</div>
+    </div>
+    <div class="target-card" id="t95">
+      <div class="t-pct">95%</div>
+      <div class="t-msg" id="t95msg">Loading...</div>
+    </div>
+  </div>
+
+  <!-- 📈 ATTENDANCE TRENDS -->
+  <div class="chart-card" id="trendsSection" style="display:none;">
+    <h3>📈 Attendance Trends</h3>
+    <div style="margin-bottom:12px;">
+      <canvas id="weeklyTrendChart" height="120"></canvas>
+    </div>
+    <h3 style="margin-top:20px;">📚 Subject-wise Performance</h3>
+    <div id="subjectBars"></div>
+    <h3 style="margin-top:20px;">📅 Best & Worst Days</h3>
+    <div id="dayBars"></div>
+  </div>
+
+  <!-- 🧠 SMART INSIGHTS -->
+  <div class="chart-card" id="insightsSection" style="display:none;">
+    <h3>🧠 Smart Insights</h3>
+    <div id="insightsList"></div>
+  </div>
+
+  <!-- 📅 DATE VIEW -->
+  <div class="date-section">
+    <h3>📅 View Attendance by Date</h3>
+    <div class="date-row">
+      <input type="date" id="datePicker">
+      <button class="check-btn" onclick="showAttendance()">Check →</button>
+    </div>
+    <table id="attendanceTable">
+      <tr>
+        <th>Period</th>
+        <th>Subject</th>
+        <th>Status</th>
+      </tr>
+    </table>
+  </div>
 
 </div>
 
-<script src="student.js"></script>
-<!-- 🔄 LOADER -->
-<div id="loader" style="display:none;">
-  <div class="spinner"></div>
-</div>
+<script>
+const roll    = localStorage.getItem("studentRoll");
+const section = localStorage.getItem("section");
+
+if(!roll || !section){
+  alert("Please login first");
+  window.location.href = "student.html";
+}
+
+document.getElementById("rollName").textContent  = roll;
+document.getElementById("sectionName").textContent = section;
+document.getElementById("todayDate").textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+let fullData = [];
+let globalPresent = 0, globalTotal = 0;
+
+// ===================== CHART =====================
+const ctx   = document.getElementById("attendanceChart").getContext("2d");
+const chart = new Chart(ctx, {
+  type:"doughnut",
+  data:{
+    labels:["Present","Absent","Not Marked"],
+    datasets:[{
+      data:[0,0,0],
+      backgroundColor:["#059669","#ef4444","#f59e0b"],
+      borderWidth:0
+    }]
+  },
+  options:{
+    plugins:{ legend:{ position:"bottom", labels:{ font:{size:12}, boxWidth:12 } } },
+    cutout:"68%"
+  }
+});
+
+// ===================== 📈 TRENDS =====================
+let weeklyTrendChart;
+
+async function loadTrends() {
+  const res  = await fetch("/trends/student/" + roll);
+  const data = await res.json();
+  if (!data.success) return;
+
+  const { weekTrend, subjectTrend, dayTrend } = data;
+
+  if (weekTrend.length > 1) {
+    document.getElementById("trendsSection").style.display = "block";
+
+    // Weekly trend chart
+    if (weeklyTrendChart) weeklyTrendChart.destroy();
+    const ctx = document.getElementById("weeklyTrendChart").getContext("2d");
+    weeklyTrendChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: weekTrend.map(w => w.week),
+        datasets: [{
+          label: "Weekly %",
+          data: weekTrend.map(w => w.pct),
+          borderColor: "#059669",
+          backgroundColor: "rgba(5,150,105,0.1)",
+          borderWidth: 2.5, pointRadius: 4,
+          pointBackgroundColor: "#059669", fill: true, tension: 0.4
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min:0, max:100, grid: { color:"rgba(0,0,0,0.05)" }, ticks: { callback: v => v+"%" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Subject bars
+    const subEl = document.getElementById("subjectBars");
+    subEl.innerHTML = subjectTrend.map(s => {
+      const color = s.pct >= 75 ? "#059669" : s.pct >= 65 ? "#f59e0b" : "#ef4444";
+      return `<div class="subject-bar-row">
+        <div class="subject-bar-label"><span>${s.subject}</span><span style="color:${color}">${s.pct}%</span></div>
+        <div class="subject-bar-track"><div class="subject-bar-fill" style="width:${s.pct}%;background:${color};"></div></div>
+      </div>`;
+    }).join("");
+
+    // Day bars
+    const dayEl = document.getElementById("dayBars");
+    dayEl.innerHTML = dayTrend.map(d => {
+      const color = d.pct >= 75 ? "#059669" : d.pct >= 65 ? "#f59e0b" : "#ef4444";
+      return `<div class="subject-bar-row">
+        <div class="subject-bar-label"><span>${d.day}</span><span style="color:${color}">${d.pct}%</span></div>
+        <div class="subject-bar-track"><div class="subject-bar-fill" style="width:${d.pct}%;background:${color};"></div></div>
+      </div>`;
+    }).join("");
+  }
+
+  // ===================== 🧠 SMART INSIGHTS =====================
+  const insights = [];
+  const weakSubject  = subjectTrend[0]; // lowest first
+  const strongSubject = subjectTrend[subjectTrend.length - 1];
+  const bestDay  = [...dayTrend].sort((a,b) => b.pct - a.pct)[0];
+  const worstDay = [...dayTrend].sort((a,b) => a.pct - b.pct)[0];
+
+  if (weakSubject && weakSubject.pct < 75)
+    insights.push({ icon:"📊", text:`You are weak in <b>${weakSubject.subject}</b> attendance (${weakSubject.pct}%). Attend more ${weakSubject.subject} classes!`, type:"warn" });
+
+  if (strongSubject && strongSubject.pct >= 90)
+    insights.push({ icon:"🌟", text:`You attend <b>${strongSubject.subject}</b> very well (${strongSubject.pct}%). Keep it up!`, type:"" });
+
+  if (bestDay && bestDay.pct > 0)
+    insights.push({ icon:"📅", text:`You attend better on <b>${bestDay.day}s</b> (${bestDay.pct}%). Great consistency on this day!`, type:"" });
+
+  if (worstDay && worstDay.pct < 70 && worstDay.pct > 0)
+    insights.push({ icon:"⚠️", text:`You tend to miss classes on <b>${worstDay.day}s</b> (${worstDay.pct}%). Try to improve.`, type:"warn" });
+
+  if (weekTrend.length >= 2) {
+    const last = weekTrend[weekTrend.length-1].pct;
+    const prev = weekTrend[weekTrend.length-2].pct;
+    if (last > prev) insights.push({ icon:"📈", text:`Your attendance improved this week (${prev}% → ${last}%). You're on the right track!`, type:"" });
+    else if (last < prev - 10) insights.push({ icon:"📉", text:`Your attendance dropped this week (${prev}% → ${last}%). Stay consistent!`, type:"danger" });
+  }
+
+  if (insights.length > 0) {
+    document.getElementById("insightsSection").style.display = "block";
+    document.getElementById("insightsList").innerHTML = insights.map(i =>
+      `<div class="insight-item ${i.type||''}">
+        <div class="insight-icon">${i.icon}</div>
+        <div class="insight-text">${i.text}</div>
+      </div>`
+    ).join("");
+  }
+}
+
+// ===================== LOAD ATTENDANCE =====================
+function loadStudentAttendance(){
+  showLoader();
+  fetch("/attendance?studentName=" + roll)
+  .then(res => res.json())
+  .then(data => {
+    fullData = data;
+
+    let present   = 0;
+    let absent    = 0;
+    let notMarked = 0;
+
+    data.forEach(item => {
+      if(item.studentName === roll){
+        if(item.status === "Present")    present++;
+        else if(item.status === "Absent") absent++;
+        else if(item.status === "NotMarked") notMarked++;
+      }
+    });
+
+    // % = present / (present + absent) only — NotMarked excluded
+    const counted = present + absent;
+    const percent = counted === 0 ? 0 : ((present / counted) * 100).toFixed(1);
+
+    globalPresent = present;
+    globalTotal   = counted;
+
+    document.getElementById("totalClasses").textContent = counted;
+    document.getElementById("attended").textContent     = present;
+    document.getElementById("absent").textContent       = absent;
+    document.getElementById("percentage").textContent   = percent + "%";
+    document.getElementById("notMarkedCount").textContent = notMarked;
+
+    // Not marked note
+    if(notMarked > 0){
+      const note = document.getElementById("notMarkedNote");
+      note.style.display = "block";
+      note.textContent = `ℹ️ ${notMarked} period(s) were not marked by your teacher — these are NOT counted in your attendance %.`;
+    }
+
+    // Update chart
+    chart.data.datasets[0].data = [present, absent, notMarked];
+    chart.update();
+
+    // AI Prediction
+    showAIPrediction(present, counted, parseFloat(percent));
+
+    // Targets
+    calculateTargets(present, counted);
+
+    // Init simulator
+    simulatePrediction();
+
+    hideLoader();
+  })
+  .catch(() => hideLoader());
+}
+
+// ===================== 🤖 AI PREDICTION =====================
+function showAIPrediction(present, total, percent) {
+  const box  = document.getElementById("aiPredictionBox");
+  const title = document.getElementById("aiTitle");
+  const body  = document.getElementById("aiBody");
+  const sugg  = document.getElementById("aiSuggestion");
+
+  box.style.display = "block";
+  box.className = "ai-box";
+
+  if(total === 0){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction";
+    body.textContent  = "No attendance data yet. Start attending classes!";
+    sugg.textContent  = "💡 Your journey begins now.";
+    return;
+  }
+
+  // ✅ PREDICTION LOGIC
+  // Assume 6 classes per day, 5 days = 30 classes remaining in semester
+  const remainingClasses = 30;
+  const safeThreshold    = 75;
+
+  // Worst case: student attends 0 remaining classes
+  const worstPct = ((present / (total + remainingClasses)) * 100).toFixed(1);
+
+  // Best case: student attends all remaining classes
+  const bestPct  = (((present + remainingClasses) / (total + remainingClasses)) * 100).toFixed(1);
+
+  // How many classes to attend to stay at 75%
+  let classesNeeded = 0;
+  if(percent < 75){
+    let p = present, t = total;
+    while((p/(t||1))*100 < 75 && classesNeeded < 200){ p++; t++; classesNeeded++; }
+  }
+
+  // How many classes can skip and stay above 75%
+  let canSkip = 0;
+  if(percent >= 75){
+    let p = present, t = total;
+    while(true){
+      t++;
+      const newPct = (p/t)*100;
+      if(newPct < 75) break;
+      canSkip++;
+      if(canSkip > 50) break;
+    }
+  }
+
+  // Predict % after next 5 classes if student attends all
+  const next5pct  = (((present+5)/(total+5))*100).toFixed(1);
+  // Predict % if student misses next 5
+  const miss5pct  = ((present/(total+5))*100).toFixed(1);
+
+  if(percent >= 85){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction: You're Excellent! 🌟";
+    body.innerHTML    = `
+      Your current attendance is <b>${percent}%</b> — well above the 75% requirement.<br>
+      Even if you miss the next <b>${canSkip}</b> classes, you'll still stay above 75%.<br>
+      If you attend all next 5 classes: <b>${next5pct}%</b> &nbsp;|&nbsp; If you miss next 5: <b>${miss5pct}%</b>
+    `;
+    sugg.textContent = `💡 You are safe for approximately ${canSkip} more classes. Keep it up!`;
+  }
+  else if(percent >= 75){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction: You're Safe ✅";
+    body.innerHTML    = `
+      Your current attendance is <b>${percent}%</b> — above 75%.<br>
+      You can safely skip <b>${canSkip}</b> more class(es) and still remain above 75%.<br>
+      If you miss next 5 classes: attendance may drop to <b>${miss5pct}%</b>
+    `;
+    sugg.textContent = canSkip <= 3
+      ? `⚠️ You are safe but close — attend regularly. You can only skip ${canSkip} more.`
+      : `💡 Attend next 3 classes to stay comfortably above 75%.`;
+  }
+  else if(percent >= 65){
+    box.classList.add("warning");
+    title.textContent = "🤖 AI Prediction: ⚠️ Warning Zone";
+    body.innerHTML    = `
+      Your current attendance is <b>${percent}%</b> — below 75%.<br>
+      You need to attend the next <b>${classesNeeded}</b> class(es) consecutively to reach 75%.<br>
+      ⚠️ If you miss next 5 classes: attendance will drop to <b>${miss5pct}%</b>
+    `;
+    sugg.textContent = `🎯 Action needed: Attend next ${classesNeeded} classes without fail to reach 75%.`;
+  }
+  else{
+    box.classList.add("danger");
+    title.textContent = "🤖 AI Prediction: 🚨 Critical Alert!";
+    body.innerHTML    = `
+      Your current attendance is <b>${percent}%</b> — critically below 75%.<br>
+      You need to attend <b>${classesNeeded}</b> consecutive classes to recover.<br>
+      🚨 If you miss next 5 classes: will drop to <b>${miss5pct}%</b>
+    `;
+    sugg.textContent = `🚨 Immediate action required: Meet your HOD and attend ALL remaining classes.`;
+  }
+}
+
+// ===================== 🔮 SIMULATOR =====================
+function simulatePrediction(){
+  const attendVal = parseInt(document.getElementById("attendSlider").value);
+  const totalVal  = parseInt(document.getElementById("totalSlider").value);
+
+  // Clamp attend to not exceed total
+  const safeAttend = Math.min(attendVal, totalVal);
+  document.getElementById("attendSlider").max = totalVal;
+  document.getElementById("attendSliderVal").textContent = attendVal;
+  document.getElementById("totalSliderVal").textContent  = totalVal;
+
+  const futurePresent = globalPresent + safeAttend;
+  const futureTotal   = globalTotal   + totalVal;
+  const futurePct     = futureTotal === 0 ? 0 : ((futurePresent / futureTotal) * 100).toFixed(1);
+
+  const currentPct = globalTotal === 0 ? 0 : ((globalPresent / globalTotal)*100).toFixed(1);
+  const change     = (futurePct - currentPct).toFixed(1);
+  const changeStr  = change > 0 ? `+${change}%` : `${change}%`;
+  const changeColor = change >= 0 ? "#059669" : "#ef4444";
+
+  const bar = document.getElementById("predictBar");
+  bar.style.width = futurePct + "%";
+  bar.style.background = futurePct >= 75 ? "#059669" : futurePct >= 65 ? "#f59e0b" : "#ef4444";
+
+  const result = document.getElementById("predictResult");
+  result.innerHTML = `
+    After attending <b>${safeAttend}</b> out of <b>${totalVal}</b> upcoming classes:<br>
+    Your attendance will be → <b style="font-size:17px;color:${futurePct>=75?'#059669':'#ef4444'}">${futurePct}%</b>
+    <span style="color:${changeColor};font-weight:700;margin-left:8px;">(${changeStr} from now)</span>
+    ${futurePct >= 75
+      ? `<br><span style="color:#059669">✅ You will be SAFE above 75%</span>`
+      : `<br><span style="color:#ef4444">⚠️ You will be BELOW 75% — attend more classes!</span>`
+    }
+  `;
+}
+
+// ===================== 🎯 TARGETS =====================
+function calculateTargets(present, total){
+  function calc(target){
+    const t = target / 100;
+    if(total === 0) return { needed:0, msg:"No data yet", cls:"far" };
+    const current = (present/total)*100;
+    if(current >= target){
+      let canSkip = 0;
+      let p = present, tt = total;
+      while(true){ tt++; if((p/tt)*100 < target) break; canSkip++; if(canSkip>100)break; }
+      return { needed:-canSkip, msg:`✅ Safe — can skip ${canSkip} more`, cls:"reached" };
+    }
+    let needed = 0, p = present, tt = total;
+    while((p/(tt||1))*100 < target && needed < 300){ p++; tt++; needed++; }
+    const cls = needed <= 5 ? "close" : "far";
+    return { needed, msg:`Attend ${needed} more classes`, cls };
+  }
+
+  [75,80,90,95].forEach(t => {
+    const r = calc(t);
+    const card = document.getElementById(`t${t}`);
+    const msg  = document.getElementById(`t${t}msg`);
+    card.className = `target-card ${r.cls}`;
+    msg.textContent = r.msg;
+  });
+}
+
+// ===================== 📅 DATE VIEW =====================
+const timetable = {
+  Monday:    [["1","BEEE"],["2","BEEE"],["3","EG LAB"],["4","EG LAB"],["5","DS LAB"],["6","DS LAB"],["7","DS LAB"]],
+  Tuesday:   [["1","DS"],["2","BEEE"],["3","EEE LAB"],["4","EEE LAB"],["5","PHY"],["6","PHY LAB"],["7","PHY LAB"]],
+  Wednesday: [["1","DS"],["2","DEVC"],["3","PHY"],["4","BEEE"],["5","BEEE"],["6","DEVC"],["7","DS"]],
+  Thursday:  [["1","DEVC"],["2","BEEE"],["3","DS"],["4","BEEE"],["5","IT WORKSHOP"],["6","IT WORKSHOP"],["7","IT WORKSHOP"]],
+  Friday:    [["1","DEVC"],["2","EG LAB"],["3","EG LAB"],["4","EG LAB"],["5","PHY"],["6","DEVC"],["7","DS"]]
+};
+
+const subjectDisplay = {
+  "BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)","DS":"Data Structures",
+  "DS LAB":"DS Lab","DEVC":"DE&VC","EG LAB":"EG Lab",
+  "IT WORKSHOP":"IT Workshop","PHY LAB":"Physics Lab","EEE LAB":"EEE Lab","PHY":"Physics"
+};
+
+function showAttendance(){
+  const dateValue = document.getElementById("datePicker").value;
+  const table     = document.getElementById("attendanceTable");
+  table.innerHTML = `<tr><th>Period</th><th>Subject</th><th>Status</th></tr>`;
+  if(!dateValue){ alert("Select a date"); return; }
+
+  const dayName = new Date(dateValue + "T12:00:00").toLocaleString('en-US',{weekday:'long'});
+  if(dayName==="Saturday"||dayName==="Sunday"){
+    let row=table.insertRow(); row.insertCell(0).innerText="—";
+    row.insertCell(1).innerText="Weekend"; row.insertCell(2).innerText="🎉 Holiday"; return;
+  }
+
+  const tt = timetable[dayName];
+  if(!tt){ let row=table.insertRow(); row.insertCell(0).colSpan=3; row.insertCell(0).innerText="No timetable"; return; }
+
+  const today = new Date().toISOString().split("T")[0];
+  const dayData = fullData.filter(x => {
+    if(!x.date) return false;
+    return x.studentName===roll && new Date(x.date).toISOString().split("T")[0]===dateValue;
+  });
+
+  tt.forEach(period => {
+    const pNo  = period[0];
+    const sub  = period[1];
+    const rec  = dayData.find(x=>(x.subject||"").trim().toLowerCase()===sub.toLowerCase());
+
+    let statusText  = "⚪ Not Yet";
+    let statusClass = "";
+
+    if(rec){
+      if(rec.status==="Present")    { statusText="✅ Present";  statusClass="status-present"; }
+      else if(rec.status==="Absent"){ statusText="❌ Absent";   statusClass="status-absent"; }
+      else                          { statusText="⚠️ Not Marked (Teacher)"; statusClass="status-notmarked"; }
+    } else if(dateValue < today){
+      statusText="❌ Absent"; statusClass="status-absent";
+    }
+
+    const row = table.insertRow();
+    row.insertCell(0).innerText = "P"+pNo;
+    row.insertCell(1).innerText = subjectDisplay[sub]||sub;
+    const sc = row.insertCell(2); sc.textContent=statusText; sc.className=statusClass;
+  });
+}
+
+function logout(){ localStorage.clear(); window.location.href="index.html"; }
+
+loadStudentAttendance();
+loadTrends();
+</script>
+
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
 </html>

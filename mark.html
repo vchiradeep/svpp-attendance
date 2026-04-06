@@ -104,7 +104,7 @@ canvas { max-width:140px; max-height:140px; }
 </style>
 </head>
 <body>
- 
+
 <div class="navbar">
   <h2>📝 Mark Attendance</h2>
   <div>
@@ -113,9 +113,9 @@ canvas { max-width:140px; max-height:140px; }
     <button style="background:#ef4444;color:white;" onclick="logout()">🚪</button>
   </div>
 </div>
- 
+
 <div class="container">
- 
+
   <!-- INFO BAR -->
   <div class="info-bar">
     <div class="info-item"><span>Date</span><strong id="dateDisplay">—</strong></div>
@@ -123,17 +123,17 @@ canvas { max-width:140px; max-height:140px; }
     <div class="info-item"><span>Section</span><strong id="sectionDisplay">—</strong></div>
     <div class="info-item"><span>Period</span><strong id="periodDisplay">—</strong></div>
   </div>
- 
+
   <!-- REMARK NOTICE -->
   <div class="remark-notice" id="remarkNotice">
     ✏️ You are re-marking attendance for a previously missed date (admin unlocked).
   </div>
- 
+
   <!-- LOCKED BANNER (if past date without unlock) -->
   <div class="locked-banner" id="lockedBanner" style="display:none;">
     🔒 Attendance is locked for past dates. Contact admin to unlock.
   </div>
- 
+
   <!-- CONTROLS -->
   <div class="controls">
     <div class="btn-row">
@@ -150,10 +150,10 @@ canvas { max-width:140px; max-height:140px; }
       <button class="btn absent" onclick="markRemainingAbsent()">🚫 All Remaining Absent</button>
     </div>
   </div>
- 
+
   <!-- STUDENT LIST -->
   <ul id="studentList" class="student-list"></ul>
- 
+
   <!-- SUMMARY -->
   <div id="summaryPanel">
     <h3>📊 Class Summary</h3>
@@ -165,18 +165,18 @@ canvas { max-width:140px; max-height:140px; }
     </div>
     <canvas id="pieChart"></canvas>
   </div>
- 
+
   <!-- SUBMIT -->
   <div class="submit-row">
     <button class="submit-btn" onclick="submitAttendance()">📤 Submit Attendance</button>
   </div>
- 
+
 </div>
- 
+
 <script>
 // ✅ CORRECT API — uses server origin, not hardcoded localhost
 const API = window.location.origin;
- 
+
 let isLocked = false;
 const teacherSubject  = localStorage.getItem("subject");
 const selectedSubject = localStorage.getItem("selectedSubject");
@@ -185,33 +185,50 @@ const section         = localStorage.getItem("section");
 const period          = localStorage.getItem("period");
 const isRemark        = localStorage.getItem("isRemark") === "true";
 const unlockId        = localStorage.getItem("reMarkUnlockId");
- 
+
 // ✅ Subject display names
 const subjectNames = {
-  "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
-  "DS":"Data Structures","DS LAB":"DS Lab","DEVC":"DE&VC","EG LAB":"EG Lab",
-  "IT WORKSHOP":"IT Workshop","PHY LAB":"Physics Lab","EEE LAB":"EEE Lab"
+  "PHY":"Physics", "BEEE":"Electrical (BEEE)", "ECE":"Electronics (BEEE)",
+  "DS":"Data Structures", "DS LAB":"Data Structures Lab", "DEVC":"DE&VC",
+  "EG LAB":"Engineering Graphics Lab", "IT WORKSHOP":"IT Workshop",
+  "PHY LAB":"Physics Lab", "EEE LAB":"EEE Lab"
 };
- 
-// ✅ Validate subject match
-if(teacherSubject !== selectedSubject){
+
+// ✅ Subject mapping — teacher can mark their labs too
+const subjectMapping = {
+  "PHY":         ["PHY", "PHY LAB"],
+  "BEEE":        ["BEEE", "EEE LAB"],
+  "ECE":         ["ECE", "EEE LAB"],
+  "DS":          ["DS", "DS LAB"],
+  "IT WORKSHOP": ["IT WORKSHOP"],
+  "EG LAB":      ["EG LAB"],
+  "DEVC":        ["DEVC"]
+};
+
+function canTeacherMark(teacherSub, selectedSub){
+  const allowed = subjectMapping[teacherSub] || [teacherSub];
+  return allowed.includes(selectedSub);
+}
+
+// ✅ Validate subject match — teacher can mark their labs too
+if(!canTeacherMark(teacherSubject, selectedSubject)){
   alert("❌ Unauthorized Access!");
   window.location.href = "teacherhome.html";
 }
- 
+
 const today   = new Date().toISOString().split("T")[0];
 const isFuture = date > today;
 const isPast   = date < today;
- 
+
 if(isFuture){ alert("❌ Cannot mark attendance for a future date"); window.location.href="teacherhome.html"; }
- 
+
 if(isPast && !isRemark){
   isLocked = true;
   document.getElementById("lockedBanner").style.display = "block";
 }
- 
+
 if(isRemark){ document.getElementById("remarkNotice").style.display = "block"; }
- 
+
 // Set info bar
 if(date){
   const p = date.split("-");
@@ -220,14 +237,14 @@ if(date){
 document.getElementById("subjectDisplay").textContent  = subjectNames[selectedSubject] || selectedSubject;
 document.getElementById("sectionDisplay").textContent  = section || "—";
 document.getElementById("periodDisplay").textContent   = period ? `Period ${period}` : "—";
- 
+
 // ===== STUDENTS =====
 function generateSeries(prefix, start, end){
   let list=[];
   for(let i=start;i<=end;i++) list.push(prefix+String(i).padStart(2,'0'));
   return list;
 }
- 
+
 let students = [];
 if(section==="CSE - A")  students=generateSeries("25G01A05",1,75);
 else if(section==="CSE - B")  students=generateSeries("25G01A05",76,120);
@@ -245,9 +262,9 @@ else if(section==="ECE - A")  students=generateSeries("25G01A04",1,75);
 else if(section==="ECE - B")  students=generateSeries("25G01A04",76,120);
 else if(section==="ECE - C")  students=generateSeries("25G01A02",1,19);
 else if(section==="ECE - D")  students=generateSeries("25G01A03",1,12);
- 
+
 let attendanceMap={}, history=[], present=0, absent=0;
- 
+
 function renderStudents(list=students){
   const ul=document.getElementById("studentList");
   ul.innerHTML="";
@@ -261,7 +278,7 @@ function renderStudents(list=students){
     ul.appendChild(li);
   });
 }
- 
+
 function toggleStudent(s){
   if(isLocked){ alert("🔒 Attendance is locked. Contact admin."); return; }
   const prev=attendanceMap[s];
@@ -271,7 +288,7 @@ function toggleStudent(s){
   else { attendanceMap[s]="Present"; present++; }
   updateUI();
 }
- 
+
 function parseInput(input){
   let res=[];
   input.split(",").forEach(p=>{
@@ -283,7 +300,7 @@ function parseInput(input){
   });
   return res;
 }
- 
+
 function markBulk(status){
   if(isLocked){ alert("🔒 Locked. Contact admin."); return; }
   const input=document.getElementById("bulkInput").value;
@@ -302,7 +319,7 @@ function markBulk(status){
   updateUI();
   document.getElementById("bulkInput").value="";
 }
- 
+
 function updateUI(){
   renderStudents(currentList);
   const unmarked=students.filter(s=>!attendanceMap[s]).length;
@@ -313,7 +330,7 @@ function updateUI(){
   pieChart.data.datasets[0].data=[present,absent];
   pieChart.update();
 }
- 
+
 let currentList=students;
 document.getElementById("searchBox").addEventListener("input",function(){
   const q=this.value.trim().toLowerCase();
@@ -321,7 +338,7 @@ document.getElementById("searchBox").addEventListener("input",function(){
   currentList=students.filter(s=>s.toLowerCase().includes(q));
   renderStudents(currentList);
 });
- 
+
 function undoLast(){
   if(!history.length) return;
   const last=history.pop();
@@ -331,9 +348,9 @@ function undoLast(){
   else delete attendanceMap[last.s];
   updateUI();
 }
- 
+
 function clearAll(){ attendanceMap={}; history=[]; present=0; absent=0; updateUI(); }
- 
+
 function markRemainingPresent(){
   students.forEach(s=>{ if(!attendanceMap[s]){ attendanceMap[s]="Present"; present++; } });
   updateUI();
@@ -342,7 +359,7 @@ function markRemainingAbsent(){
   students.forEach(s=>{ if(!attendanceMap[s]){ attendanceMap[s]="Absent"; absent++; } });
   updateUI();
 }
- 
+
 function exportCSV(){
   let csv="Roll,Status\n";
   students.forEach(s=>{ csv+=`${s},${attendanceMap[s]||"Unmarked"}\n`; });
@@ -350,19 +367,19 @@ function exportCSV(){
   a.href=URL.createObjectURL(new Blob([csv]));
   a.download="attendance.csv"; a.click();
 }
- 
+
 // CHART
 const pieChart=new Chart(document.getElementById("pieChart"),{
   type:"doughnut",
   data:{labels:["Present","Absent"],datasets:[{data:[0,0],backgroundColor:["#4caf50","#f44336"],borderWidth:0}]},
   options:{plugins:{legend:{position:"bottom"}},cutout:"65%"}
 });
- 
+
 // NAV
 function goHome(){ location.href="teacherhome.html"; }
 function logout(){ localStorage.clear(); location.href="index.html"; }
 function toggleTheme(){ document.body.classList.toggle("light-mode"); }
- 
+
 // KEYBOARD SHORTCUTS
 document.addEventListener("keydown",function(e){
   if(e.target.tagName==="INPUT") return;
@@ -371,23 +388,23 @@ document.addEventListener("keydown",function(e){
   if(e.key==="u") undoLast();
   if(e.key==="c") clearAll();
 });
- 
+
 // ✅ SUBMIT — passes unlockId so server marks unlock as used
 function submitAttendance(){
   if(isLocked){ alert("🔒 Attendance is locked. Contact admin to unlock."); return; }
- 
+
   const unmarked=students.filter(s=>!attendanceMap[s]).length;
   if(unmarked>0){
     const go=confirm(`⚠️ ${unmarked} students are not marked yet. Submit anyway?\n(Unmarked students will be skipped)`);
     if(!go) return;
   }
- 
+
   showLoader();
- 
+
   // Only submit marked students
   const dataToSubmit={};
   students.forEach(s=>{ if(attendanceMap[s]) dataToSubmit[s]=attendanceMap[s]; });
- 
+
   fetch(API+"/submit-attendance",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
@@ -412,11 +429,11 @@ function submitAttendance(){
   })
   .catch(()=>{ hideLoader(); alert("❌ Network error. Try again."); });
 }
- 
+
 // Init
 renderStudents();
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>

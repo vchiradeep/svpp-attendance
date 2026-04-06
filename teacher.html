@@ -66,12 +66,12 @@
     </style>
 </head>
 <body>
- 
+
 <div class="login-wrapper">
   <div class="login-icon">👨‍🏫</div>
   <h2>Faculty Login</h2>
   <p class="subtitle">Select your subject and enter password</p>
- 
+
   <div class="input-group">
     <label class="input-label">Subject</label>
     <select id="subject">
@@ -81,14 +81,11 @@
       <option value="ECE">Electronics (BEEE)</option>
       <option value="DS">Data Structures</option>
       <option value="IT WORKSHOP">IT Workshop</option>
-      <option value="EG LAB">Engineering Graphics (EG LAB)</option>
+      <option value="EG LAB">Engineering Graphics</option>
       <option value="DEVC">DE&VC</option>
-      <option value="PHY LAB">Physics Lab</option>
-      <option value="EEE LAB">EEE Lab</option>
-      <option value="DS LAB">DS Lab</option>
     </select>
   </div>
- 
+
   <div class="input-group">
     <label class="input-label">Password</label>
     <div class="pass-wrap">
@@ -96,21 +93,21 @@
       <span class="toggle-eye" onclick="togglePassword()">👁️</span>
     </div>
   </div>
- 
+
   <p class="error-msg" id="errorMsg">❌ Wrong password. Please try again.</p>
- 
+
   <button class="login-btn" onclick="login()">Login →</button>
   <a href="index.html" class="back-link">← Back to Home</a>
 </div>
- 
+
 <script>
 function login(){
   const subject  = document.getElementById("subject").value;
   const password = document.getElementById("password").value;
   const errorMsg = document.getElementById("errorMsg");
- 
+
   errorMsg.style.display = "none";
- 
+
   if(!subject){
     alert("Please select subject");
     return;
@@ -119,7 +116,7 @@ function login(){
     alert("Enter password");
     return;
   }
- 
+
   // ✅ FIXED: Password must be "svpp"
   if(password !== "svpp"){
     errorMsg.style.display = "block";
@@ -127,22 +124,22 @@ function login(){
     document.getElementById("password").focus();
     return;
   }
- 
+
   localStorage.setItem("subject", subject);
   window.location.href = "teacherhome.html";
 }
- 
+
 function togglePassword(){
   const pwd = document.getElementById("password");
   pwd.type = (pwd.type === "password") ? "text" : "password";
 }
- 
+
 // Allow Enter key to login
 document.addEventListener("keydown", function(e){
   if(e.key === "Enter") login();
 });
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>

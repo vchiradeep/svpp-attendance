@@ -44,10 +44,10 @@
   .scroll-box { max-height:320px; overflow-y:auto; border-radius:10px; }
   .scroll-box::-webkit-scrollbar { width:4px; }
   .scroll-box::-webkit-scrollbar-thumb { background:#334155; border-radius:4px; }
-  .green { color:#34d399; font-weight:700; }
-  .red { color:#f87171; font-weight:700; }
-  .amber { color:#fbbf24; font-weight:700; }
-  .eye { cursor:pointer; font-size:18px; }
+  .green  { color:#34d399; font-weight:700; }
+  .red    { color:#f87171; font-weight:700; }
+  .amber  { color:#fbbf24; font-weight:700; }
+  .eye    { cursor:pointer; font-size:18px; }
   .stats-row { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
   .mini-stat { background:#0f172a; border-radius:10px; padding:14px 20px; text-align:center; border:1px solid #334155; min-width:90px; }
   .mini-stat p { font-size:22px; font-weight:800; color:#f1f5f9; margin-bottom:3px; }
@@ -61,7 +61,7 @@
   .pill-blue    { background:#1e3a8a; color:#93c5fd; }
   .input-label { font-size:11px; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; display:block; margin-bottom:4px; margin-top:10px; }
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media(max-width:580px){ .form-grid{grid-template-columns:1fr;} }
+  @media(max-width:580px) { .form-grid { grid-template-columns:1fr; } }
   @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
@@ -74,129 +74,163 @@
 
 <div class="admin-container">
 
-<!-- LOGIN -->
-<div id="loginBox" class="login-box">
-  <div class="admin-login-icon">🛡️</div>
-  <h2>Admin Login</h2>
-  <p>Enter your admin password to continue</p>
-  <div style="position:relative;display:flex;align-items:center;">
-    <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
-    <span class="eye" onclick="togglePassword()" style="position:absolute;right:14px;">👁️</span>
-  </div>
-  <button class="admin-btn" onclick="checkLogin()">Login →</button>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="adminPanel" style="display:none;">
-
-  <div class="panel-tabs">
-    <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
-    <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
+  <!-- LOGIN -->
+  <div id="loginBox" class="login-box">
+    <div class="admin-login-icon">🛡️</div>
+    <h2>Admin Login</h2>
+    <p>Enter your admin password to continue</p>
+    <div style="position:relative;display:flex;align-items:center;">
+      <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
+      <span class="eye" onclick="togglePassword()" style="position:absolute;right:14px;">👁️</span>
+    </div>
+    <button class="admin-btn" onclick="checkLogin()">Login →</button>
   </div>
 
-  <!-- ===================== STUDENT SECTION ===================== -->
-  <div id="studentSection">
-    <div class="dark-card">
-      <h3>🔍 Search Student Records</h3>
-      <div class="search-row">
-        <input type="text" id="searchRoll" placeholder="Enter Roll Number">
-        <button onclick="searchStudent()">Search</button>
-      </div>
-    </div>
-    <div id="result"></div>
-    <div class="dark-card" id="updateBox" style="display:none;">
-      <h3>✏️ Update Attendance</h3>
-      <input type="text" id="updateRoll" placeholder="Student Roll No">
-      <input type="date" id="updateDate" onchange="updatePeriods()">
-      <select id="period"><option>Select Date First</option></select>
-      <select id="status"><option value="Present">Present</option><option value="Absent">Absent</option></select>
-      <button onclick="updateAttendance()">✅ Update</button>
-    </div>
-  </div>
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" style="display:none;">
 
-  <!-- ===================== TEACHER SECTION ===================== -->
-  <div id="teacherSection" style="display:none;">
-
-    <!-- MISSED MONITOR -->
-    <div class="dark-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <div>
-          <h3 style="margin-bottom:4px;">⚠️ Missed Marking Monitor</h3>
-          <p style="font-size:13px;color:#64748b;">Dates where teachers forgot to mark attendance</p>
-        </div>
-        <button class="secondary" onclick="loadMissedSummary()" style="font-size:13px;padding:9px 16px;">🔄 Refresh</button>
-      </div>
-      <div id="missedSummary" style="margin-top:16px;">
-        <p style="color:#64748b;font-size:13px;">Click Refresh to load missed dates.</p>
-      </div>
+    <div class="panel-tabs">
+      <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
+      <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
+      <button class="tab-btn" id="tab-leave" onclick="showSection('leave')">📋 Leave Requests</button>
+      <button class="tab-btn" id="tab-audit" onclick="showSection('audit')">🔒 Audit Log</button>
     </div>
 
-    <!-- UNLOCK FOR TEACHER -->
-    <div class="dark-card">
-      <h3>🔓 Unlock Date for Teacher to Re-mark</h3>
-      <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Give a teacher permission to mark attendance for a missed date</p>
-      <div class="form-grid">
-        <div>
-          <label class="input-label">Subject</label>
-          <select id="unlockSubject">
-            <option value="">Select Subject</option>
-            <option value="PHY">Physics</option>
-            <option value="BEEE">Electrical (BEEE)</option>
-            <option value="ECE">Electronics (BEEE)</option>
-            <option value="DS">Data Structures</option>
-            <option value="DEVC">DEVC</option>
-            <option value="EG LAB">EG LAB</option>
-            <option value="IT WORKSHOP">IT Workshop</option>
-            <option value="PHY LAB">PHY LAB</option>
-            <option value="EEE LAB">EEE LAB</option>
-            <option value="DS LAB">DS LAB</option>
-          </select>
-        </div>
-        <div>
-          <label class="input-label">Section</label>
-          <select id="unlockSection">
-            <option value="">Select Section</option>
-            <option>CSE - A</option><option>CSE - B</option>
-            <option>A.I - A</option><option>A.I - B</option>
-            <option>AIML - A</option><option>AIML - B</option>
-            <option>CIVIL</option><option>D.S</option>
-            <option>ECE - A</option><option>ECE - B</option>
-            <option>ECE - C</option><option>ECE - D</option>
-          </select>
+    <!-- STUDENT SECTION -->
+    <div id="studentSection">
+      <div class="dark-card">
+        <h3>🔍 Search Student Records</h3>
+        <div class="search-row">
+          <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+          <button onclick="searchStudent()">Search</button>
         </div>
       </div>
-      <label class="input-label">Date to Unlock</label>
-      <input type="date" id="unlockDate">
-      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="amber" onclick="unlockForTeacher()">🔓 Unlock for Teacher</button>
-        <button class="purple" onclick="adminMarkOnBehalf()">👑 Admin Mark on Behalf</button>
+      <div id="result"></div>
+      <div class="dark-card" id="updateBox" style="display:none;">
+        <h3>✏️ Update Attendance</h3>
+        <input type="text" id="updateRoll" placeholder="Student Roll No">
+        <input type="date" id="updateDate" onchange="updatePeriods()">
+        <select id="period"><option>Select Date First</option></select>
+        <select id="status">
+          <option value="Present">Present</option>
+          <option value="Absent">Absent</option>
+        </select>
+        <button onclick="updateAttendance()">✅ Update</button>
       </div>
-      <div id="unlockResult" style="margin-top:12px;display:none;font-size:13px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155;"></div>
     </div>
 
-    <!-- MARK ON BEHALF FORM -->
-    <div class="dark-card" id="adminMarkForm" style="display:none;">
-      <h3>👑 Admin Marks Attendance on Teacher's Behalf</h3>
-      <p style="font-size:13px;color:#64748b;margin-bottom:14px;" id="adminMarkInfo"></p>
-      <div id="adminMarkStudentList"></div>
-      <button onclick="submitAdminMark()" style="margin-top:14px;">✅ Submit Attendance</button>
-      <button class="secondary" onclick="document.getElementById('adminMarkForm').style.display='none';" style="margin-top:14px;">Cancel</button>
+    <!-- TEACHER SECTION -->
+    <div id="teacherSection" style="display:none;">
+
+      <!-- MISSED MONITOR -->
+      <div class="dark-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin-bottom:4px;">⚠️ Missed Marking Monitor</h3>
+            <p style="font-size:13px;color:#64748b;">Dates where teachers forgot to mark attendance</p>
+          </div>
+          <button class="secondary" onclick="loadMissedSummary()" style="font-size:13px;padding:9px 16px;">🔄 Refresh</button>
+        </div>
+        <div id="missedSummary" style="margin-top:16px;">
+          <p style="color:#64748b;font-size:13px;">Click Refresh to load missed dates.</p>
+        </div>
+      </div>
+
+      <!-- UNLOCK FOR TEACHER -->
+      <div class="dark-card">
+        <h3>🔓 Unlock Date for Teacher to Re-mark</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Give a teacher permission to mark attendance for a missed date</p>
+        <div class="form-grid">
+          <div>
+            <label class="input-label">Subject</label>
+            <select id="unlockSubject">
+              <option value="">Select Subject</option>
+              <option value="PHY">Physics</option>
+              <option value="BEEE">Electrical (BEEE)</option>
+              <option value="ECE">Electronics (BEEE)</option>
+              <option value="DS">Data Structures</option>
+              <option value="DEVC">DE&amp;VC</option>
+              <option value="EG LAB">Engineering Graphics</option>
+              <option value="IT WORKSHOP">IT Workshop</option>
+              <option value="PHY LAB">Physics Lab</option>
+              <option value="EEE LAB">EEE Lab</option>
+              <option value="DS LAB">DS Lab</option>
+            </select>
+          </div>
+          <div>
+            <label class="input-label">Section</label>
+            <select id="unlockSection">
+              <option value="">Select Section</option>
+              <option>CSE - A</option><option>CSE - B</option>
+              <option>A.I - A</option><option>A.I - B</option>
+              <option>AIML - A</option><option>AIML - B</option>
+              <option>CIVIL</option><option>D.S</option>
+              <option>ECE - A</option><option>ECE - B</option>
+              <option>ECE - C</option><option>ECE - D</option>
+            </select>
+          </div>
+        </div>
+        <label class="input-label">Date to Unlock</label>
+        <input type="date" id="unlockDate">
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="amber" onclick="unlockForTeacher()">🔓 Unlock for Teacher</button>
+          <button class="purple" onclick="adminMarkOnBehalf()">👑 Admin Mark on Behalf</button>
+        </div>
+        <div id="unlockResult" style="margin-top:12px;display:none;font-size:13px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155;"></div>
+      </div>
+
+      <!-- MARK ON BEHALF FORM -->
+      <div class="dark-card" id="adminMarkForm" style="display:none;">
+        <h3>👑 Admin Marks Attendance on Teacher's Behalf</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:14px;" id="adminMarkInfo"></p>
+        <div id="adminMarkStudentList"></div>
+        <button onclick="submitAdminMark()" style="margin-top:14px;">✅ Submit Attendance</button>
+        <button class="secondary" onclick="document.getElementById('adminMarkForm').style.display='none';" style="margin-top:14px;">Cancel</button>
+      </div>
+
+      <!-- TEACHER PERFORMANCE -->
+      <div class="dark-card">
+        <h3>📊 Teacher Performance</h3>
+        <button onclick="loadTeachers()" style="font-size:13px;padding:9px 16px;">📋 Load All Teachers</button>
+      </div>
+      <div id="teacherResult"></div>
+
+    </div>
+    <!-- LEAVE REQUESTS SECTION -->
+    <div id="leaveSection" style="display:none;">
+      <div class="dark-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <h3 style="margin:0;">📋 Pending Leave Requests</h3>
+          <button class="secondary" onclick="loadLeaveRequests()" style="font-size:13px;padding:9px 16px;">🔄 Refresh</button>
+        </div>
+        <div id="leaveList" style="margin-top:16px;"><p style="color:#64748b;font-size:13px;">Click Refresh to load requests.</p></div>
+      </div>
     </div>
 
-    <!-- TEACHER PERFORMANCE -->
-    <div class="dark-card">
-      <h3>📊 Teacher Performance</h3>
-      <button onclick="loadTeachers()" style="font-size:13px;padding:9px 16px;">📋 Load All Teachers</button>
+    <!-- AUDIT LOG SECTION -->
+    <div id="auditSection" style="display:none;">
+      <div class="dark-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin-bottom:4px;">🔒 Audit Log</h3>
+            <p style="font-size:13px;color:#64748b;">All attendance changes — who did what and when</p>
+          </div>
+          <button class="secondary" onclick="loadAuditLog()" style="font-size:13px;padding:9px 16px;">🔄 Load Log</button>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="text" id="auditRollFilter" placeholder="Filter by roll number" style="flex:1;min-width:160px;">
+          <button onclick="loadAuditLog()" style="font-size:13px;padding:10px 18px;">Search</button>
+        </div>
+        <div id="auditList" style="margin-top:16px;"><p style="color:#64748b;font-size:13px;">Click Load Log to view audit trail.</p></div>
+      </div>
     </div>
-    <div id="teacherResult"></div>
 
   </div>
-
-</div>
 </div>
 
 <script>
 const API = window.location.origin;
+
 const timetable = {
   Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
   Tuesday:   [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
@@ -205,47 +239,68 @@ const timetable = {
   Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
 };
 
+const subjects = ["PHY","BEEE","ECE","DS","DEVC","EG LAB","IT WORKSHOP"];
+const subjectLabels = {
+  "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
+  "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop"
+};
+
 let adminMarkData = {};
 
-function togglePassword(){ let i=document.getElementById("adminPass"); i.type=i.type==="password"?"text":"password"; }
-
-function checkLogin(){
-  if(document.getElementById("adminPass").value==="chiru1122"){
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("adminPanel").style.display="block";
-  } else { alert("❌ Wrong Password"); }
+// ===== AUTH =====
+function togglePassword() {
+  const i = document.getElementById("adminPass");
+  i.type = i.type === "password" ? "text" : "password";
 }
 
-function showSection(type){
-  ["student","teacher"].forEach(t=>{
-    document.getElementById(t+"Section").style.display="none";
-    document.getElementById("tab-"+t).classList.remove("active");
+function checkLogin() {
+  if (document.getElementById("adminPass").value === "chiru1122") {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+  } else {
+    alert("❌ Wrong Password");
+  }
+}
+
+// ===== TABS (updated for 4 tabs) =====
+function showSection(type) {
+  ["student","teacher","leave","audit"].forEach(t => {
+    const s = document.getElementById(t + "Section");
+    const b = document.getElementById("tab-" + t);
+    if (s) s.style.display = "none";
+    if (b) b.classList.remove("active");
   });
-  document.getElementById(type+"Section").style.display="block";
-  document.getElementById("tab-"+type).classList.add("active");
+  document.getElementById(type + "Section").style.display = "block";
+  document.getElementById("tab-" + type).classList.add("active");
 }
 
 // ===== STUDENT =====
-async function searchStudent(){
-  let roll=document.getElementById("searchRoll").value.trim();
-  if(!roll){alert("Enter Roll No");return;}
+async function searchStudent() {
+  const roll = document.getElementById("searchRoll").value.trim();
+  if (!roll) { alert("Enter Roll No"); return; }
   showLoader();
-  const res=await fetch(API+"/attendance?studentName="+roll);
-  const data=await res.json();
+  const res  = await fetch(API + "/attendance?studentName=" + roll);
+  const data = await res.json();
   hideLoader();
-  const result=document.getElementById("result");
-  if(data.length===0){result.innerHTML=`<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b></p></div>`;return;}
-  let present=data.filter(d=>d.status==="Present").length;
-  let absent=data.filter(d=>d.status==="Absent").length;
-  let notMarked=data.filter(d=>d.status==="NotMarked").length;
-  let pct=((present/(present+absent||1))*100).toFixed(1);
-  let html=`<div class="dark-card">
+
+  const result = document.getElementById("result");
+  if (data.length === 0) {
+    result.innerHTML = `<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b></p></div>`;
+    return;
+  }
+
+  const present   = data.filter(d => d.status === "Present").length;
+  const absent    = data.filter(d => d.status === "Absent").length;
+  const notMarked = data.filter(d => d.status === "NotMarked").length;
+  const pct       = ((present / ((present + absent) || 1)) * 100).toFixed(1);
+
+  let html = `<div class="dark-card">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
       <h3 style="margin:0;">🎓 ${roll}</h3>
       <button onclick="deleteAllRecords()" style="background:#7f1d1d;font-size:12px;padding:8px 14px;">🗑 Delete All</button>
     </div>
     <div class="stats-row">
-      <div class="mini-stat"><p>${present+absent}</p><span>Counted</span></div>
+      <div class="mini-stat"><p>${present + absent}</p><span>Counted</span></div>
       <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
       <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
       <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Percentage</span></div>
@@ -253,10 +308,11 @@ async function searchStudent(){
     </div>
     <div class="scroll-box"><table class="dark-table">
       <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>`;
-  data.forEach(d=>{
-    const autoTag=d.autoMarked?`<span style="font-size:10px;background:#78350f;color:#fcd34d;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:5px;">AUTO</span>`:'';
-    const statusClass=d.status==="Present"?"green":d.status==="Absent"?"red":"amber";
-    html+=`<tr>
+
+  data.forEach(d => {
+    const autoTag     = d.autoMarked ? `<span style="font-size:10px;background:#78350f;color:#fcd34d;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:5px;">AUTO</span>` : '';
+    const statusClass = d.status === "Present" ? "green" : d.status === "Absent" ? "red" : "amber";
+    html += `<tr>
       <td>${new Date(d.date).toLocaleDateString()}</td>
       <td>${d.subject}</td>
       <td class="${statusClass}">${d.status}${autoTag}</td>
@@ -264,57 +320,76 @@ async function searchStudent(){
       <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" style="padding:6px 10px;font-size:12px;background:#7f1d1d;">🗑</button></td>
     </tr>`;
   });
-  html+=`</table></div></div>`;
-  result.innerHTML=html;
-  document.getElementById("updateBox").style.display="block";
+
+  html += `</table></div></div>`;
+  result.innerHTML = html;
+  document.getElementById("updateBox").style.display = "block";
 }
 
-async function deleteRecord(name,date,subject){
+async function deleteRecord(name, date, subject) {
   showLoader();
-  await fetch(API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
-  hideLoader();alert("Deleted");searchStudent();
+  await fetch(API + "/delete", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ studentName:name, date, subject }) });
+  hideLoader();
+  alert("Deleted");
+  searchStudent();
 }
-async function deleteAllRecords(){
-  if(!confirm("⚠️ Delete ALL records?"))return;
-  showLoader();await fetch(API+"/delete-all",{method:"POST"});hideLoader();
-  alert("✅ All records deleted");document.getElementById("result").innerHTML="";
-}
-async function updateAttendance(){
-  let roll=document.getElementById("updateRoll").value;
-  let date=document.getElementById("updateDate").value;
-  let subject=document.getElementById("period").value;
-  let status=document.getElementById("status").value;
-  if(!roll||!date){alert("Fill all fields");return;}
+
+async function deleteAllRecords() {
+  if (!confirm("⚠️ Delete ALL records?")) return;
   showLoader();
-  let data={};data[roll]=status;
-  await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data,section:"A"})});
-  hideLoader();alert("✅ Updated");searchStudent();
+  await fetch(API + "/delete-all", { method:"POST" });
+  hideLoader();
+  alert("✅ All records deleted");
+  document.getElementById("result").innerHTML = "";
 }
-function updatePeriods(){
-  let date=document.getElementById("updateDate").value;
-  if(!date)return;
-  let day=new Date(date).toLocaleDateString('en-US',{weekday:'long'});
-  let dropdown=document.getElementById("period");
-  dropdown.innerHTML="";
-  let dayData=timetable[day];
-  if(!dayData){dropdown.innerHTML="<option>No Classes</option>";return;}
-  dayData.forEach(row=>{let opt=document.createElement("option");opt.value=row[2];opt.text="Period "+row[0]+" — "+row[2];dropdown.appendChild(opt);});
+
+async function updateAttendance() {
+  const roll    = document.getElementById("updateRoll").value;
+  const date    = document.getElementById("updateDate").value;
+  const subject = document.getElementById("period").value;
+  const status  = document.getElementById("status").value;
+  if (!roll || !date) { alert("Fill all fields"); return; }
+  showLoader();
+  const data = {}; data[roll] = status;
+  await fetch(API + "/submit-attendance", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ date, subject, data, section:"A" }) });
+  hideLoader();
+  alert("✅ Updated");
+  searchStudent();
+}
+
+function updatePeriods() {
+  const date = document.getElementById("updateDate").value;
+  if (!date) return;
+  const day      = new Date(date).toLocaleDateString('en-US', { weekday:'long' });
+  const dropdown = document.getElementById("period");
+  dropdown.innerHTML = "";
+  const dayData  = timetable[day];
+  if (!dayData) { dropdown.innerHTML = "<option>No Classes</option>"; return; }
+  dayData.forEach(row => {
+    const opt = document.createElement("option");
+    opt.value = row[2];
+    opt.text  = "Period " + row[0] + " — " + row[2];
+    dropdown.appendChild(opt);
+  });
 }
 
 // ===== MISSED MONITOR =====
-async function loadMissedSummary(){
-  const box=document.getElementById("missedSummary");
-  box.innerHTML=`<p style="color:#64748b;font-size:13px;">Loading...</p>`;
-  const res=await fetch(API+"/admin/missed-summary");
-  const data=await res.json();
-  if(!data.missed||data.missed.length===0){
-    box.innerHTML=`<p style="color:#34d399;font-size:13px;">✅ No missed marking found! All teachers are up to date.</p>`;return;
+async function loadMissedSummary() {
+  const box = document.getElementById("missedSummary");
+  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
+  const res  = await fetch(API + "/admin/missed-summary");
+  const data = await res.json();
+
+  if (!data.missed || data.missed.length === 0) {
+    box.innerHTML = `<p style="color:#34d399;font-size:13px;">✅ No missed marking found! All teachers are up to date.</p>`;
+    return;
   }
-  box.innerHTML=data.missed.map(item=>{
-    const date=new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    let pillClass="pill-warn", pillText="⚠️ Not Marked";
-    if(item.used)   {pillClass="pill-success";pillText="✅ Re-marked";}
-    if(item.unlocked){pillClass="pill-blue";   pillText="🔓 Unlocked";}
+
+  box.innerHTML = data.missed.map(item => {
+    const date = new Date(item.date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+    let pillClass = "pill-warn", pillText = "⚠️ Not Marked";
+    if (item.used)     { pillClass = "pill-success"; pillText = "✅ Re-marked"; }
+    if (item.unlocked) { pillClass = "pill-blue";    pillText = "🔓 Unlocked"; }
     return `<div class="missed-row">
       <div>
         <strong style="color:#f1f5f9;font-size:14px;">${item.subject} — ${item.section}</strong>
@@ -322,66 +397,65 @@ async function loadMissedSummary(){
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <span class="pill ${pillClass}">${pillText}</span>
-        ${!item.used?`<button class="amber" onclick="quickUnlock('${item.subject}','${item.section}','${new Date(item.date).toISOString().split('T')[0]}')" style="padding:6px 12px;font-size:12px;">🔓 Unlock</button>`:''}
+        ${!item.used ? `<button class="amber" onclick="quickUnlock('${item.subject}','${item.section}','${new Date(item.date).toISOString().split('T')[0]}')" style="padding:6px 12px;font-size:12px;">🔓 Unlock</button>` : ''}
       </div>
     </div>`;
   }).join("");
 }
 
-// Quick unlock from missed monitor
-async function quickUnlock(subject, section, date){
+async function quickUnlock(subject, section, date) {
   showLoader();
-  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data=await res.json();
+  const res  = await fetch(API + "/admin/unlock", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ subject, section, date }) });
+  const data = await res.json();
   hideLoader();
-  alert(data.success?"✅ "+data.message:"❌ "+data.message);
+  alert(data.success ? "✅ " + data.message : "❌ " + data.message);
   loadMissedSummary();
 }
 
 // ===== UNLOCK FOR TEACHER =====
-async function unlockForTeacher(){
-  const subject=document.getElementById("unlockSubject").value;
-  const section=document.getElementById("unlockSection").value;
-  const date=document.getElementById("unlockDate").value;
-  if(!subject||!section||!date){alert("Fill all fields");return;}
+async function unlockForTeacher() {
+  const subject = document.getElementById("unlockSubject").value;
+  const section = document.getElementById("unlockSection").value;
+  const date    = document.getElementById("unlockDate").value;
+  if (!subject || !section || !date) { alert("Fill all fields"); return; }
   showLoader();
-  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data=await res.json();
+  const res  = await fetch(API + "/admin/unlock", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ subject, section, date }) });
+  const data = await res.json();
   hideLoader();
-  const box=document.getElementById("unlockResult");
-  box.style.display="block";
-  box.style.color=data.success?"#34d399":"#f87171";
-  box.textContent=data.success?"✅ "+data.message:"❌ "+data.message;
+  const box = document.getElementById("unlockResult");
+  box.style.display = "block";
+  box.style.color   = data.success ? "#34d399" : "#f87171";
+  box.textContent   = data.success ? "✅ " + data.message : "❌ " + data.message;
 }
 
 // ===== ADMIN MARK ON BEHALF =====
-function adminMarkOnBehalf(){
-  const subject=document.getElementById("unlockSubject").value;
-  const section=document.getElementById("unlockSection").value;
-  const date=document.getElementById("unlockDate").value;
-  if(!subject||!section||!date){alert("Fill all fields first");return;}
+function adminMarkOnBehalf() {
+  const subject = document.getElementById("unlockSubject").value;
+  const section = document.getElementById("unlockSection").value;
+  const date    = document.getElementById("unlockDate").value;
+  if (!subject || !section || !date) { alert("Fill all fields first"); return; }
 
-  // Generate student list for section
-  const sectionMap={
-    "CSE - A":{prefix:"25G01A05",s:1,e:75},"CSE - B":{prefix:"25G01A05",s:76,e:120},
-    "A.I - A":{prefix:"25G01A43",s:1,e:75},"A.I - B":{prefix:"25G01A43",s:76,e:120},
-    "AIML - A":{prefix:"25G01A42",s:1,e:75},"AIML - B":{prefix:"25G01A42",s:76,e:120},
-    "CIVIL":{prefix:"25G01A01",s:2,e:9},"D.S":{prefix:"25G01A32",s:1,e:41},
-    "ECE - A":{prefix:"25G01A04",s:1,e:75},"ECE - B":{prefix:"25G01A04",s:76,e:120},
-    "ECE - C":{prefix:"25G01A02",s:1,e:19},"ECE - D":{prefix:"25G01A03",s:1,e:12}
+  const sectionMap = {
+    "CSE - A":{prefix:"25G01A05",s:1,e:75},  "CSE - B":{prefix:"25G01A05",s:76,e:120},
+    "A.I - A":{prefix:"25G01A43",s:1,e:75},  "A.I - B":{prefix:"25G01A43",s:76,e:120},
+    "AIML - A":{prefix:"25G01A42",s:1,e:75}, "AIML - B":{prefix:"25G01A42",s:76,e:120},
+    "CIVIL":{prefix:"25G01A01",s:2,e:9},      "D.S":{prefix:"25G01A32",s:1,e:41},
+    "ECE - A":{prefix:"25G01A04",s:1,e:75},  "ECE - B":{prefix:"25G01A04",s:76,e:120},
+    "ECE - C":{prefix:"25G01A02",s:1,e:19},  "ECE - D":{prefix:"25G01A03",s:1,e:12}
   };
 
-  const sec=sectionMap[section];
-  if(!sec){alert("Invalid section");return;}
-  let students=[];
-  for(let i=sec.s;i<=sec.e;i++) students.push(sec.prefix+String(i).padStart(2,'0'));
+  const sec = sectionMap[section];
+  if (!sec) { alert("Invalid section"); return; }
 
-  document.getElementById("adminMarkInfo").textContent=`Marking ${subject} for ${section} on ${new Date(date).toLocaleDateString()}`;
+  const students = [];
+  for (let i = sec.s; i <= sec.e; i++) students.push(sec.prefix + String(i).padStart(2, '0'));
 
-  const listEl=document.getElementById("adminMarkStudentList");
-  adminMarkData={};
+  document.getElementById("adminMarkInfo").textContent = `Marking ${subject} for ${section} on ${new Date(date).toLocaleDateString()}`;
 
-  listEl.innerHTML=`
+  const listEl = document.getElementById("adminMarkStudentList");
+  adminMarkData = {};
+
+  listEl.innerHTML = `
     <div style="display:flex;gap:10px;margin-bottom:12px;">
       <button class="amber" onclick="markAllAdmin('Present')">✅ All Present</button>
       <button style="background:#ef4444;" onclick="markAllAdmin('Absent')">❌ All Absent</button>
@@ -389,111 +463,245 @@ function adminMarkOnBehalf(){
     <div class="scroll-box" style="max-height:280px;">
     <table class="dark-table">
       <tr><th>Roll No</th><th>Present</th><th>Absent</th></tr>
-      ${students.map(roll=>`
+      ${students.map(r => `
         <tr>
-          <td>${roll}</td>
-          <td><input type="radio" name="atd_${roll}" value="Present" onchange="adminMarkData['${roll}']='Present'" checked></td>
-          <td><input type="radio" name="atd_${roll}" value="Absent"  onchange="adminMarkData['${roll}']='Absent'"></td>
-        </tr>
-      `).join("")}
+          <td>${r}</td>
+          <td><input type="radio" name="atd_${r}" value="Present" onchange="adminMarkData['${r}']='Present'" checked></td>
+          <td><input type="radio" name="atd_${r}" value="Absent"  onchange="adminMarkData['${r}']='Absent'"></td>
+        </tr>`).join("")}
     </table></div>`;
 
-  // Default all present
-  students.forEach(r=>adminMarkData[r]="Present");
-  document.getElementById("adminMarkForm").style.display="block";
-  document.getElementById("adminMarkForm").scrollIntoView({behavior:"smooth"});
-
-  // Store for submit
-  document.getElementById("adminMarkForm").dataset.subject=subject;
-  document.getElementById("adminMarkForm").dataset.section=section;
-  document.getElementById("adminMarkForm").dataset.date=date;
+  students.forEach(r => adminMarkData[r] = "Present");
+  document.getElementById("adminMarkForm").style.display = "block";
+  document.getElementById("adminMarkForm").scrollIntoView({ behavior:"smooth" });
+  document.getElementById("adminMarkForm").dataset.subject = subject;
+  document.getElementById("adminMarkForm").dataset.section = section;
+  document.getElementById("adminMarkForm").dataset.date    = date;
 }
 
-function markAllAdmin(status){
-  document.querySelectorAll(`[name^="atd_"]`).forEach(r=>{
-    if(r.value===status)r.checked=true;
-  });
-  Object.keys(adminMarkData).forEach(k=>adminMarkData[k]=status);
+function markAllAdmin(status) {
+  document.querySelectorAll(`[name^="atd_"]`).forEach(r => { if (r.value === status) r.checked = true; });
+  Object.keys(adminMarkData).forEach(k => adminMarkData[k] = status);
 }
 
-async function submitAdminMark(){
-  const form=document.getElementById("adminMarkForm");
-  const subject=form.dataset.subject;
-  const section=form.dataset.section;
-  const date=form.dataset.date;
+async function submitAdminMark() {
+  const form    = document.getElementById("adminMarkForm");
+  const subject = form.dataset.subject;
+  const section = form.dataset.section;
+  const date    = form.dataset.date;
   showLoader();
-  const res=await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
-  const data=await res.json();
+  const res  = await fetch(API + "/admin/mark-on-behalf", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ subject, section, date, data:adminMarkData }) });
+  const data = await res.json();
   hideLoader();
-  if(data.success){
+  if (data.success) {
     alert("✅ Attendance marked by admin successfully!");
-    form.style.display="none";
+    form.style.display = "none";
     loadMissedSummary();
   } else {
-    alert("❌ Error: "+data.message);
+    alert("❌ Error: " + data.message);
   }
 }
 
-// ===== TEACHER PERFORMANCE =====
-function loadTeachers(){
-  const subjects=["PHY","BEEE","ECE","DS","DEVC","EG LAB","IT WORKSHOP","PHY LAB","EEE LAB","DS LAB"];
-  let html=`<div class="dark-card"><h3>👩‍🏫 Faculty List</h3><div class="scroll-box"><table class="dark-table">
-    <tr><th>Subject</th><th>Action</th></tr>`;
-  subjects.forEach(sub=>{
-    html+=`<tr><td>${sub}</td><td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px;font-size:12px;">📊 View Performance</button></td></tr>`;
-  });
-  html+=`</table></div></div><div id="teacherDetails"></div>`;
-  document.getElementById("teacherResult").innerHTML=html;
+// ===== LEAVE REQUESTS =====
+async function loadLeaveRequests() {
+  const box = document.getElementById("leaveList");
+  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
+  const res  = await fetch(API + "/leave/pending");
+  const data = await res.json();
+
+  if (!data.requests || data.requests.length === 0) {
+    box.innerHTML = `<p style="color:#34d399;font-size:13px;">✅ No pending leave requests.</p>`;
+    return;
+  }
+
+  box.innerHTML = data.requests.map(r => {
+    const date = new Date(r.date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+    return `<div style="background:#0f172a;border-radius:12px;padding:16px 18px;margin-bottom:10px;border:1px solid #334155;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+        <div>
+          <strong style="color:#f1f5f9;font-size:14px;">🎓 ${r.studentName}</strong>
+          <span style="font-size:12px;color:#64748b;margin-left:8px;">${r.section}</span>
+        </div>
+        <span style="font-size:12px;color:#94a3b8;">${date}</span>
+      </div>
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:12px;">💬 ${r.reason}${r.subject ? ' · 📘 ' + r.subject : ' · 📅 Full Day'}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="text" placeholder="Remarks (optional)" id="remarks_${r._id}" style="flex:1;min-width:160px;padding:8px 12px;font-size:13px;">
+        <button onclick="reviewLeave('${r._id}','Approved')" style="background:#14532d;color:#86efac;padding:8px 14px;font-size:12px;">✅ Approve</button>
+        <button onclick="reviewLeave('${r._id}','Rejected')" style="background:#7f1d1d;color:#fca5a5;padding:8px 14px;font-size:12px;">❌ Reject</button>
+      </div>
+    </div>`;
+  }).join("");
 }
 
-async function viewTeacher(subject){
-  const res=await fetch(API+"/attendance");
-  const data=await res.json();
-  let filtered=data.filter(d=>d.subject===subject);
-  if(filtered.length===0){document.getElementById("teacherDetails").innerHTML=`<div class="dark-card"><p style="color:#64748b;">No data available for ${subject}</p></div>`;return;}
-  let present=0,absent=0,notMarked=0,onTime=0,late=0,dateMap={};
-  filtered.forEach(d=>{
-    if(d.status==="Present")present++;
-    else if(d.status==="Absent")absent++;
-    else notMarked++;
-    let date=new Date(d.date).toLocaleDateString();
-    if(!dateMap[date])dateMap[date]={present:0,absent:0,notMarked:0,total:0,teacherMarked:!d.autoMarked};
-    dateMap[date].total++;
-    if(d.status==="Present")dateMap[date].present++;
-    else if(d.status==="Absent")dateMap[date].absent++;
-    else dateMap[date].notMarked++;
-    if(!d.autoMarked&&d.updatedAt){let t=new Date(d.updatedAt);if(!isNaN(t.getTime())){if(t.getHours()<=10)onTime++;else late++;}}
+async function reviewLeave(id, status) {
+  const remarks = document.getElementById("remarks_" + id)?.value || "";
+  showLoader();
+  const res  = await fetch(API + "/leave/review", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ id, status, reviewedBy:"admin", remarks })
   });
-  let counted=present+absent;
-  let pct=counted?((present/counted)*100).toFixed(1):0;
-  // Teacher performance = days they marked / total days they should have marked
-  let totalDays=Object.keys(dateMap).length;
-  let markedDays=Object.values(dateMap).filter(d=>d.teacherMarked).length;
-  let teacherPct=totalDays?((markedDays/totalDays)*100).toFixed(1):0;
-  let html=`<div class="dark-card">
-    <h3>📊 ${subject} — Full Performance</h3>
-    <div class="stats-row">
-      <div class="mini-stat"><p>${counted}</p><span>Counted</span></div>
-      <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
-      <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
-      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Student Avg%</span></div>
-      <div class="mini-stat"><p style="color:#f87171">${notMarked}</p><span>Not Marked</span></div>
-      <div class="mini-stat"><p style="color:${teacherPct>=80?"#34d399":"#f87171"}">${teacherPct}%</p><span>Teacher Score</span></div>
-    </div>
-    <p style="font-size:13px;color:#64748b;margin-bottom:14px;">
-      Teacher marked attendance on <b style="color:#f1f5f9">${markedDays}</b> out of <b style="color:#f1f5f9">${totalDays}</b> scheduled days
-    </p>
+  const data = await res.json();
+  hideLoader();
+  alert(data.success ? "✅ " + data.message : "❌ " + data.message);
+  loadLeaveRequests();
+}
+
+// ===== AUDIT LOG =====
+async function loadAuditLog() {
+  const box  = document.getElementById("auditList");
+  const roll = document.getElementById("auditRollFilter").value.trim();
+  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
+
+  const url = roll ? `/audit-log?studentName=${roll}&limit=50` : `/audit-log?limit=50`;
+  const res  = await fetch(API + url);
+  const data = await res.json();
+
+  if (!data.logs || data.logs.length === 0) {
+    box.innerHTML = `<p style="color:#64748b;font-size:13px;">No audit records found.</p>`;
+    return;
+  }
+
+  const actionColors = {
+    "MARKED":"#34d399","EDITED":"#fbbf24","DELETED":"#f87171",
+    "AUTO_MARKED":"#94a3b8","ADMIN_MARKED":"#a78bfa","LEAVE_APPROVED":"#60a5fa",
+    "LEAVE_REQUESTED":"#38bdf8","UNLOCK_GRANTED":"#fb923c","DELETE_ALL":"#f87171"
+  };
+
+  box.innerHTML = `<div class="scroll-box" style="max-height:400px;">
+    <table class="dark-table">
+      <tr><th>Time</th><th>Action</th><th>By</th><th>Student</th><th>Subject</th><th>Change</th></tr>
+      ${data.logs.map(l => {
+        const color  = actionColors[l.action] || "#94a3b8";
+        const time   = new Date(l.timestamp).toLocaleString('en-IN');
+        const change = l.oldStatus && l.newStatus ? `${l.oldStatus} → ${l.newStatus}` : l.newStatus || "—";
+        return `<tr>
+          <td style="font-size:11px;">${time}</td>
+          <td><span style="font-size:10px;background:${color}22;color:${color};padding:2px 8px;border-radius:10px;font-weight:700;">${l.action}</span></td>
+          <td style="font-size:12px;">${l.performedBy||"—"}</td>
+          <td style="font-size:12px;">${l.studentName||"—"}</td>
+          <td style="font-size:12px;">${l.subject||"—"}</td>
+          <td style="font-size:12px;color:#94a3b8;">${change}</td>
+        </tr>`;
+      }).join("")}
+    </table></div>`;
+}
+
+function getPerformanceScore(markedDays, totalDays, onTime, late, notMarked) {
+  if (totalDays === 0) return { score:0, grade:"N/A", color:"#94a3b8", msg:"No data available" };
+  const markingScore       = (markedDays / totalDays) * 60;
+  const totalActions       = onTime + late;
+  const punctualScore      = totalActions > 0 ? (onTime / totalActions) * 30 : 30;
+  const consistencyPenalty = (notMarked / (totalDays || 1)) * 10;
+  const score = Math.max(0, Math.min(100, markingScore + punctualScore - consistencyPenalty)).toFixed(1);
+
+  let grade, color, msg;
+  if      (score >= 90) { grade = "⭐ Excellent";       color = "#34d399"; msg = "Outstanding consistency and punctuality!"; }
+  else if (score >= 80) { grade = "👍 Good";             color = "#60a5fa"; msg = "Good performance. Minor improvements needed."; }
+  else if (score >= 65) { grade = "⚠️ Average";          color = "#fbbf24"; msg = "Needs improvement in consistency."; }
+  else                  { grade = "🚨 Needs Attention";  color = "#f87171"; msg = "Multiple missed markings. Admin review needed."; }
+
+  return { score, grade, color, msg };
+}
+
+function loadTeachers() {
+  let html = `<div class="dark-card"><h3>👩‍🏫 Faculty Performance Board</h3>
     <div class="scroll-box"><table class="dark-table">
-      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Teacher</th></tr>`;
-  for(let d in dateMap){
-    let dm=dateMap[d];
-    let teacherStatus=dm.teacherMarked
-      ?'<span class="pill pill-success">✅ Marked</span>'
-      :'<span class="pill pill-warn">⚠️ Missed</span>';
-    html+=`<tr><td>${d}</td><td class="green">${dm.present}</td><td class="red">${dm.absent}</td><td class="amber">${dm.notMarked}</td><td>${teacherStatus}</td></tr>`;
+      <tr><th>Subject</th><th>Action</th></tr>`;
+  subjects.forEach(sub => {
+    html += `<tr>
+      <td>${subjectLabels[sub] || sub}</td>
+      <td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px;font-size:12px;">📊 View Score</button></td>
+    </tr>`;
+  });
+  html += `</table></div></div><div id="teacherDetails"></div>`;
+  document.getElementById("teacherResult").innerHTML = html;
+}
+
+async function viewTeacher(subject) {
+  const res  = await fetch(API + "/attendance");
+  const data = await res.json();
+
+  const filtered = data.filter(d => d.subject === subject);
+  if (filtered.length === 0) {
+    document.getElementById("teacherDetails").innerHTML =
+      `<div class="dark-card"><p style="color:#64748b;">No data available for ${subjectLabels[subject] || subject}</p></div>`;
+    return;
   }
-  html+=`</table></div></div>`;
-  document.getElementById("teacherDetails").innerHTML=html;
+
+  let present = 0, absent = 0, notMarked = 0, onTime = 0, late = 0;
+  const dateMap = {};
+
+  filtered.forEach(d => {
+    if      (d.status === "Present")   present++;
+    else if (d.status === "Absent")    absent++;
+    else                               notMarked++;
+
+    const dateKey = new Date(d.date).toLocaleDateString();
+    if (!dateMap[dateKey]) dateMap[dateKey] = { present:0, absent:0, notMarked:0, total:0, teacherMarked:!d.autoMarked };
+    dateMap[dateKey].total++;
+    if      (d.status === "Present") dateMap[dateKey].present++;
+    else if (d.status === "Absent")  dateMap[dateKey].absent++;
+    else                             dateMap[dateKey].notMarked++;
+
+    if (!d.autoMarked && d.updatedAt) {
+      const t = new Date(d.updatedAt);
+      if (!isNaN(t.getTime())) { if (t.getHours() <= 10) onTime++; else late++; }
+    }
+  });
+
+  const counted     = present + absent;
+  const studentPct  = counted ? ((present / counted) * 100).toFixed(1) : 0;
+  const totalDays   = Object.keys(dateMap).length;
+  const markedDays  = Object.values(dateMap).filter(d => d.teacherMarked).length;
+  const missedDays  = totalDays - markedDays;
+  const perf        = getPerformanceScore(markedDays, totalDays, onTime, late, notMarked);
+
+  let html = `<div class="dark-card">
+    <h3>📊 ${subjectLabels[subject] || subject} — Teacher Performance Report</h3>
+
+    <div style="background:#0f172a;border-radius:14px;padding:20px;margin-bottom:16px;border:2px solid ${perf.color};text-align:center;">
+      <div style="font-size:48px;font-weight:800;color:${perf.color};line-height:1;">${perf.score}%</div>
+      <div style="font-size:18px;font-weight:700;color:${perf.color};margin:8px 0;">${perf.grade}</div>
+      <div style="font-size:13px;color:#94a3b8;">${perf.msg}</div>
+      <div style="background:#1e293b;border-radius:10px;height:10px;margin:14px 0;overflow:hidden;">
+        <div style="height:100%;width:${perf.score}%;background:${perf.color};border-radius:10px;"></div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:20px;font-size:12px;color:#64748b;flex-wrap:wrap;">
+        <span>📋 Marking: <b style="color:#f1f5f9">60%</b></span>
+        <span>⏰ Punctuality: <b style="color:#f1f5f9">30%</b></span>
+        <span>❌ Miss Penalty: <b style="color:#f1f5f9">10%</b></span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="mini-stat"><p style="color:#34d399">${markedDays}</p><span>Days Marked</span></div>
+      <div class="mini-stat"><p style="color:#f87171">${missedDays}</p><span>Days Missed</span></div>
+      <div class="mini-stat"><p style="color:#60a5fa">${onTime}</p><span>On Time</span></div>
+      <div class="mini-stat"><p style="color:#f97316">${late}</p><span>Late Entries</span></div>
+      <div class="mini-stat"><p style="color:#fbbf24">${notMarked}</p><span>Not Marked</span></div>
+      <div class="mini-stat"><p style="color:#a78bfa">${studentPct}%</p><span>Student Avg</span></div>
+    </div>
+
+    <h4 style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 10px;">Date-wise Breakdown</h4>
+    <div class="scroll-box"><table class="dark-table">
+      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Teacher Status</th></tr>`;
+
+  for (const [d, dm] of Object.entries(dateMap)) {
+    const ts = dm.teacherMarked
+      ? '<span class="pill pill-success">✅ Marked</span>'
+      : '<span class="pill pill-warn">⚠️ Missed</span>';
+    html += `<tr>
+      <td>${d}</td>
+      <td class="green">${dm.present}</td>
+      <td class="red">${dm.absent}</td>
+      <td class="amber">${dm.notMarked}</td>
+      <td>${ts}</td>
+    </tr>`;
+  }
+
+  html += `</table></div></div>`;
+  document.getElementById("teacherDetails").innerHTML = html;
 }
 </script>
 

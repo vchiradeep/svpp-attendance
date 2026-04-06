@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leave Request — SVPCET</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background:linear-gradient(160deg,#ecfdf5,#d1fae5,#f0fdf4); min-height:100vh; font-family:'Plus Jakarta Sans',sans-serif; }
+
+  .page-header {
+    background:#059669; color:white; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  .page-header h2 { font-size:17px; font-weight:800; margin:0; }
+  .back-btn { padding:8px 16px; background:rgba(255,255,255,0.2); border:none; border-radius:8px; color:white; font-weight:700; font-size:13px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none; }
+
+  .container { max-width:700px; margin:0 auto; padding:24px 16px 50px; }
+
+  .form-card {
+    background:white; border-radius:18px; padding:28px;
+    box-shadow:0 4px 24px rgba(5,150,105,0.12); margin-bottom:24px;
+    border-top:4px solid #059669;
+  }
+  .form-card h3 { font-size:17px; font-weight:800; color:#064e3b; margin-bottom:18px; }
+
+  .input-label { display:block; font-size:12px; font-weight:700; color:#065f46; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+  .input-group { margin-bottom:16px; }
+  input, select, textarea {
+    width:100%; padding:12px 15px; border:2px solid #d1fae5;
+    border-radius:11px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif;
+    color:#1e293b; background:#f0fdf4; outline:none; transition:0.25s;
+  }
+  input:focus, select:focus, textarea:focus { border-color:#059669; background:white; box-shadow:0 0 0 4px rgba(5,150,105,0.1); }
+  textarea { resize:vertical; min-height:90px; }
+
+  .submit-btn {
+    width:100%; padding:14px; background:linear-gradient(135deg,#059669,#10b981);
+    color:white; border:none; border-radius:12px; font-size:15px; font-weight:700;
+    font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:0.25s;
+  }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(5,150,105,0.35); }
+
+  /* REQUEST LIST */
+  .request-card {
+    background:white; border-radius:14px; padding:18px 20px;
+    box-shadow:0 2px 12px rgba(0,0,0,0.06); margin-bottom:12px;
+    border-left:4px solid #e2e8f0; transition:0.2s;
+  }
+  .request-card.pending  { border-left-color:#f59e0b; }
+  .request-card.approved { border-left-color:#059669; }
+  .request-card.rejected { border-left-color:#ef4444; }
+
+  .req-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px; }
+  .req-date   { font-size:14px; font-weight:700; color:#1e293b; }
+  .req-reason { font-size:13px; color:#64748b; margin-bottom:8px; }
+  .req-subject { font-size:12px; color:#94a3b8; }
+  .req-remarks { font-size:13px; color:#059669; font-weight:600; margin-top:8px; padding:8px 12px; background:#f0fdf4; border-radius:8px; }
+  .req-remarks.rejected { color:#ef4444; background:#fef2f2; }
+
+  .status-pill { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+  .pill-pending  { background:#fef3c7; color:#92400e; }
+  .pill-approved { background:#dcfce7; color:#166534; }
+  .pill-rejected { background:#fee2e2; color:#991b1b; }
+
+  .empty { text-align:center; padding:40px; color:#94a3b8; font-size:14px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h2>📋 Leave Request</h2>
+  <a href="studenthome.html" class="back-btn">← Back</a>
+</div>
+
+<div class="container">
+
+  <!-- SUBMIT FORM -->
+  <div class="form-card">
+    <h3>📝 Submit Leave Request</h3>
+
+    <div class="input-group">
+      <label class="input-label">Date of Leave</label>
+      <input type="date" id="leaveDate">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Subject (Optional — leave blank for full day)</label>
+      <select id="leaveSubject">
+        <option value="">Full Day Leave</option>
+        <option value="PHY">Physics</option>
+        <option value="BEEE">Electrical (BEEE)</option>
+        <option value="ECE">Electronics (BEEE)</option>
+        <option value="DS">Data Structures</option>
+        <option value="DEVC">DE&amp;VC</option>
+        <option value="EG LAB">Engineering Graphics</option>
+        <option value="IT WORKSHOP">IT Workshop</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Reason for Leave</label>
+      <textarea id="leaveReason" placeholder="Explain your reason for leave (medical, family, event, etc.)..."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="submitLeave()">📤 Submit Request</button>
+  </div>
+
+  <!-- MY REQUESTS -->
+  <div class="form-card" style="border-top-color:#3b82f6;">
+    <h3>📋 My Leave Requests</h3>
+    <div id="myRequests"><div class="empty">Loading...</div></div>
+  </div>
+
+</div>
+
+<script>
+const roll    = localStorage.getItem("studentRoll");
+const section = localStorage.getItem("section");
+
+if (!roll) { alert("Please login first"); window.location.href = "student.html"; }
+
+// Set today's date as default
+const today = new Date().toISOString().split("T")[0];
+document.getElementById("leaveDate").value = today;
+
+async function submitLeave() {
+  const date    = document.getElementById("leaveDate").value;
+  const subject = document.getElementById("leaveSubject").value;
+  const reason  = document.getElementById("leaveReason").value.trim();
+
+  if (!date)   { alert("Select a date");       return; }
+  if (!reason) { alert("Enter a reason");      return; }
+
+  showLoader();
+  const res  = await fetch("/leave/request", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ studentName:roll, section, date, reason, subject:subject||null })
+  });
+  const data = await res.json();
+  hideLoader();
+
+  if (data.success) {
+    alert("✅ Leave request submitted successfully!\nYour teacher will review it.");
+    document.getElementById("leaveReason").value = "";
+    loadMyRequests();
+  } else {
+    alert("❌ " + data.message);
+  }
+}
+
+async function loadMyRequests() {
+  const res  = await fetch("/leave/student/" + roll);
+  const data = await res.json();
+  const box  = document.getElementById("myRequests");
+
+  if (!data.success || !data.requests.length) {
+    box.innerHTML = `<div class="empty">No leave requests yet.</div>`;
+    return;
+  }
+
+  const subjectLabels = {
+    "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
+    "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"EG Lab","IT WORKSHOP":"IT Workshop"
+  };
+
+  box.innerHTML = data.requests.map(r => {
+    const date   = new Date(r.date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'long', year:'numeric' });
+    const status = r.status.toLowerCase();
+    const pillClass = status === "pending" ? "pill-pending" : status === "approved" ? "pill-approved" : "pill-rejected";
+
+    return `
+    <div class="request-card ${status}">
+      <div class="req-header">
+        <div class="req-date">📅 ${date}</div>
+        <span class="status-pill ${pillClass}">${r.status}</span>
+      </div>
+      <div class="req-reason">💬 ${r.reason}</div>
+      <div class="req-subject">${r.subject ? "📘 " + (subjectLabels[r.subject]||r.subject) : "📅 Full Day"}</div>
+      ${r.remarks ? `<div class="req-remarks ${status}">${status==="approved"?"✅":"❌"} Teacher: ${r.remarks}</div>` : ""}
+      ${r.reviewedAt ? `<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Reviewed on ${new Date(r.reviewedAt).toLocaleString()}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+loadMyRequests();
+</script>
+
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
+<script src="utils.js"></script>
+</body>
+</html>

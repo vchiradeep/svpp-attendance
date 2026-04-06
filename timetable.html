@@ -100,7 +100,7 @@
     </style>
 </head>
 <body>
- 
+
 <div class="page-header">
   <div>
     <h2>📅 Period Timetable</h2>
@@ -108,36 +108,41 @@
   </div>
   <button class="back-btn" onclick="window.location.href='teacherhome.html'">← Back</button>
 </div>
- 
+
 <div class="tt-container">
- 
+
   <div class="remark-banner" id="remarkBanner">
     🔓 Admin has unlocked this date for re-marking. Please mark the attendance carefully.
   </div>
- 
+
   <div class="day-badge" id="dayBadge">Loading...</div>
- 
+
   <div id="periodsContainer"></div>
- 
+
 </div>
- 
+
 <script>
-// ✅ SUBJECT DISPLAY NAMES — fixed names as per requirement
-const subjectNames = {
-  "PHY":          "Physics",
-  "BEEE":         "Electrical (BEEE)",
-  "ECE":          "Electronics (BEEE)",
-  "DS":           "Data Structures",
-  "DS LAB":       "Data Structures Lab",
-  "DEVC":         "DE&VC",
-  "EG LAB":       "Engineering Graphics Lab",
-  "IT WORKSHOP":  "IT Workshop",
-  "PHY LAB":      "Physics Lab",
-  "EEE LAB":      "EEE Lab"
+// ✅ Each teacher's subject value covers their labs too
+// DS teacher → DS + DS LAB
+// PHY teacher → PHY + PHY LAB
+// BEEE teacher → BEEE + EEE LAB
+// ECE teacher → ECE + EEE LAB
+// EG LAB teacher → EG LAB
+const subjectMapping = {
+  "PHY":          ["PHY", "PHY LAB"],
+  "BEEE":         ["BEEE", "EEE LAB"],
+  "ECE":          ["ECE", "EEE LAB"],
+  "DS":           ["DS", "DS LAB"],
+  "IT WORKSHOP":  ["IT WORKSHOP"],
+  "EG LAB":       ["EG LAB"],
+  "DEVC":         ["DEVC"]
 };
- 
-function getDisplayName(sub){ return subjectNames[sub] || sub; }
- 
+
+function canTeacherMark(teacherSubject, periodSubject) {
+  const allowed = subjectMapping[teacherSubject] || [teacherSubject];
+  return allowed.includes(periodSubject);
+}
+
 const timetable = {
   Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
   Tuesday:   [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
@@ -145,27 +150,42 @@ const timetable = {
   Thursday:  [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
   Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
 };
- 
+
+// Subject display names
+const subjectNames = {
+  "PHY":         "Physics",
+  "BEEE":        "Electrical (BEEE)",
+  "ECE":         "Electronics (BEEE)",
+  "DS":          "Data Structures",
+  "DS LAB":      "Data Structures Lab",
+  "DEVC":        "DE&VC",
+  "EG LAB":      "Engineering Graphics Lab",
+  "IT WORKSHOP": "IT Workshop",
+  "PHY LAB":     "Physics Lab",
+  "EEE LAB":     "EEE Lab"
+};
+function getDisplayName(sub){ return subjectNames[sub] || sub; }
+
 const date          = localStorage.getItem("selectedDate");
 const teacherSubject = localStorage.getItem("subject");
 const isRemark       = localStorage.getItem("isRemark") === "true";
 const unlockId       = localStorage.getItem("reMarkUnlockId");
 const section        = localStorage.getItem("section") || "";
- 
+
 const dateObj = new Date(date);
 const dayName = dateObj.toLocaleString('en-US', { weekday:'long' });
 const dateStr = dateObj.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
- 
+
 document.getElementById("dayBadge").textContent = dayName;
 document.getElementById("headerSub").textContent = `${dateStr} · Section: ${section}`;
- 
+
 // Show remark banner if admin unlocked
 if(isRemark){
   document.getElementById("remarkBanner").style.display = "block";
 }
- 
+
 const container = document.getElementById("periodsContainer");
- 
+
 // Weekend check
 if(dayName === "Saturday" || dayName === "Sunday"){
   container.innerHTML = `
@@ -182,14 +202,13 @@ if(dayName === "Saturday" || dayName === "Sunday"){
     const time        = row[1];
     const subject     = row[2];
     const displayName = getDisplayName(subject);
- 
-    // Check if this period belongs to the logged-in teacher
-    const isMySubject = teacherSubject &&
-      subject.toLowerCase() === teacherSubject.toLowerCase();
- 
+
+    // ✅ Check if this period belongs to the logged-in teacher (including labs)
+    const isMySubject = teacherSubject && canTeacherMark(teacherSubject, subject);
+
     const card = document.createElement("div");
     card.className = `period-card ${isMySubject ? "allowed" : "blocked"}`;
- 
+
     card.innerHTML = `
       <div class="period-left">
         <div class="period-num">P${period}</div>
@@ -205,11 +224,11 @@ if(dayName === "Saturday" || dayName === "Sunday"){
         : `<button class="no-access">🔒 Not Your Subject</button>`
       }
     `;
- 
+
     container.appendChild(card);
   });
 }
- 
+
 function goMark(subject, period){
   localStorage.setItem("selectedSubject", subject);
   localStorage.setItem("period", period);
@@ -219,7 +238,7 @@ function goMark(subject, period){
   window.location.href = "mark.html";
 }
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
