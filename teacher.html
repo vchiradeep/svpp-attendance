@@ -126,6 +126,7 @@ function login(){
   }
 
   localStorage.setItem("subject", subject);
+  sessionStorage.setItem("justLoggedIn", "true");
   window.location.href = "teacherhome.html";
 }
 

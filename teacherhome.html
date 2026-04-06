@@ -4,103 +4,45 @@
     <title>SVPCET — Faculty Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <style>
-      body { background: #f1f5f9; }
- 
-      /* ===== ALERT BOX ===== */
-      .alert-banner {
-        display: none;
-        margin: 20px 30px 0;
-        border-radius: 14px;
-        padding: 18px 22px;
-        border: 2px solid;
-        animation: fadeUp 0.4s ease;
-      }
-      .alert-banner.warning {
-        background: #fffbeb;
-        border-color: #f59e0b;
-      }
-      .alert-banner.success {
-        background: #f0fdf4;
-        border-color: #22c55e;
-      }
-      .alert-banner.info {
-        background: #eff6ff;
-        border-color: #3b82f6;
-      }
-      .alert-title {
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .alert-banner.warning .alert-title { color: #92400e; }
-      .alert-banner.success .alert-title { color: #166534; }
-      .alert-banner.info    .alert-title { color: #1e40af; }
-      .alert-body {
-        font-size: 13px;
-        line-height: 1.6;
-        margin-bottom: 12px;
-      }
-      .alert-banner.warning .alert-body { color: #78350f; }
-      .alert-banner.success .alert-body { color: #14532d; }
-      .alert-banner.info    .alert-body { color: #1e3a8a; }
-      .alert-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-      .alert-btn {
-        padding: 9px 18px;
-        border: none;
-        border-radius: 9px;
-        font-weight: 700;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 13px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .alert-btn.primary   { background: #f59e0b; color: #1c1917; }
-      .alert-btn.secondary { background: #e2e8f0; color: #374151; }
-      .alert-btn.blue      { background: #3b82f6; color: white; }
-      .alert-btn:hover     { transform: translateY(-1px); opacity: 0.9; }
- 
-      /* ===== MISSED HISTORY ===== */
-      .missed-list {
-        margin: 0 30px 20px;
-        display: none;
-        animation: fadeUp 0.4s ease;
-      }
-      .missed-item {
-        background: white;
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        border-left: 4px solid #f59e0b;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .missed-item.unlocked { border-left-color: #22c55e; }
-      .missed-item.used     { border-left-color: #94a3b8; opacity: 0.7; }
-      .missed-info strong  { font-size: 14px; color: #1e293b; display: block; margin-bottom: 3px; }
-      .missed-info span    { font-size: 12px; color: #64748b; }
-      .status-pill {
-        font-size: 11px;
-        font-weight: 700;
-        padding: 4px 12px;
-        border-radius: 20px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .pill-warning  { background: #fef3c7; color: #92400e; }
-      .pill-success  { background: #dcfce7; color: #166534; }
-      .pill-gray     { background: #f1f5f9; color: #64748b; }
- 
-      /* ===== REST OF PAGE ===== */
+      body { background:#f1f5f9; }
+
+      /* ALERT BANNERS */
+      .alert-banner { display:none; margin:16px 24px 0; border-radius:14px; padding:18px 22px; border:2px solid; animation:fadeUp 0.4s ease; }
+      .alert-banner.warning { background:#fffbeb; border-color:#f59e0b; }
+      .alert-banner.success { background:#f0fdf4; border-color:#22c55e; }
+      .alert-banner.info    { background:#eff6ff; border-color:#3b82f6; }
+      .alert-title { font-size:15px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+      .alert-banner.warning .alert-title { color:#92400e; }
+      .alert-banner.success .alert-title { color:#166534; }
+      .alert-banner.info    .alert-title { color:#1e40af; }
+      .alert-body { font-size:13px; line-height:1.6; }
+      .alert-banner.warning .alert-body { color:#78350f; }
+      .alert-banner.success .alert-body { color:#14532d; }
+      .alert-banner.info    .alert-body { color:#1e3a8a; }
+      .alert-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+      .alert-btn { padding:9px 18px; border:none; border-radius:9px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; cursor:pointer; transition:all 0.2s; }
+      .alert-btn.primary   { background:#f59e0b; color:#1c1917; }
+      .alert-btn.secondary { background:#e2e8f0; color:#374151; }
+      .alert-btn.blue      { background:#3b82f6; color:white; }
+      .alert-btn:hover     { transform:translateY(-1px); opacity:0.9; }
+
+      /* MISSED HISTORY */
+      .missed-list { margin:16px 24px; display:none; animation:fadeUp 0.4s ease; }
+      .missed-item { background:white; border-radius:12px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:4px solid #f59e0b; flex-wrap:wrap; gap:10px; }
+      .missed-item.unlocked { border-left-color:#22c55e; }
+      .missed-item.used     { border-left-color:#94a3b8; opacity:0.7; }
+      .missed-info strong { font-size:14px; color:#1e293b; display:block; margin-bottom:3px; }
+      .missed-info span   { font-size:12px; color:#64748b; }
+      .status-pill { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+      .pill-warning { background:#fef3c7; color:#92400e; }
+      .pill-success { background:#dcfce7; color:#166534; }
+      .pill-gray    { background:#f1f5f9; color:#64748b; }
+      .pill-blue    { background:#eff6ff; color:#1e40af; }
+
+      /* COLLEGE SECTIONS */
       .placement-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:18px; }
       .placement-stat { background:white; border-radius:14px; padding:20px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.07); border-bottom:3px solid #1a56db; transition:all 0.3s; }
-      .placement-stat:hover { transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,0,0,0.12); }
+      .placement-stat:hover { transform:translateY(-4px); }
       .placement-stat .p-icon  { font-size:28px; margin-bottom:8px; display:block; }
       .placement-stat .p-value { font-size:26px; font-weight:800; color:#1e293b; display:block; }
       .placement-stat .p-label { font-size:12px; color:#64748b; text-transform:uppercase; letter-spacing:0.8px; font-weight:600; margin-top:4px; display:block; }
@@ -112,16 +54,27 @@
       .highlight-strip .hs-icon { font-size:36px; flex-shrink:0; }
       .highlight-strip h4 { font-size:16px; font-weight:700; margin-bottom:3px; }
       .highlight-strip p { font-size:13px; opacity:0.85; }
+
+      /* SUCCESS POPUP */
+      .popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; display:none; align-items:center; justify-content:center; }
+      .popup-overlay.show { display:flex; }
+      .popup-box { background:white; border-radius:20px; padding:36px 32px; text-align:center; max-width:320px; width:90%; animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+      @keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+      .popup-icon  { font-size:52px; margin-bottom:14px; }
+      .popup-title { font-size:20px; font-weight:800; color:#1e293b; margin-bottom:8px; }
+      .popup-msg   { font-size:14px; color:#64748b; line-height:1.5; margin-bottom:20px; }
+      .popup-btn   { padding:12px 28px; background:#1a56db; color:white; border:none; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; }
+
       @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
     </style>
 </head>
 <body>
- 
+
 <!-- TOP BAR -->
 <div class="top-bar">
-    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9a8ada4a0babaa0a6a789babfb9aaacbde7a6bbae">[email&#160;protected]</a> &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, Chittoor (D), AP
+    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ admission@svpcet.org &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, Chittoor (D), AP
 </div>
- 
+
 <!-- COLLEGE HEADER -->
 <div class="college-header">
     <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="logo">
@@ -131,7 +84,7 @@
         <p>RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh — 517583</p>
     </div>
 </div>
- 
+
 <!-- NAVBAR -->
 <div class="navbar">
     <h2>👨‍🏫 Faculty Dashboard</h2>
@@ -142,39 +95,29 @@
         <button onclick="logout()" style="background:#ef4444;">🚪 Logout</button>
     </div>
 </div>
- 
-<!-- ===== ALERT BANNER — shown if teacher missed yesterday ===== -->
-<div class="alert-banner warning" id="missedAlert">
-    <div class="alert-title">⚠️ Attendance Not Marked!</div>
-    <div class="alert-body" id="missedAlertBody">
-        You forgot to mark attendance yesterday. Please contact the admin to unlock it for re-marking.
-    </div>
+
+<!-- ✅ MISSED ALERT -->
+<div class="alert-banner" id="missedAlert">
+    <div class="alert-title" id="missedAlertTitle">⚠️ Attendance Not Marked!</div>
+    <div class="alert-body" id="missedAlertBody">Loading...</div>
     <div class="alert-actions">
-        <button class="alert-btn primary" id="reMarkBtn" style="display:none;" onclick="goToRemark()">
-            ✏️ Mark Now (Admin Unlocked)
-        </button>
-        <button class="alert-btn secondary" onclick="dismissAlert()">
-            Dismiss
-        </button>
+        <button class="alert-btn primary" id="reMarkBtn" style="display:none;" onclick="goToRemark()">✏️ Mark Now (Admin Unlocked)</button>
+        <button class="alert-btn secondary" onclick="document.getElementById('missedAlert').style.display='none'">Dismiss</button>
     </div>
 </div>
- 
-<!-- ===== SUCCESS BANNER — shown if all marked ===== -->
+
+<!-- ✅ ALL GOOD ALERT -->
 <div class="alert-banner success" id="allGoodAlert">
     <div class="alert-title">✅ All Attendance Marked!</div>
-    <div class="alert-body">
-        Great job! You have marked attendance for all your scheduled classes. Keep it up!
-    </div>
+    <div class="alert-body">Great job! You have marked attendance for all your scheduled classes today.</div>
 </div>
- 
-<!-- ===== MISSED HISTORY LIST ===== -->
+
+<!-- ✅ MISSED HISTORY -->
 <div class="missed-list" id="missedHistory">
-    <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:12px;">📋 Your Missed Marking History</h3>
-    <div id="missedHistoryItems">
-        <p style="color:#64748b; font-size:13px;">Loading...</p>
-    </div>
+    <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:12px;">📋 Your Missed Marking History</h3>
+    <div id="missedHistoryItems"><p style="color:#64748b;font-size:13px;">Loading...</p></div>
 </div>
- 
+
 <!-- HERO -->
 <div class="hero">
     <img src="https://assets.allegiance-educare.com/colleges/1480077652001.jpg" alt="SVPCET Campus">
@@ -183,8 +126,8 @@
         <p>Shaping Engineers · Building Futures Since 2001</p>
     </div>
 </div>
- 
-<!-- STATS STRIP -->
+
+<!-- STATS -->
 <div class="stats-strip">
     <div class="stat-item"><h3>2001</h3><p>Established</p></div>
     <div class="stat-item"><h3>25 Acres</h3><p>Campus</p></div>
@@ -192,20 +135,17 @@
     <div class="stat-item"><h3>1361</h3><p>Students</p></div>
     <div class="stat-item"><h3>7.6 LPA</h3><p>Highest Package</p></div>
 </div>
- 
+
 <!-- ABOUT -->
 <div class="section">
     <div class="section-title">🏫 About SVPCET</div>
     <div class="about-card">
-        Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in <strong>2001</strong> and promoted by the
-        <strong>Tamilian Education Academy</strong>, is a premier integrated interdisciplinary technological institute spread
-        across <strong>25 acres</strong> in Puttur, Chittoor District, Andhra Pradesh. Affiliated to <strong>JNTUA</strong>
-        and recognized by <strong>UGC & AICTE</strong>, the college is accredited by <strong>NAAC</strong> and approved by <strong>NBA</strong>.
-        With 70% of faculty ratified by the affiliating university, SVPCET recruits only distinguished academicians,
-        research scientists, and experienced faculty committed to academic excellence.
+        Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in <strong>2001</strong>, is a premier
+        interdisciplinary technological institute spread across <strong>25 acres</strong> in Puttur, Chittoor District, AP.
+        Affiliated to <strong>JNTUA</strong>, recognized by <strong>UGC & AICTE</strong>, accredited by <strong>NAAC</strong> and approved by <strong>NBA</strong>.
     </div>
 </div>
- 
+
 <!-- KEY INFO -->
 <div class="section">
     <div class="section-title">ℹ️ Key Information</div>
@@ -218,16 +158,13 @@
         <div class="info-card"><span class="icon">✈️</span><h4>Nearest Airport</h4><p>Tirupati International — 25 km</p></div>
     </div>
 </div>
- 
+
 <!-- PLACEMENTS -->
 <div class="section">
     <div class="section-title">💼 Placements 2024</div>
     <div class="highlight-strip">
         <div class="hs-icon">🏆</div>
-        <div>
-            <h4>Outstanding Placement Record</h4>
-            <p>SVPCET's dedicated Training & Placement Cell delivers consistent results through mock interviews, aptitude training, group discussions, resume building, and industry partnerships.</p>
-        </div>
+        <div><h4>Outstanding Placement Record</h4><p>Dedicated T&P Cell with mock interviews, aptitude training, and industry partnerships.</p></div>
     </div>
     <div class="placement-grid">
         <div class="placement-stat"><span class="p-icon">👨‍🎓</span><span class="p-value">283</span><span class="p-label">Students Placed</span></div>
@@ -244,10 +181,10 @@
         <div class="recruiter-card"><span class="r-icon">🟢</span>Alchemy Techsol</div>
     </div>
 </div>
- 
+
 <!-- ACCREDITATIONS -->
 <div class="section">
-    <div class="section-title">🏅 Accreditations & Approvals</div>
+    <div class="section-title">🏅 Accreditations</div>
     <div class="accred-list">
         <span class="accred-badge">✅ NAAC Accredited</span>
         <span class="accred-badge">✅ NBA Approved</span>
@@ -256,147 +193,150 @@
         <span class="accred-badge">✅ Affiliated to JNTUA</span>
     </div>
 </div>
- 
+
 <!-- CONTACT -->
 <div class="section">
     <div class="section-title">📞 Contact Us</div>
     <div class="contact-card">
         <div class="contact-item"><span>📍</span> RVS Nagar, K.N Road, Puttur, Chittoor District, AP — 517583</div>
-        <div class="contact-item"><span>📞</span> +91 93905 05445 &nbsp;|&nbsp; +91 93905 05456</div>
-        <div class="contact-item"><span>✉️</span> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb9a9f96928888929495bb888d8b989e8fd594899c">[email&#160;protected]</a></div>
+        <div class="contact-item"><span>📞</span> +91 93905 05445 | +91 93905 05456</div>
+        <div class="contact-item"><span>✉️</span> admission@svpcet.org</div>
         <div class="contact-item"><span>🌐</span> www.svpcet.org</div>
-        <div class="contact-item"><span>✈️</span> 25 km from Tirupati International Airport</div>
-        <div class="contact-item"><span>🚉</span> 4.7 km from Anangur Railway Station</div>
     </div>
 </div>
- 
+
 <footer>© 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur. All rights reserved.</footer>
- 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+<!-- ✅ SUCCESS POPUP (shown after login) -->
+<div class="popup-overlay" id="loginSuccessPopup">
+  <div class="popup-box">
+    <div class="popup-icon">👨‍🏫</div>
+    <div class="popup-title">Welcome, Faculty!</div>
+    <div class="popup-msg" id="loginSuccessMsg">You are logged in successfully.</div>
+    <button class="popup-btn" onclick="document.getElementById('loginSuccessPopup').classList.remove('show')">Continue →</button>
+  </div>
+</div>
+
+<script>
 const subject = localStorage.getItem("subject");
 let missedInfo = null;
- 
-// ✅ Check on page load if teacher missed yesterday
-async function checkMissedAttendance() {
-    if (!subject) return;
- 
-    try {
-        const res  = await fetch(`/teacher/missed/${subject}`);
-        const data = await res.json();
- 
-        if (data.missed) {
-            missedInfo = data;
- 
-            const date    = new Date(data.date).toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
-            const alertEl = document.getElementById("missedAlert");
-            const bodyEl  = document.getElementById("missedAlertBody");
-            const btnEl   = document.getElementById("reMarkBtn");
- 
-            alertEl.style.display = "block";
- 
-            if (data.unlocked) {
-                // Admin gave permission — show mark now button
-                alertEl.classList.remove("warning");
-                alertEl.classList.add("info");
-                bodyEl.innerHTML = `
-                    <b>Admin has unlocked ${date} for you to re-mark attendance.</b><br>
-                    Please mark it now before the permission expires.
-                `;
-                btnEl.style.display = "inline-block";
-                btnEl.dataset.unlockId = data.unlockId;
-                btnEl.dataset.date     = data.date;
-            } else {
-                bodyEl.innerHTML = `
-                    You did not mark <b>${data.subject}</b> attendance on <b>${date}</b>.<br>
-                    Please contact the <b>Admin</b> to unlock that date for re-marking.<br>
-                    <span style="font-size:12px;opacity:0.8;margin-top:4px;display:block;">
-                        Until then, those students are marked as "Not Marked" — not affecting their attendance %.
-                    </span>
-                `;
-                btnEl.style.display = "none";
-            }
- 
-            document.getElementById("allGoodAlert").style.display = "none";
- 
-        } else {
-            // All good — show success banner briefly
-            const allGood = document.getElementById("allGoodAlert");
-            allGood.style.display = "block";
-            setTimeout(() => { allGood.style.display = "none"; }, 4000);
-            document.getElementById("missedAlert").style.display = "none";
-        }
- 
-    } catch (e) {
-        console.log("Could not check missed attendance:", e);
-    }
-}
- 
-// Go to mark page with the unlocked date pre-filled
-function goToRemark() {
-    if (!missedInfo) return;
-    localStorage.setItem("selectedDate",    new Date(missedInfo.date).toISOString().split("T")[0]);
-    localStorage.setItem("reMarkUnlockId",  missedInfo.unlockId);
-    localStorage.setItem("isRemark",        "true");
-    window.location.href = "timetable.html";
-}
- 
-function dismissAlert() {
-    document.getElementById("missedAlert").style.display = "none";
-}
- 
-// Show/hide missed history
 let historyLoaded = false;
-async function toggleMissedHistory() {
-    const el = document.getElementById("missedHistory");
-    if (el.style.display === "block") {
-        el.style.display = "none"; return;
-    }
-    el.style.display = "block";
- 
-    if (historyLoaded) return;
-    historyLoaded = true;
- 
-    try {
-        const res  = await fetch(`/teacher/all-missed/${subject}`);
-        const data = await res.json();
-        const container = document.getElementById("missedHistoryItems");
- 
-        if (!data.missedDates || data.missedDates.length === 0) {
-            container.innerHTML = `<p style="color:#64748b;font-size:13px;">✅ No missed marking history! Great job.</p>`;
-            return;
-        }
- 
-        container.innerHTML = data.missedDates.map(item => {
-            const date  = new Date(item.date).toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
-            let pillClass = "pill-warning", pillText = "⚠️ Not Marked";
-            let cssClass  = "";
-            if (item.used)     { pillClass = "pill-gray";    pillText = "✅ Re-marked";  cssClass = "used"; }
-            if (item.unlocked) { pillClass = "pill-success";  pillText = "🔓 Unlocked"; cssClass = "unlocked"; }
- 
-            return `
-            <div class="missed-item ${cssClass}">
-                <div class="missed-info">
-                    <strong>${subject} — ${item.section}</strong>
-                    <span>${date}</span>
-                </div>
-                <span class="status-pill ${pillClass}">${pillText}</span>
-            </div>`;
-        }).join("");
- 
-    } catch (e) {
-        document.getElementById("missedHistoryItems").innerHTML = `<p style="color:#ef4444;">Error loading history</p>`;
-    }
+
+const subjectLabels = {
+  "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
+  "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics",
+  "IT WORKSHOP":"IT Workshop","PHY LAB":"Physics Lab",
+  "EEE LAB":"EEE Lab","DS LAB":"DS Lab"
+};
+
+// ✅ Show login success popup on first visit
+if(sessionStorage.getItem("justLoggedIn") === "true"){
+  sessionStorage.removeItem("justLoggedIn");
+  document.getElementById("loginSuccessMsg").textContent =
+    `You are logged in as ${subjectLabels[subject]||subject} faculty. Welcome!`;
+  document.getElementById("loginSuccessPopup").classList.add("show");
 }
- 
-function goMark() { 
-    window.location.href = "dateselect.html"; 
+
+// ✅ CHECK MISSED ATTENDANCE
+async function checkMissedAttendance(){
+  if(!subject) return;
+  try {
+    const res  = await fetch(`/teacher/missed/${subject}`);
+    const data = await res.json();
+
+    if(!data.success) return;
+
+    if(data.missed){
+      missedInfo = data;
+      const dateStr = new Date(data.date).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+      const alertEl = document.getElementById("missedAlert");
+      const bodyEl  = document.getElementById("missedAlertBody");
+      const btnEl   = document.getElementById("reMarkBtn");
+      const titleEl = document.getElementById("missedAlertTitle");
+
+      alertEl.style.display = "block";
+      document.getElementById("allGoodAlert").style.display = "none";
+
+      if(data.unlocked){
+        alertEl.className = "alert-banner info";
+        titleEl.textContent = "🔓 Admin Has Unlocked Previous Date!";
+        bodyEl.innerHTML = `Admin has unlocked <b>${dateStr}</b> for you to re-mark <b>${subjectLabels[subject]||subject}</b> attendance. Please mark it now.`;
+        btnEl.style.display = "inline-block";
+        btnEl.dataset.date    = data.date;
+        btnEl.dataset.unlockId = data.unlockId || "";
+      } else {
+        alertEl.className = "alert-banner warning";
+        titleEl.textContent = "⚠️ Attendance Not Marked Yesterday!";
+        bodyEl.innerHTML = `You did not mark <b>${subjectLabels[subject]||subject}</b> attendance on <b>${dateStr}</b>.<br>
+          Contact the <b>Admin</b> to unlock that date for re-marking.<br>
+          <small style="opacity:0.75;">Students are marked as "Not Marked" — this does NOT affect their %.</small>`;
+        btnEl.style.display = "none";
+      }
+    } else {
+      document.getElementById("allGoodAlert").style.display = "block";
+      document.getElementById("missedAlert").style.display  = "none";
+      // Auto hide after 4s
+      setTimeout(()=>{ document.getElementById("allGoodAlert").style.display="none"; }, 4000);
+    }
+  } catch(e){ console.log("Missed check error:", e); }
 }
-function goRanking() { window.location.href = "ranking.html"; }
+
+// ✅ GO TO RE-MARK PAGE
+function goToRemark(){
+  if(!missedInfo) return;
+  const dateStr = new Date(missedInfo.date).toISOString().split("T")[0];
+  localStorage.setItem("selectedDate",   dateStr);
+  localStorage.setItem("isRemark",       "true");
+  localStorage.setItem("reMarkUnlockId", missedInfo.unlockId || "");
+  window.location.href = "timetable.html";
+}
+
+// ✅ MISSED HISTORY
+async function toggleMissedHistory(){
+  const el = document.getElementById("missedHistory");
+  if(el.style.display === "block"){ el.style.display="none"; return; }
+  el.style.display = "block";
+  if(historyLoaded) return;
+  historyLoaded = true;
+
+  try {
+    const res  = await fetch(`/teacher/all-missed/${subject}`);
+    const data = await res.json();
+    const container = document.getElementById("missedHistoryItems");
+
+    if(!data.success || !data.missedDates || data.missedDates.length === 0){
+      container.innerHTML = `<p style="color:#059669;font-size:13px;">✅ No missed marking history! Great job.</p>`;
+      return;
+    }
+
+    container.innerHTML = data.missedDates.map(item => {
+      const date = new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      let pillClass="pill-warning", pillText="⚠️ Not Marked", cssClass="";
+      if(item.used)     { pillClass="pill-success"; pillText="✅ Re-marked"; cssClass="used"; }
+      if(item.unlocked) { pillClass="pill-blue";    pillText="🔓 Unlocked";  cssClass="unlocked"; }
+
+      return `<div class="missed-item ${cssClass}">
+        <div class="missed-info">
+          <strong>${subjectLabels[subject]||subject}</strong>
+          <span>${date}</span>
+        </div>
+        <span class="status-pill ${pillClass}">${pillText}</span>
+      </div>`;
+    }).join("");
+
+  } catch(e){
+    document.getElementById("missedHistoryItems").innerHTML = `<p style="color:#ef4444;">Failed to load history. Please try again.</p>`;
+  }
+}
+
+function goMark()    { window.location.href = "dateselect.html"; }
+function goRanking() { window.location.href = "leaderboard.html"; }
 function logout()    { localStorage.clear(); window.location.href = "index.html"; }
- 
+
+// Run checks
 checkMissedAttendance();
 </script>
- 
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 <script src="reminders.js"></script>
