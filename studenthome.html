@@ -226,14 +226,16 @@ async function loadData(showLoad=true){
 
     fullData = data;
 
-    let present=0, absent=0, notMarked=0;
+    let present=0, absent=0, notMarked=0, onLeave=0;
     data.forEach(r => {
-      if(r.status==="Present")    present++;
-      else if(r.status==="Absent") absent++;
-      else if(r.status==="NotMarked") notMarked++;
+      if(r.status==="Present")         present++;
+      else if(r.status==="Absent")     absent++;
+      else if(r.status==="NotMarked")  notMarked++;
+      else if(r.status==="OnLeave")    onLeave++;
+      // OnLeave does NOT count as absent — treated like Not Marked
     });
 
-    const counted = present + absent;
+    const counted = present + absent;  // Only Present + Absent counted
     const pct     = counted===0 ? 0 : ((present/counted)*100).toFixed(1);
 
     gPresent = present;
@@ -244,7 +246,7 @@ async function loadData(showLoad=true){
     document.getElementById("sAttended").textContent     = present;
     document.getElementById("sAbsent").textContent       = absent;
     document.getElementById("sPct").textContent          = pct + "%";
-    document.getElementById("sNotMarked").textContent    = notMarked;
+    document.getElementById("sNotMarked").textContent    = notMarked + (onLeave>0 ? ` (+${onLeave} On Leave)` : "");
 
     // Not marked note
     const nmEl = document.getElementById("nmNote");
@@ -420,6 +422,7 @@ function showByDate(){
     if(rec){
       if(rec.status==="Present")    { statusText="✅ Present";  cls="sp"; }
       else if(rec.status==="Absent"){ statusText="❌ Absent";   cls="sa"; }
+      else if(rec.status==="OnLeave"){ statusText="🏥 On Leave"; cls="sn"; }
       else                          { statusText="⚠️ Not Marked (Teacher)"; cls="sn"; }
     } else if(dateVal < today){
       statusText="❌ Absent"; cls="sa";

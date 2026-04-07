@@ -36,7 +36,7 @@ const Attendance    = require("./models/Attendance");
 const Teacher       = require("./models/teacher");
 const UnlockRequest = require("./models/UnlockRequest");
 const AuditLog      = require("./models/AuditLog");
-const LeaveRequest  = require("./models/LeaveRequest");
+const LeaveRequest  = require("./models/Leaverequest");
 
 // ===================== ROLL NUMBER GENERATOR =====================
 const SERIES_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -153,25 +153,46 @@ cron.schedule("31 18 * * *",()=>autoMarkNotMarked());
 // ===================== ATTENDANCE ROUTES =====================
 
 app.post("/submit-attendance", async (req, res) => {
-  const { date, subject, data, section, unlockId } = req.body;
-  const performedBy = "teacher:" + subject;
   try {
+    const { date, subject, data, section, unlockId } = req.body;
+
+    // ✅ Validate all required fields upfront
+    if (!date || !subject || !data || !section) {
+      return res.status(400).json({ success:false, message:"Missing required fields" });
+    }
+
+    // ✅ Parse date safely
+    const dateObj = new Date(date + "T00:00:00.000Z");
+    if (isNaN(dateObj.getTime())) {
+      return res.status(400).json({ success:false, message:"Invalid date: " + date });
+    }
+
+    const startOfDay = new Date(dateObj);
+    const endOfDay   = new Date(dateObj.getTime() + 86400000);
+    const performedBy = "teacher:" + subject;
     let markedCount = 0;
+
     for (const student of Object.keys(data)) {
       if (!data[student]) continue;
-      const existing = await Attendance.findOne({ studentName:student, subject, date:dateRange(new Date(date)) });
+      const existing = await Attendance.findOne({ studentName:student, subject, date:{ $gte:startOfDay, $lt:endOfDay } });
       const oldStatus = existing?.status;
       await Attendance.findOneAndUpdate(
-        { studentName:student, subject, date:new Date(date) },
-        { studentName:student, subject, date:new Date(date), section, status:data[student], updatedAt:new Date(), autoMarked:false },
-        { upsert:true }
+        { studentName:student, subject, date:{ $gte:startOfDay, $lt:endOfDay } },
+        { studentName:student, subject, date:startOfDay, section, status:data[student], updatedAt:new Date(), autoMarked:false },
+        { upsert:true, new:true }
       );
-      await writeAudit({ action:oldStatus?"EDITED":"MARKED", performedBy, studentName:student, subject, section, date, oldStatus, newStatus:data[student], req });
+      await writeAudit({ action:oldStatus?"EDITED":"MARKED", performedBy, studentName:student, subject, section, date:startOfDay, oldStatus, newStatus:data[student], req });
       markedCount++;
     }
+
     if (unlockId) await UnlockRequest.findByIdAndUpdate(unlockId, { used:true, usedAt:new Date() });
+    console.log(`✅ Submitted: ${markedCount} records for ${subject} ${section} on ${date}`);
     res.json({ success:true, markedCount });
-  } catch (err) { console.log(err); res.json({ success:false, message:err.message }); }
+
+  } catch (err) {
+    console.error("❌ submit-attendance error:", err.message);
+    res.status(500).json({ success:false, message:err.message || "Server error saving attendance" });
+  }
 });
 
 app.get("/attendance", async (req, res) => {
@@ -281,30 +302,41 @@ app.get("/audit-log", async (req, res) => {
 app.post("/leave/request", async (req, res) => {
   try {
     const { studentName, section, date, reason, subject, leaveLetterText } = req.body;
+
     if (!studentName || !section || !date || !reason)
-      return res.json({ success:false, message:"All fields required" });
+      return res.json({ success:false, message:"All fields required (studentName, section, date, reason)" });
+
+    // Parse date safely
+    const dateObj = new Date(date + "T00:00:00.000Z");
+    if (isNaN(dateObj.getTime()))
+      return res.json({ success:false, message:"Invalid date format" });
 
     // Check duplicate
-    const existing = await LeaveRequest.findOne({
-      studentName, date:new Date(date),
+    const startOfDay = new Date(dateObj);
+    const endOfDay   = new Date(dateObj.getTime() + 86400000);
+    const existing   = await LeaveRequest.findOne({
+      studentName,
+      date:    { $gte:startOfDay, $lt:endOfDay },
       subject: subject || null
     });
     if (existing) return res.json({ success:false, message:"Leave already requested for this date and subject" });
 
     const lr = await LeaveRequest.create({
       studentName, section,
-      date: new Date(date),
+      date:            startOfDay,
       reason,
-      subject: subject || null,
+      subject:         subject || null,
       leaveLetterText: leaveLetterText || null,
-      // If subject = null → goes to admin; if subject set → goes to teacher of that subject
-      reviewedBy: null,
-      status: "Pending"
+      status:          "Pending"
     });
 
-    await writeAudit({ action:"LEAVE_REQUESTED", performedBy:"student:"+studentName, studentName, subject:subject||"FULL_DAY", section, date, newStatus:"Pending" });
+    await writeAudit({ action:"LEAVE_REQUESTED", performedBy:"student:"+studentName, studentName, subject:subject||"FULL_DAY", section, date:startOfDay, newStatus:"Pending" });
     res.json({ success:true, message:"Leave request submitted successfully", id:lr._id });
-  } catch (err) { res.status(500).json({ success:false, error:err.message }); }
+
+  } catch (err) {
+    console.error("❌ leave/request error:", err.message);
+    res.status(500).json({ success:false, message:err.message || "Server error creating leave request" });
+  }
 });
 
 // Get leave requests for a specific student
@@ -362,24 +394,32 @@ app.post("/leave/review", async (req, res) => {
     );
     if (!lr) return res.json({ success:false, message:"Request not found" });
 
-    // If approved → mark attendance as OnLeave
+    // If approved → mark attendance as OnLeave (does NOT count as absent)
     if (status === "Approved") {
+      const leaveDate = new Date(lr.date);
+      const startOfDay = new Date(leaveDate.getFullYear(), leaveDate.getMonth(), leaveDate.getDate());
+      const endOfDay   = new Date(startOfDay.getTime() + 86400000);
+
       const subjects = lr.subject
         ? [lr.subject]
-        : [...new Set(timetable[getDayName(lr.date)] || [])];
+        : [...new Set(timetable[getDayName(leaveDate)] || [])];
 
       for (const sub of subjects) {
+        // ✅ OnLeave is now in the enum — this will work
         await Attendance.findOneAndUpdate(
-          { studentName:lr.studentName, subject:sub, date:dateRange(lr.date) },
-          { studentName:lr.studentName, subject:sub, date:lr.date, section:lr.section, status:"OnLeave", updatedAt:new Date(), autoMarked:false },
-          { upsert:true }
+          { studentName:lr.studentName, subject:sub, date:{ $gte:startOfDay, $lt:endOfDay } },
+          { studentName:lr.studentName, subject:sub, date:startOfDay, section:lr.section, status:"OnLeave", updatedAt:new Date(), autoMarked:false },
+          { upsert:true, new:true }
         );
       }
-      await writeAudit({ action:"LEAVE_APPROVED", performedBy:reviewedBy||"admin", studentName:lr.studentName, subject:lr.subject||"ALL", section:lr.section, date:lr.date, newStatus:"OnLeave" });
+      await writeAudit({ action:"LEAVE_APPROVED", performedBy:reviewedBy||"admin", studentName:lr.studentName, subject:lr.subject||"ALL", section:lr.section, date:startOfDay, newStatus:"OnLeave" });
     }
 
     res.json({ success:true, message:`Leave ${status} successfully` });
-  } catch (err) { res.status(500).json({ success:false, error:err.message }); }
+  } catch (err) {
+    console.error("❌ leave/review error:", err.message);
+    res.status(500).json({ success:false, message:err.message || "Server error reviewing leave" });
+  }
 });
 
 // ===================== UNLOCK ROUTES =====================
