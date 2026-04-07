@@ -286,6 +286,7 @@ function exportCSV(){
 }
 
 // ===== SUBMIT =====
+// ===== SUBMIT =====
 async function submitAttendance(){
   if(isLocked){alert("🔒 Date is locked. Contact admin to unlock.");return;}
 
@@ -316,24 +317,38 @@ async function submitAttendance(){
   btn.disabled=true;
   btn.textContent="⏳ Submitting...";
 
-  // ✅ Do NOT use showLoader() — it blocks the popup from showing
   try{
-    const res=await fetch(API+"/submit-attendance",{
+    let result;
+    
+    // ✅ FIXED: Use AbortController for timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    
+    const res = await fetch(API+"/submit-attendance",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({date,subject:selSub,section,data:payload,unlockId:unlockId||null})
+      body:JSON.stringify({
+        date,
+        subject:selSub,
+        section,
+        data:payload,
+        unlockId:unlockId||null
+      }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeout);
 
-     if (!res.ok) {
-    throw new Error("Server error: " + res.status);
-  }
+    // ✅ FIXED: Read raw text first, then parse
+    const rawText = await res.text();
+    
+    try {
+      result = JSON.parse(rawText);
+    } catch(parseErr) {
+      console.error("Server returned non-JSON:", rawText);
+      throw new Error("Server returned invalid response. Status: " + res.status);
+    }
 
-  let result;
-  try {
-    result = await res.json();
-  } catch (e) {
-    throw new Error("Invalid JSON response from server");
-  }
     btn.disabled=false;
     btn.textContent="📤 Submit Attendance";
 
@@ -341,7 +356,6 @@ async function submitAttendance(){
       localStorage.removeItem("reMarkUnlockId");
       localStorage.removeItem("isRemark");
 
-      // ✅ Show popup directly
       const subLabel=subNames[selSub]||selSub;
       document.getElementById("spBody").textContent=
         `${subLabel} attendance for ${section} on ${dp[2]}/${dp[1]}/${dp[0]} saved successfully!`;
@@ -352,11 +366,18 @@ async function submitAttendance(){
     } else {
       alert("❌ Submission failed!\n"+(result.message||"Please try again."));
     }
+    
   } catch(err){
     btn.disabled=false;
     btn.textContent="📤 Submit Attendance";
     console.error("Submit error:",err);
-    alert("❌ Network error!\n\nCheck your internet connection and try again.\n\nError: "+err.message);
+    
+    // ✅ FIXED: Better error messages
+    if(err.name === "AbortError"){
+      alert("❌ Request timed out!\n\nThe server took too long to respond.\nPlease check your connection and try again.");
+    } else {
+      alert("❌ Network error!\n\nCheck your internet connection and try again.\n\nError: "+err.message);
+    }
   }
 }
 

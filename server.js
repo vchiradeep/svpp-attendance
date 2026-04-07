@@ -312,12 +312,14 @@ app.post("/leave/request", async (req, res) => {
       return res.json({ success:false, message:"Invalid date format" });
 
     // Check duplicate
+        // Check duplicate
     const startOfDay = new Date(dateObj);
     const endOfDay   = new Date(dateObj.getTime() + 86400000);
     const existing   = await LeaveRequest.findOne({
       studentName,
       date:    { $gte:startOfDay, $lt:endOfDay },
-      subject: subject || null
+      // ✅ FIXED: Handle null subject correctly
+      subject: subject ? subject : { $in: [null, undefined] }
     });
     if (existing) return res.json({ success:false, message:"Leave already requested for this date and subject" });
 

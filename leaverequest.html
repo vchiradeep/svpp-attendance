@@ -301,6 +301,7 @@ Date: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'
 }
 
 // ===== SUBMIT =====
+// ===== SUBMIT =====
 async function submitLeave(){
   const date    = document.getElementById("leaveDate").value;
   const type    = document.getElementById("leaveType").value;
@@ -314,7 +315,11 @@ async function submitLeave(){
   btn.textContent = "⏳ Submitting...";
 
   try {
-    const res  = await fetch(API+"/leave/request",{
+    // ✅ FIXED: AbortController for timeout
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    
+    const res = await fetch(API+"/leave/request",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
@@ -324,9 +329,23 @@ async function submitLeave(){
         reason,
         subject,
         leaveLetterText: generatedLetter
-      })
+      }),
+      signal: controller.signal
     });
-    const data = await res.json();
+    
+    clearTimeout(timeout);
+
+    // ✅ FIXED: Read raw text first, then parse safely
+    const rawText = await res.text();
+    let data;
+    
+    try {
+      data = JSON.parse(rawText);
+    } catch(parseErr) {
+      console.error("Server returned non-JSON:", rawText);
+      throw new Error("Invalid response from server (Status: " + res.status + ")");
+    }
+
     btn.disabled = false;
     btn.textContent = "📤 Submit Leave Request";
 
@@ -346,13 +365,22 @@ async function submitLeave(){
       document.getElementById("routingBox").style.display= "none";
       document.getElementById("subjectGrp").style.display= "none";
       generatedLetter = "";
+      
     } else {
       alert("❌ "+data.message);
     }
+    
   } catch(err){
     btn.disabled = false;
     btn.textContent = "📤 Submit Leave Request";
-    alert("❌ Network error. Please try again.");
+    console.error("Leave submit error:", err);
+    
+    // ✅ FIXED: Specific error messages
+    if(err.name === "AbortError"){
+      alert("❌ Request timed out. Please check your connection and try again.");
+    } else {
+      alert("❌ Network error. Please try again.\n\nDetails: " + err.message);
+    }
   }
 }
 
