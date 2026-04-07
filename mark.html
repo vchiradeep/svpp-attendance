@@ -324,7 +324,16 @@ async function submitAttendance(){
       body:JSON.stringify({date,subject:selSub,section,data:payload,unlockId:unlockId||null})
     });
 
-    const result=await res.json();
+     if (!res.ok) {
+    throw new Error("Server error: " + res.status);
+  }
+
+  let result;
+  try {
+    result = await res.json();
+  } catch (e) {
+    throw new Error("Invalid JSON response from server");
+  }
     btn.disabled=false;
     btn.textContent="📤 Submit Attendance";
 
