@@ -4,107 +4,180 @@
 <title>Leave Request — SVPCET</title>
 <link rel="stylesheet" href="style.css">
 <style>
-  body { background:linear-gradient(160deg,#ecfdf5,#d1fae5,#f0fdf4); min-height:100vh; font-family:'Plus Jakarta Sans',sans-serif; }
-  .page-header { background:#059669; color:white; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-  .page-header h2 { font-size:17px; font-weight:800; margin:0; }
-  .back-btn { padding:8px 16px; background:rgba(255,255,255,0.2); border:none; border-radius:8px; color:white; font-weight:700; font-size:13px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none; display:inline-block; }
+  body{background:linear-gradient(160deg,#ecfdf5,#d1fae5,#f0fdf4);min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;}
+  .top-nav{background:#059669;color:white;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .top-nav h2{font-size:17px;font-weight:800;margin:0;}
+  .back-btn{padding:8px 16px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;color:white;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;display:inline-block;}
+  .page{max-width:720px;margin:0 auto;padding:22px 16px 60px;}
 
-  .container { max-width:700px; margin:0 auto; padding:24px 16px 50px; }
+  /* STEP TABS */
+  .step-tabs{display:flex;gap:0;margin-bottom:24px;background:white;border-radius:14px;padding:6px;box-shadow:0 2px 12px rgba(0,0,0,0.07);}
+  .step-tab{flex:1;padding:11px;text-align:center;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.25s;background:transparent;color:#64748b;}
+  .step-tab.active{background:linear-gradient(135deg,#059669,#10b981);color:white;box-shadow:0 4px 14px rgba(5,150,105,0.3);}
 
-  .form-card { background:white; border-radius:18px; padding:28px; box-shadow:0 4px 24px rgba(5,150,105,0.12); margin-bottom:24px; border-top:4px solid #059669; }
-  .form-card h3 { font-size:17px; font-weight:800; color:#064e3b; margin-bottom:18px; }
-  .input-label { display:block; font-size:12px; font-weight:700; color:#065f46; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
-  .input-group { margin-bottom:16px; }
-  input, select, textarea { width:100%; padding:12px 15px; border:2px solid #d1fae5; border-radius:11px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; color:#1e293b; background:#f0fdf4; outline:none; transition:0.25s; }
-  input:focus, select:focus, textarea:focus { border-color:#059669; background:white; box-shadow:0 0 0 4px rgba(5,150,105,0.1); }
-  textarea { resize:vertical; min-height:90px; }
-  .submit-btn { width:100%; padding:14px; background:linear-gradient(135deg,#059669,#10b981); color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; transition:0.25s; }
-  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(5,150,105,0.35); }
+  /* CARDS */
+  .card{background:white;border-radius:18px;padding:26px;margin-bottom:20px;box-shadow:0 4px 20px rgba(5,150,105,0.10);}
+  .card-title{font-size:17px;font-weight:800;color:#064e3b;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+  .card-sub{font-size:13px;color:#64748b;margin-bottom:20px;}
 
-  /* REQUEST LIST */
-  .request-card { background:white; border-radius:14px; padding:18px 20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); margin-bottom:12px; border-left:4px solid #e2e8f0; }
-  .request-card.pending  { border-left-color:#f59e0b; }
-  .request-card.approved { border-left-color:#059669; }
-  .request-card.rejected { border-left-color:#ef4444; }
-  .req-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px; }
-  .req-date   { font-size:14px; font-weight:700; color:#1e293b; }
-  .req-reason { font-size:13px; color:#64748b; margin-bottom:6px; }
-  .req-subject{ font-size:12px; color:#94a3b8; }
-  .req-remarks{ font-size:13px; font-weight:600; margin-top:8px; padding:8px 12px; border-radius:8px; }
-  .req-remarks.approved { color:#059669; background:#f0fdf4; }
-  .req-remarks.rejected { color:#ef4444; background:#fef2f2; }
-  .status-pill { font-size:11px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase; }
-  .pill-pending  { background:#fef3c7; color:#92400e; }
-  .pill-approved { background:#dcfce7; color:#166534; }
-  .pill-rejected { background:#fee2e2; color:#991b1b; }
-  .empty { text-align:center; padding:40px; color:#94a3b8; font-size:14px; }
+  /* FORM */
+  .lbl{display:block;font-size:12px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+  .grp{margin-bottom:16px;}
+  input,select,textarea{width:100%;padding:12px 15px;border:2px solid #d1fae5;border-radius:11px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:#1e293b;background:#f0fdf4;outline:none;transition:0.25s;}
+  input:focus,select:focus,textarea:focus{border-color:#059669;background:white;box-shadow:0 0 0 4px rgba(5,150,105,0.1);}
+  textarea{resize:vertical;min-height:80px;}
 
-  /* SUCCESS POPUP */
-  .popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; display:none; align-items:center; justify-content:center; }
-  .popup-overlay.show { display:flex; }
-  .popup-box { background:white; border-radius:20px; padding:36px 32px; text-align:center; max-width:320px; width:90%; animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
-  @keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
-  .popup-icon  { font-size:52px; margin-bottom:14px; }
-  .popup-title { font-size:20px; font-weight:800; color:#064e3b; margin-bottom:8px; }
-  .popup-msg   { font-size:14px; color:#64748b; line-height:1.5; margin-bottom:20px; }
-  .popup-btn   { padding:12px 28px; background:#059669; color:white; border:none; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; }
+  /* ROUTING INDICATOR */
+  .routing-box{border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:600;display:none;}
+  .routing-box.teacher{background:#eff6ff;border:2px solid #3b82f6;color:#1e40af;}
+  .routing-box.admin  {background:#fdf4ff;border:2px solid #a855f7;color:#6b21a8;}
+
+  /* LEAVE LETTER PREVIEW */
+  .letter-preview{background:#fafafa;border:2px solid #e2e8f0;border-radius:12px;padding:20px 24px;margin-bottom:16px;font-size:14px;line-height:1.8;color:#374151;font-family:Georgia,serif;display:none;white-space:pre-wrap;}
+  .letter-preview.show{display:block;}
+
+  /* BUTTONS */
+  .gen-btn{width:100%;padding:13px;background:linear-gradient(135deg,#1a56db,#3b82f6);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:0.25s;margin-bottom:12px;}
+  .gen-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,86,219,0.3);}
+  .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#059669,#10b981);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:0.25s;}
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(5,150,105,0.35);}
+  .submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+  /* HISTORY */
+  .req-card{border-radius:14px;padding:18px 20px;margin-bottom:12px;border-left:4px solid #e2e8f0;background:white;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+  .req-card.pending {border-left-color:#f59e0b;}
+  .req-card.approved{border-left-color:#059669;}
+  .req-card.rejected{border-left-color:#ef4444;}
+  .req-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+  .req-title{font-size:14px;font-weight:700;color:#1e293b;}
+  .req-meta{font-size:12px;color:#94a3b8;margin-bottom:6px;}
+  .req-reason{font-size:13px;color:#64748b;margin-bottom:8px;}
+  .req-letter-btn{font-size:12px;color:#1a56db;border:none;background:none;cursor:pointer;font-weight:600;padding:0;font-family:'Plus Jakarta Sans',sans-serif;}
+  .req-letter-box{display:none;background:#f8fafc;border-radius:8px;padding:14px;font-size:13px;line-height:1.7;color:#374151;margin-top:10px;font-family:Georgia,serif;white-space:pre-wrap;border:1px solid #e2e8f0;}
+  .req-remarks{font-size:13px;font-weight:600;margin-top:8px;padding:8px 12px;border-radius:8px;}
+  .req-remarks.approved{color:#059669;background:#f0fdf4;}
+  .req-remarks.rejected{color:#ef4444;background:#fef2f2;}
+  .pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;}
+  .pill.pending {background:#fef3c7;color:#92400e;}
+  .pill.approved{background:#dcfce7;color:#166534;}
+  .pill.rejected{background:#fee2e2;color:#991b1b;}
+  .routed-to{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;margin-left:6px;}
+  .routed-to.teacher{background:#eff6ff;color:#1e40af;}
+  .routed-to.admin  {background:#fdf4ff;color:#6b21a8;}
+
+  /* POPUP */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:none;align-items:center;justify-content:center;}
+  .overlay.show{display:flex;}
+  .popup{background:white;border-radius:22px;padding:38px 34px;text-align:center;max-width:360px;width:90%;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+  @keyframes popIn{from{opacity:0;transform:scale(0.65)}to{opacity:1;transform:scale(1)}}
+  .pop-icon{font-size:54px;margin-bottom:12px;}
+  .pop-title{font-size:21px;font-weight:800;color:#064e3b;margin-bottom:8px;}
+  .pop-msg{font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.5;}
+  .pop-btn{padding:12px 30px;background:#059669;color:white;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+  .empty{text-align:center;padding:40px;color:#94a3b8;font-size:14px;}
+  .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-btn{padding:8px 16px;border-radius:8px;border:2px solid #d1fae5;background:white;color:#64748b;font-weight:700;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:0.2s;}
+  .filter-btn.active{background:#059669;color:white;border-color:#059669;}
 </style>
 </head>
 <body>
 
-<div class="page-header">
+<div class="top-nav">
   <h2>📋 Leave Request</h2>
   <a href="studenthome.html" class="back-btn">← Back to Dashboard</a>
 </div>
 
-<div class="container">
+<div class="page">
 
-  <!-- SUBMIT FORM -->
-  <div class="form-card">
-    <h3>📝 Submit New Leave Request</h3>
-
-    <div class="input-group">
-      <label class="input-label">Date of Leave</label>
-      <input type="date" id="leaveDate">
-    </div>
-
-    <div class="input-group">
-      <label class="input-label">Subject (Optional — blank = Full Day)</label>
-      <select id="leaveSubject">
-        <option value="">Full Day Leave</option>
-        <option value="PHY">Physics</option>
-        <option value="BEEE">Electrical (BEEE)</option>
-        <option value="ECE">Electronics (BEEE)</option>
-        <option value="DS">Data Structures</option>
-        <option value="DEVC">DE&amp;VC</option>
-        <option value="EG LAB">Engineering Graphics</option>
-        <option value="IT WORKSHOP">IT Workshop</option>
-      </select>
-    </div>
-
-    <div class="input-group">
-      <label class="input-label">Reason for Leave</label>
-      <textarea id="leaveReason" placeholder="Explain your reason (medical, family, event, etc.)..."></textarea>
-    </div>
-
-    <button class="submit-btn" onclick="submitLeave()">📤 Submit Leave Request</button>
+  <!-- TABS -->
+  <div class="step-tabs">
+    <button class="step-tab active" id="tab-new"     onclick="switchTab('new')">📝 New Request</button>
+    <button class="step-tab"        id="tab-history" onclick="switchTab('history')">📋 My History</button>
   </div>
 
-  <!-- MY REQUESTS -->
-  <div class="form-card" style="border-top-color:#3b82f6;">
-    <h3>📋 My Leave Requests</h3>
-    <div id="myRequests"><div class="empty">Loading your requests...</div></div>
+  <!-- ===== NEW REQUEST TAB ===== -->
+  <div id="newTab">
+    <div class="card">
+      <div class="card-title">📝 Submit Leave Request</div>
+      <div class="card-sub">Fill in details — your leave letter will be auto-generated and sent to the right person.</div>
+
+      <div class="grp">
+        <label class="lbl">Date of Leave</label>
+        <input type="date" id="leaveDate" oninput="onFormChange()">
+      </div>
+
+      <div class="grp">
+        <label class="lbl">Leave Type</label>
+        <select id="leaveType" onchange="onLeaveTypeChange()">
+          <option value="">— Select Leave Type —</option>
+          <option value="subject">📘 Single Subject Leave (goes to Teacher)</option>
+          <option value="fullday">📅 Full Day Leave (goes to Admin)</option>
+        </select>
+      </div>
+
+      <!-- Shown only if subject leave -->
+      <div class="grp" id="subjectGrp" style="display:none;">
+        <label class="lbl">Subject</label>
+        <select id="leaveSubject" onchange="onFormChange()">
+          <option value="">— Select Subject —</option>
+          <option value="PHY">Physics</option>
+          <option value="BEEE">Electrical (BEEE)</option>
+          <option value="ECE">Electronics (BEEE)</option>
+          <option value="DS">Data Structures</option>
+          <option value="DEVC">DE&amp;VC</option>
+          <option value="EG LAB">Engineering Graphics</option>
+          <option value="IT WORKSHOP">IT Workshop</option>
+        </select>
+      </div>
+
+      <!-- Routing indicator -->
+      <div class="routing-box" id="routingBox"></div>
+
+      <div class="grp">
+        <label class="lbl">Reason for Leave</label>
+        <textarea id="leaveReason" placeholder="Brief reason (e.g. Medical appointment, family function, fever...)" oninput="onFormChange()"></textarea>
+      </div>
+
+      <!-- Generate Letter Button -->
+      <button class="gen-btn" id="genBtn" onclick="generateLetter()" style="display:none;">
+        ✨ Generate Leave Letter
+      </button>
+
+      <!-- Letter Preview -->
+      <div id="letterPreview" class="letter-preview"></div>
+
+      <!-- Submit -->
+      <button class="submit-btn" id="submitBtn" onclick="submitLeave()" style="display:none;">
+        📤 Submit Leave Request
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY TAB ===== -->
+  <div id="historyTab" style="display:none;">
+    <div class="card">
+      <div class="card-title">📋 My Leave History</div>
+      <div class="card-sub">Track all your leave requests and their status</div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterHistory('All',this)">All</button>
+        <button class="filter-btn" onclick="filterHistory('Pending',this)">⏳ Pending</button>
+        <button class="filter-btn" onclick="filterHistory('Approved',this)">✅ Approved</button>
+        <button class="filter-btn" onclick="filterHistory('Rejected',this)">❌ Rejected</button>
+      </div>
+      <div id="historyList"><div class="empty">Loading...</div></div>
+    </div>
   </div>
 
 </div>
 
 <!-- SUCCESS POPUP -->
-<div class="popup-overlay" id="successPopup">
-  <div class="popup-box">
-    <div class="popup-icon">📋</div>
-    <div class="popup-title">Request Submitted!</div>
-    <div class="popup-msg">Your leave request has been sent. Your teacher will review it shortly.</div>
-    <button class="popup-btn" onclick="document.getElementById('successPopup').classList.remove('show')">OK</button>
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="pop-icon">📋</div>
+    <div class="pop-title">Request Submitted!</div>
+    <div class="pop-msg" id="popMsg"></div>
+    <button class="pop-btn" onclick="document.getElementById('overlay').classList.remove('show');switchTab('history');">View History</button>
   </div>
 </div>
 
@@ -112,94 +185,242 @@
 const API     = window.location.origin;
 const roll    = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
+if(!roll||!section){alert("Please login first");window.location.href="student.html";}
 
-if(!roll || !section){ alert("Please login first"); window.location.href="student.html"; }
-
-const subjectLabels = {
+const subjectLabels={
   "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
-  "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"EG Lab","IT WORKSHOP":"IT Workshop"
+  "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop"
 };
 
-// Set today as default date
-const today = new Date().toISOString().split("T")[0];
-document.getElementById("leaveDate").value = today;
+let generatedLetter = "";
+let allRequests     = [];
 
-async function submitLeave(){
+// Set today as default date
+document.getElementById("leaveDate").value = new Date().toISOString().split("T")[0];
+
+// ===== TABS =====
+function switchTab(tab){
+  document.getElementById("newTab").style.display     = tab==="new"?"block":"none";
+  document.getElementById("historyTab").style.display = tab==="history"?"block":"none";
+  document.getElementById("tab-new").classList.toggle("active",     tab==="new");
+  document.getElementById("tab-history").classList.toggle("active", tab==="history");
+  if(tab==="history") loadHistory();
+}
+
+// ===== FORM LOGIC =====
+function onLeaveTypeChange(){
+  const type    = document.getElementById("leaveType").value;
+  const subGrp  = document.getElementById("subjectGrp");
+  const routeEl = document.getElementById("routingBox");
+  const genBtn  = document.getElementById("genBtn");
+  const subBtn  = document.getElementById("submitBtn");
+
+  subGrp.style.display = type==="subject" ? "block" : "none";
+  generatedLetter = "";
+  document.getElementById("letterPreview").className = "letter-preview";
+  document.getElementById("letterPreview").textContent = "";
+  genBtn.style.display  = "none";
+  subBtn.style.display  = "none";
+  routeEl.style.display = "none";
+
+  if(type==="subject"){
+    routeEl.className   = "routing-box teacher";
+    routeEl.innerHTML   = "📘 <b>Subject Leave</b> — This request will be sent to the <b>respective subject teacher</b> for approval.";
+    routeEl.style.display="block";
+  } else if(type==="fullday"){
+    routeEl.className   = "routing-box admin";
+    routeEl.innerHTML   = "🛡️ <b>Full Day Leave</b> — This request will be sent to the <b>Admin</b> for approval.";
+    routeEl.style.display="block";
+  }
+  onFormChange();
+}
+
+function onFormChange(){
   const date    = document.getElementById("leaveDate").value;
+  const type    = document.getElementById("leaveType").value;
   const subject = document.getElementById("leaveSubject").value;
   const reason  = document.getElementById("leaveReason").value.trim();
 
-  if(!date)  { alert("⚠️ Please select a date");        return; }
-  if(!reason){ alert("⚠️ Please enter a reason");       return; }
+  const canGenerate =
+    date && type && reason.length >= 5 &&
+    (type==="fullday" || (type==="subject" && subject));
 
-  showLoader();
+  document.getElementById("genBtn").style.display  = canGenerate ? "block" : "none";
+  document.getElementById("submitBtn").style.display = "none"; // hide until letter generated
+}
+
+// ===== AUTO-GENERATE LETTER =====
+function generateLetter(){
+  const date     = document.getElementById("leaveDate").value;
+  const type     = document.getElementById("leaveType").value;
+  const subject  = document.getElementById("leaveSubject").value;
+  const reason   = document.getElementById("leaveReason").value.trim();
+
+  if(!date||!type||!reason){ alert("Please fill all fields first"); return; }
+  if(type==="subject"&&!subject){ alert("Please select a subject"); return; }
+
+  const dateObj  = new Date(date+"T12:00:00");
+  const dayName  = dateObj.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const subLabel = subject ? (subjectLabels[subject]||subject) : "";
+  const to       = type==="fullday" ? "The Principal / Admin\nSVPCET, Puttur" : `The ${subLabel} Faculty\nSVPCET, Puttur`;
+  const subject2 = type==="fullday"
+    ? "Request for Full Day Leave"
+    : `Request for Leave from ${subLabel} Class`;
+
+  generatedLetter =
+`To,
+${to}
+
+Subject: ${subject2}
+
+Respected Sir/Madam,
+
+I, ${roll}, a student of ${section}, am writing to respectfully request leave ${type==="subject"?`from the ${subLabel} class`:"for the full day"} on ${dayName}.
+
+The reason for my absence is: ${reason}.
+
+I assure you that I will cover all missed coursework and assignments upon my return. I kindly request you to consider my leave application and grant permission for the same.
+
+I shall be grateful for your kind consideration.
+
+Thanking you,
+Yours obediently,
+
+${roll}
+${section}
+SVPCET, Puttur
+Date: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}`;
+
+  const preview = document.getElementById("letterPreview");
+  preview.textContent  = generatedLetter;
+  preview.className    = "letter-preview show";
+  document.getElementById("submitBtn").style.display = "block";
+
+  // Scroll to preview
+  preview.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+// ===== SUBMIT =====
+async function submitLeave(){
+  const date    = document.getElementById("leaveDate").value;
+  const type    = document.getElementById("leaveType").value;
+  const subject = type==="subject" ? document.getElementById("leaveSubject").value : null;
+  const reason  = document.getElementById("leaveReason").value.trim();
+
+  if(!generatedLetter){ alert("Please generate the leave letter first."); return; }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Submitting...";
 
   try {
-    const res  = await fetch(API + "/leave/request", {
-      method:  "POST",
-      headers: {"Content-Type":"application/json"},
-      body:    JSON.stringify({ studentName:roll, section, date, reason, subject:subject||null })
+    const res  = await fetch(API+"/leave/request",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        studentName: roll,
+        section,
+        date,
+        reason,
+        subject,
+        leaveLetterText: generatedLetter
+      })
     });
     const data = await res.json();
-    hideLoader();
+    btn.disabled = false;
+    btn.textContent = "📤 Submit Leave Request";
 
     if(data.success){
+      const routedTo = subject ? `The ${subjectLabels[subject]||subject} teacher` : "The Admin";
+      document.getElementById("popMsg").innerHTML =
+        `Your leave request has been sent to <b>${routedTo}</b>.<br>You'll be notified once it's reviewed.`;
+      document.getElementById("overlay").classList.add("show");
+
+      // Reset form
+      document.getElementById("leaveType").value = "";
       document.getElementById("leaveReason").value = "";
-      document.getElementById("successPopup").classList.add("show");
-      // Refresh list
-      historyLoaded = false;
-      loadMyRequests();
+      document.getElementById("leaveSubject").value = "";
+      document.getElementById("letterPreview").className = "letter-preview";
+      document.getElementById("genBtn").style.display    = "none";
+      document.getElementById("submitBtn").style.display = "none";
+      document.getElementById("routingBox").style.display= "none";
+      document.getElementById("subjectGrp").style.display= "none";
+      generatedLetter = "";
     } else {
-      alert("❌ " + (data.message || "Failed to submit request"));
+      alert("❌ "+data.message);
     }
   } catch(err){
-    hideLoader();
-    alert("❌ Network error. Please check your connection.");
+    btn.disabled = false;
+    btn.textContent = "📤 Submit Leave Request";
+    alert("❌ Network error. Please try again.");
   }
 }
 
-let historyLoaded = false;
+// ===== HISTORY =====
+let currentFilter = "All";
 
-async function loadMyRequests(){
-  if(historyLoaded) return;
-  const box = document.getElementById("myRequests");
+async function loadHistory(){
+  const box = document.getElementById("historyList");
+  box.innerHTML = `<div class="empty">Loading...</div>`;
 
   try {
-    const res  = await fetch(API + "/leave/student/" + roll);
+    const res  = await fetch(API+"/leave/student/"+encodeURIComponent(roll));
     const data = await res.json();
-    historyLoaded = true;
-
-    if(!data.success || !data.requests || data.requests.length === 0){
-      box.innerHTML = `<div class="empty">No leave requests yet. Submit your first one above!</div>`;
-      return;
-    }
-
-    box.innerHTML = data.requests.map(r => {
-      const date     = new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
-      const status   = r.status.toLowerCase();
-      const pillCls  = status==="pending"?"pill-pending":status==="approved"?"pill-approved":"pill-rejected";
-      const subLabel = r.subject ? (subjectLabels[r.subject]||r.subject) : "Full Day";
-
-      return `<div class="request-card ${status}">
-        <div class="req-header">
-          <div class="req-date">📅 ${date}</div>
-          <span class="status-pill ${pillCls}">${r.status}</span>
-        </div>
-        <div class="req-reason">💬 ${r.reason}</div>
-        <div class="req-subject">📘 ${subLabel}</div>
-        ${r.remarks
-          ? `<div class="req-remarks ${status}">${status==="approved"?"✅":"❌"} Teacher's Note: ${r.remarks}</div>`
-          : status==="pending" ? `<div style="font-size:12px;color:#94a3b8;margin-top:8px;">⏳ Awaiting teacher review...</div>` : ""}
-        ${r.reviewedAt ? `<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Reviewed: ${new Date(r.reviewedAt).toLocaleString()}</div>` : ""}
-      </div>`;
-    }).join("");
-
+    allRequests = data.requests || [];
+    renderHistory();
   } catch(err){
-    box.innerHTML = `<div class="empty" style="color:#ef4444;">Failed to load requests. Please refresh.</div>`;
+    box.innerHTML = `<div class="empty" style="color:#ef4444;">Failed to load. Please refresh.</div>`;
   }
 }
 
-loadMyRequests();
+function filterHistory(status, btn){
+  currentFilter = status;
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderHistory();
+}
+
+function renderHistory(){
+  const box  = document.getElementById("historyList");
+  const list = currentFilter==="All" ? allRequests : allRequests.filter(r=>r.status===currentFilter);
+
+  if(!list.length){
+    box.innerHTML = `<div class="empty">${currentFilter==="All"?"No leave requests yet. Submit your first one!":"No "+currentFilter.toLowerCase()+" requests."}</div>`;
+    return;
+  }
+
+  box.innerHTML = list.map((r,i) => {
+    const date     = new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+    const status   = r.status.toLowerCase();
+    const pillCls  = status;
+    const subLabel = r.subject ? (subjectLabels[r.subject]||r.subject) : "Full Day";
+    const routedTo = r.subject ? "Teacher" : "Admin";
+    const routeCls = r.subject ? "teacher" : "admin";
+
+    return `<div class="req-card ${status}">
+      <div class="req-header">
+        <div class="req-title">
+          📅 ${date}
+          <span class="routed-to ${routeCls}">→ ${routedTo}</span>
+        </div>
+        <span class="pill ${pillCls}">${r.status}</span>
+      </div>
+      <div class="req-meta">📘 ${subLabel} &nbsp;·&nbsp; Submitted: ${new Date(r.createdAt).toLocaleDateString()}</div>
+      <div class="req-reason">💬 ${r.reason}</div>
+      ${r.leaveLetterText ? `
+        <button class="req-letter-btn" onclick="toggleLetter(${i})">📄 View Leave Letter</button>
+        <div class="req-letter-box" id="letter_${i}">${r.leaveLetterText}</div>
+      ` : ""}
+      ${r.remarks ? `<div class="req-remarks ${status}">${status==="approved"?"✅":"❌"} ${routedTo}'s Note: ${r.remarks}</div>` : ""}
+      ${r.reviewedAt ? `<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Reviewed: ${new Date(r.reviewedAt).toLocaleString()}</div>` : status==="pending"?`<div style="font-size:12px;color:#94a3b8;margin-top:6px;">⏳ Awaiting review...</div>`:""}
+    </div>`;
+  }).join("");
+}
+
+function toggleLetter(i){
+  const box = document.getElementById("letter_"+i);
+  box.style.display = box.style.display==="block" ? "none" : "block";
+}
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
