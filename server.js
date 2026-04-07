@@ -158,40 +158,99 @@ app.post("/submit-attendance", async (req, res) => {
 
     // ✅ Validate all required fields upfront
     if (!date || !subject || !data || !section) {
-      return res.status(400).json({ success:false, message:"Missing required fields" });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Missing required fields" 
+      });
+    }
+
+    // ✅ Validate data is an object
+    if (typeof data !== "object" || Array.isArray(data)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid attendance data format" 
+      });
     }
 
     // ✅ Parse date safely
     const dateObj = new Date(date + "T00:00:00.000Z");
     if (isNaN(dateObj.getTime())) {
-      return res.status(400).json({ success:false, message:"Invalid date: " + date });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid date: " + date 
+      });
     }
 
-    const startOfDay = new Date(dateObj);
-    const endOfDay   = new Date(dateObj.getTime() + 86400000);
+    const startOfDay  = new Date(dateObj);
+    const endOfDay    = new Date(dateObj.getTime() + 86400000);
     const performedBy = "teacher:" + subject;
-    let markedCount = 0;
+    let markedCount   = 0;
 
     for (const student of Object.keys(data)) {
       if (!data[student]) continue;
-      const existing = await Attendance.findOne({ studentName:student, subject, date:{ $gte:startOfDay, $lt:endOfDay } });
+      
+      const existing = await Attendance.findOne({ 
+        studentName: student, 
+        subject, 
+        date: { $gte: startOfDay, $lt: endOfDay } 
+      });
+      
       const oldStatus = existing?.status;
+      
       await Attendance.findOneAndUpdate(
-        { studentName:student, subject, date:{ $gte:startOfDay, $lt:endOfDay } },
-        { studentName:student, subject, date:startOfDay, section, status:data[student], updatedAt:new Date(), autoMarked:false },
-        { upsert:true, new:true }
+        { 
+          studentName: student, 
+          subject, 
+          date: { $gte: startOfDay, $lt: endOfDay } 
+        },
+        { 
+          studentName: student, 
+          subject, 
+          date:      startOfDay, 
+          section, 
+          status:    data[student], 
+          updatedAt: new Date(), 
+          autoMarked: false 
+        },
+        { upsert: true, new: true }
       );
-      await writeAudit({ action:oldStatus?"EDITED":"MARKED", performedBy, studentName:student, subject, section, date:startOfDay, oldStatus, newStatus:data[student], req });
+      
+      await writeAudit({ 
+        action:      oldStatus ? "EDITED" : "MARKED", 
+        performedBy, 
+        studentName: student, 
+        subject, 
+        section, 
+        date:        startOfDay, 
+        oldStatus, 
+        newStatus:   data[student], 
+        req 
+      });
+      
       markedCount++;
     }
 
-    if (unlockId) await UnlockRequest.findByIdAndUpdate(unlockId, { used:true, usedAt:new Date() });
+    if (unlockId) {
+      await UnlockRequest.findByIdAndUpdate(unlockId, { 
+        used:   true, 
+        usedAt: new Date() 
+      });
+    }
+
     console.log(`✅ Submitted: ${markedCount} records for ${subject} ${section} on ${date}`);
-    res.json({ success:true, markedCount });
+    
+    // ✅ FIXED: Explicit return with proper JSON
+    return res.status(200).json({ 
+      success:     true, 
+      markedCount: markedCount 
+    });
 
   } catch (err) {
     console.error("❌ submit-attendance error:", err.message);
-    res.status(500).json({ success:false, message:err.message || "Server error saving attendance" });
+    return res.status(500).json({ 
+      success: false, 
+      message: err.message || "Server error saving attendance" 
+    });
   }
 });
 
