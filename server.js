@@ -88,7 +88,6 @@ const timetable = {
   Friday:    ["DEVC","EG LAB","EG LAB","EG LAB","PHY","DEVC","DS"]
 };
 
-// Subject → which main teacher is responsible
 const subjectOwner = {
   "PHY":"PHY","PHY LAB":"PHY",
   "BEEE":"BEEE","EEE LAB":"BEEE",
@@ -152,106 +151,90 @@ cron.schedule("31 18 * * *",()=>autoMarkNotMarked());
 
 // ===================== ATTENDANCE ROUTES =====================
 
+// ✅ FIX 1: submit-attendance
+// BUG WAS: findOneAndUpdate used { date: {$gte, $lt} } as filter with upsert:true
+// MongoDB cannot use a range operator as the stored value when inserting a new doc → crashes with empty response
+// FIX: find first, then update or create separately — no range in upsert filter
 app.post("/submit-attendance", async (req, res) => {
   try {
     const { date, subject, data, section, unlockId } = req.body;
 
-    // ✅ Validate all required fields upfront
     if (!date || !subject || !data || !section) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Missing required fields" 
-      });
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
 
-    // ✅ Validate data is an object
     if (typeof data !== "object" || Array.isArray(data)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid attendance data format" 
-      });
+      return res.status(400).json({ success: false, message: "Invalid attendance data format" });
     }
 
-    // ✅ Parse date safely
     const dateObj = new Date(date + "T00:00:00.000Z");
     if (isNaN(dateObj.getTime())) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid date: " + date 
-      });
+      return res.status(400).json({ success: false, message: "Invalid date: " + date });
     }
 
-    const startOfDay  = new Date(dateObj);
-    const endOfDay    = new Date(dateObj.getTime() + 86400000);
+    const startOfDay = new Date(dateObj);
+    const endOfDay   = new Date(dateObj.getTime() + 86400000);
     const performedBy = "teacher:" + subject;
-    let markedCount   = 0;
+    let markedCount = 0;
 
     for (const student of Object.keys(data)) {
       if (!data[student]) continue;
-      
-      const existing = await Attendance.findOne({ 
-        studentName: student, 
-        subject, 
-        date: { $gte: startOfDay, $lt: endOfDay } 
+
+      // Step 1: find existing record using range (safe — read only)
+      const existing = await Attendance.findOne({
+        studentName: student,
+        subject,
+        date: { $gte: startOfDay, $lt: endOfDay }
       });
-      
-      const oldStatus = existing?.status;
-      
-      await Attendance.findOneAndUpdate(
-        { 
-          studentName: student, 
-          subject, 
-          date: { $gte: startOfDay, $lt: endOfDay } 
-        },
-        { 
-          studentName: student, 
-          subject, 
-          date:      startOfDay, 
-          section, 
-          status:    data[student], 
-          updatedAt: new Date(), 
-          autoMarked: false 
-        },
-        { upsert: true, new: true }
-      );
-      
-      await writeAudit({ 
-        action:      oldStatus ? "EDITED" : "MARKED", 
-        performedBy, 
-        studentName: student, 
-        subject, 
-        section, 
-        date:        startOfDay, 
-        oldStatus, 
-        newStatus:   data[student], 
-        req 
+
+      const oldStatus = existing ? existing.status : null;
+
+      if (existing) {
+        // Step 2a: record exists → just update it by _id (no range in filter)
+        await Attendance.findByIdAndUpdate(existing._id, {
+          status:     data[student],
+          section,
+          updatedAt:  new Date(),
+          autoMarked: false
+        });
+      } else {
+        // Step 2b: no record → create new one with exact startOfDay date
+        await Attendance.create({
+          studentName: student,
+          subject,
+          date:        startOfDay,
+          section,
+          status:      data[student],
+          updatedAt:   new Date(),
+          autoMarked:  false
+        });
+      }
+
+      await writeAudit({
+        action:      oldStatus ? "EDITED" : "MARKED",
+        performedBy,
+        studentName: student,
+        subject,
+        section,
+        date:        startOfDay,
+        oldStatus,
+        newStatus:   data[student],
+        req
       });
-      
+
       markedCount++;
     }
 
     if (unlockId) {
-      await UnlockRequest.findByIdAndUpdate(unlockId, { 
-        used:   true, 
-        usedAt: new Date() 
-      });
+      await UnlockRequest.findByIdAndUpdate(unlockId, { used: true, usedAt: new Date() });
     }
 
     console.log(`✅ Submitted: ${markedCount} records for ${subject} ${section} on ${date}`);
-    
-    // ✅ FIXED: Explicit return with proper JSON
-    return res.status(200).json({ 
-      success:     true, 
-      markedCount: markedCount 
-    });
+    return res.status(200).json({ success: true, markedCount });
 
   } catch (err) {
     console.error("❌ submit-attendance error:", err.message);
-    res.status(500).json({ 
-      success: false, 
-      message: err.message || "Server error saving attendance" 
-    });
-    return;
+    return res.status(500).json({ success: false, message: err.message || "Server error saving attendance" });
   }
 });
 
@@ -357,8 +340,9 @@ app.get("/audit-log", async (req, res) => {
 
 // ===================== LEAVE REQUESTS =====================
 
-// Student submits leave request
-// subject = specific subject (goes to teacher) | null = full day (goes to admin)
+// ✅ FIX 2: /leave/request
+// BUG WAS: same range-in-upsert issue in the duplicate check query with null subject
+// FIX: find first using range (read), then create separately (no upsert with range)
 app.post("/leave/request", async (req, res) => {
   try {
     const { studentName, section, date, reason, subject, leaveLetterText } = req.body;
@@ -366,25 +350,30 @@ app.post("/leave/request", async (req, res) => {
     if (!studentName || !section || !date || !reason)
       return res.json({ success:false, message:"All fields required (studentName, section, date, reason)" });
 
-    // Parse date safely
     const dateObj = new Date(date + "T00:00:00.000Z");
     if (isNaN(dateObj.getTime()))
       return res.json({ success:false, message:"Invalid date format" });
 
-    // Check duplicate
-        // Check duplicate
     const startOfDay = new Date(dateObj);
     const endOfDay   = new Date(dateObj.getTime() + 86400000);
-    const existing   = await LeaveRequest.findOne({
+
+    // Check duplicate — read-only range query (safe)
+    const dupFilter = {
       studentName,
-      date:    { $gte:startOfDay, $lt:endOfDay },
-      // ✅ FIXED: Handle null subject correctly
-      subject: subject ? subject : { $in: [null, undefined] }
-    });
+      date: { $gte: startOfDay, $lt: endOfDay }
+    };
+    if (subject) {
+      dupFilter.subject = subject;
+    } else {
+      dupFilter.subject = null;
+    }
+    const existing = await LeaveRequest.findOne(dupFilter);
     if (existing) return res.json({ success:false, message:"Leave already requested for this date and subject" });
 
+    // Create new record with exact date — no upsert, no range
     const lr = await LeaveRequest.create({
-      studentName, section,
+      studentName,
+      section,
       date:            startOfDay,
       reason,
       subject:         subject || null,
@@ -393,15 +382,14 @@ app.post("/leave/request", async (req, res) => {
     });
 
     await writeAudit({ action:"LEAVE_REQUESTED", performedBy:"student:"+studentName, studentName, subject:subject||"FULL_DAY", section, date:startOfDay, newStatus:"Pending" });
-    res.json({ success:true, message:"Leave request submitted successfully", id:lr._id });
+    return res.json({ success:true, message:"Leave request submitted successfully", id:lr._id });
 
   } catch (err) {
     console.error("❌ leave/request error:", err.message);
-    res.status(500).json({ success:false, message:err.message || "Server error creating leave request" });
+    return res.status(500).json({ success:false, message:err.message || "Server error creating leave request" });
   }
 });
 
-// Get leave requests for a specific student
 app.get("/leave/student/:roll", async (req, res) => {
   try {
     const requests = await LeaveRequest.find({ studentName:req.params.roll }).sort({ createdAt:-1 });
@@ -409,7 +397,6 @@ app.get("/leave/student/:roll", async (req, res) => {
   } catch (err) { res.status(500).json({ success:false, error:err.message }); }
 });
 
-// ✅ Teacher gets leave requests for THEIR specific subject
 app.get("/leave/teacher/:subject", async (req, res) => {
   try {
     const { subject } = req.params;
@@ -421,7 +408,6 @@ app.get("/leave/teacher/:subject", async (req, res) => {
   } catch (err) { res.status(500).json({ success:false, error:err.message }); }
 });
 
-// ✅ Admin gets ALL pending leave requests (full day ones where subject=null)
 app.get("/leave/pending", async (req, res) => {
   try {
     const { subject, all } = req.query;
@@ -433,7 +419,6 @@ app.get("/leave/pending", async (req, res) => {
   } catch (err) { res.status(500).json({ success:false, error:err.message }); }
 });
 
-// ✅ Admin gets only full-day leave requests (subject = null)
 app.get("/leave/admin/pending", async (req, res) => {
   try {
     const { all } = req.query;
@@ -444,7 +429,9 @@ app.get("/leave/admin/pending", async (req, res) => {
   } catch (err) { res.status(500).json({ success:false, error:err.message }); }
 });
 
-// Teacher or admin reviews a leave request
+// ✅ FIX 3: /leave/review
+// BUG WAS: same range-in-upsert issue when saving OnLeave status
+// FIX: find first, then update by _id or create separately
 app.post("/leave/review", async (req, res) => {
   try {
     const { id, status, reviewedBy, remarks } = req.body;
@@ -456,9 +443,8 @@ app.post("/leave/review", async (req, res) => {
     );
     if (!lr) return res.json({ success:false, message:"Request not found" });
 
-    // If approved → mark attendance as OnLeave (does NOT count as absent)
     if (status === "Approved") {
-      const leaveDate = new Date(lr.date);
+      const leaveDate  = new Date(lr.date);
       const startOfDay = new Date(leaveDate.getFullYear(), leaveDate.getMonth(), leaveDate.getDate());
       const endOfDay   = new Date(startOfDay.getTime() + 86400000);
 
@@ -467,20 +453,41 @@ app.post("/leave/review", async (req, res) => {
         : [...new Set(timetable[getDayName(leaveDate)] || [])];
 
       for (const sub of subjects) {
-        // ✅ OnLeave is now in the enum — this will work
-        await Attendance.findOneAndUpdate(
-          { studentName:lr.studentName, subject:sub, date:{ $gte:startOfDay, $lt:endOfDay } },
-          { studentName:lr.studentName, subject:sub, date:startOfDay, section:lr.section, status:"OnLeave", updatedAt:new Date(), autoMarked:false },
-          { upsert:true, new:true }
-        );
+        // Find first (read-only range query)
+        const existing = await Attendance.findOne({
+          studentName: lr.studentName,
+          subject:     sub,
+          date:        { $gte: startOfDay, $lt: endOfDay }
+        });
+
+        if (existing) {
+          // Update by _id — no range in filter
+          await Attendance.findByIdAndUpdate(existing._id, {
+            status:     "OnLeave",
+            section:    lr.section,
+            updatedAt:  new Date(),
+            autoMarked: false
+          });
+        } else {
+          // Create new — exact date, no range
+          await Attendance.create({
+            studentName: lr.studentName,
+            subject:     sub,
+            date:        startOfDay,
+            section:     lr.section,
+            status:      "OnLeave",
+            updatedAt:   new Date(),
+            autoMarked:  false
+          });
+        }
       }
       await writeAudit({ action:"LEAVE_APPROVED", performedBy:reviewedBy||"admin", studentName:lr.studentName, subject:lr.subject||"ALL", section:lr.section, date:startOfDay, newStatus:"OnLeave" });
     }
 
-    res.json({ success:true, message:`Leave ${status} successfully` });
+    return res.json({ success:true, message:`Leave ${status} successfully` });
   } catch (err) {
     console.error("❌ leave/review error:", err.message);
-    res.status(500).json({ success:false, message:err.message || "Server error reviewing leave" });
+    return res.status(500).json({ success:false, message:err.message || "Server error reviewing leave" });
   }
 });
 
@@ -590,7 +597,6 @@ app.get("/events", (req, res) => {
     res.end();
   });
 
-  // Send update on new connection
   res.write("data: {\"type\":\"connected\",\"message\":\"Real-time updates enabled\"}\n\n");
 });
 
