@@ -247,10 +247,11 @@ app.post("/submit-attendance", async (req, res) => {
 
   } catch (err) {
     console.error("❌ submit-attendance error:", err.message);
-    return res.status(500).json({ 
+    res.status(500).json({ 
       success: false, 
       message: err.message || "Server error saving attendance" 
     });
+    return;
   }
 });
 
@@ -571,6 +572,26 @@ app.post("/admin/mark-on-behalf", async (req, res) => {
 app.post("/admin/auto-mark-absent", async (req, res) => {
   try{await autoMarkNotMarked();res.json({success:true,message:"Auto-mark completed"});}
   catch(err){res.json({success:false,error:err.message});}
+});
+
+// ===================== SSE REAL-TIME UPDATES =====================
+app.get("/events", (req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+  });
+
+  const heartbeat = setInterval(() => res.write("data: :heartbeat\n\n"), 30000);
+
+  req.on("close", () => {
+    clearInterval(heartbeat);
+    res.end();
+  });
+
+  // Send update on new connection
+  res.write("data: {\"type\":\"connected\",\"message\":\"Real-time updates enabled\"}\n\n");
 });
 
 // TEACHERS

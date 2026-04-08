@@ -297,11 +297,26 @@ function toggleDark(){
   document.body.classList.toggle("dark");
 }
 
-// AUTO REFRESH
-setInterval(() => {
-  loadAttendance(false);
-}, 10000);
+// SSE + POLL AUTO REFRESH (NEW real-time)
+let eventSource = null;
+function connectSSE() {
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource(API + "/events");
+  eventSource.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === "attendance" || data.type === "connected") {
+      showNotification("📢 Attendance Updated!", "#4caf50");
+      loadAttendance(false);
+    }
+  };
+  eventSource.onerror = () => {
+    console.log("SSE reconnecting...");
+    setTimeout(connectSSE, 5000);
+  };
+}
+setInterval(() => loadAttendance(false), 10000); // fallback polling
 
+connectSSE();
 loadAttendance();
 </script>
 
