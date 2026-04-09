@@ -35,7 +35,7 @@ mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep1122@attendance-clus
 // ✅ Use mongoose.models to avoid OverwriteModelError on hot reload
 const Attendance    = require("./models/Attendance");
 const Teacher       = require("./models/teacher");
-const UnlockRequest = require("./models/UnlockRequest");
+const UnlockRequest = require("./models/unlockrequest");
 const AuditLog      = require("./models/AuditLog");
 const LeaveRequest  = require("./models/Leaverequest");
 
