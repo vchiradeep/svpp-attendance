@@ -324,7 +324,7 @@ async function submitAttendance(){
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     
-        const baseAPI = "https://svpp-attendance.onrender.com";
+       const baseAPI = "https://s-v-p-p-attendance.onrender.com";
     const res = await fetch(baseAPI+"/submit-attendance",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
