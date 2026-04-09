@@ -438,11 +438,30 @@ function showByDate(){
 
 function logout(){ localStorage.clear(); window.location.href="index.html"; }
 
-// ===== INIT & AUTO-REFRESH =====
+// ===== INIT & REAL-TIME UPDATES =====
 loadData(true);
 
-// ✅ Auto-refresh every 30 seconds to pick up new attendance immediately
-setInterval(() => loadData(false), 30000);
+// ✅ SSE — instant update when teacher submits attendance
+let sseRetry = 0;
+function connectSSE(){
+  try {
+    const es = new EventSource(API + "/events");
+    es.onopen = () => { sseRetry = 0; };
+    es.onmessage = () => {
+      // Any server event triggers an immediate silent refresh
+      loadData(false);
+    };
+    es.onerror = () => {
+      es.close();
+      sseRetry++;
+      setTimeout(connectSSE, Math.min(3000 * sseRetry, 15000));
+    };
+  } catch(e){}
+}
+connectSSE();
+
+// ✅ Fallback polling every 5 seconds (reduced from 30s)
+setInterval(() => loadData(false), 5000);
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
