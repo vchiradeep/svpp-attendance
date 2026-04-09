@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-
+// TEST CHANGE
 app.use(express.static(path.join(__dirname, "public")));
 
 // CONNECT DB
