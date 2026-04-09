@@ -134,11 +134,12 @@ background-clip: border-box;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
       .logo-img {
-        width: 90px; height: 90px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid rgba(255,255,255,0.1);
-      }
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;   /* THIS makes it round */
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.1);
+}
 
       /* ── HEADING ── */
       .heading-group {
@@ -345,7 +346,6 @@ background-clip: border-box;
 
   <!-- Logo -->
   <div class="logo-wrap">
-    <div class="logo-ring"></div>
     <img
       src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg"
       class="logo-img" alt="SVPCET Logo">
