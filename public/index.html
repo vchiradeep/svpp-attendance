@@ -1,194 +1,504 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>SVPCET Attendance System</title>
     <link rel="icon" type="image/png" href="/svpp-logo.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
- 
-      * { box-sizing: border-box; margin: 0; padding: 0; }
- 
-      body {
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg:        #04050f;
+        --surface:   rgba(255,255,255,0.04);
+        --border:    rgba(255,255,255,0.08);
+        --text:      #f0f0ff;
+        --muted:     rgba(200,200,240,0.45);
+        --teacher:   #3b82f6;
+        --student:   #10b981;
+        --admin:     #f43f5e;
+        --glow-t:    rgba(59,130,246,0.35);
+        --glow-s:    rgba(16,185,129,0.35);
+        --glow-a:    rgba(244,63,94,0.35);
+      }
+
+      html, body {
+        height: 100%;
+        overflow-x: hidden;
+        background: var(--bg);
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text);
+      }
+
+      /* ── CANVAS BACKGROUND ── */
+      #bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ── FLOATING ORBS ── */
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.18;
+        pointer-events: none;
+        z-index: 0;
+        animation: drift 18s ease-in-out infinite alternate;
+      }
+      .orb-1 { width:500px; height:500px; background:#3b82f6; top:-120px; left:-100px; animation-delay:0s; }
+      .orb-2 { width:400px; height:400px; background:#10b981; bottom:-80px; right:-80px; animation-delay:-6s; }
+      .orb-3 { width:300px; height:300px; background:#f43f5e; top:40%; left:60%; animation-delay:-12s; }
+
+      @keyframes drift {
+        0%   { transform: translate(0,0) scale(1); }
+        50%  { transform: translate(40px,30px) scale(1.08); }
+        100% { transform: translate(-20px,50px) scale(0.95); }
+      }
+
+      /* ── GRID OVERLAY ── */
+      .grid-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+      }
+
+      /* ── WRAPPER ── */
+      .wrapper {
+        position: relative;
+        z-index: 10;
         min-height: 100vh;
-        background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        padding: 24px;
+        padding: 40px 24px;
       }
- 
-      .home-wrapper {
-        width: 100%;
-        max-width: 420px;
+
+      /* ── BADGE ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 16px;
+        border-radius: 100px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+        animation: fadeDown 0.8s ease both;
       }
- 
-      /* LOGO + TITLE */
-      .home-header {
-        text-align: center;
-        margin-bottom: 36px;
+      .badge-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+        animation: pulse-dot 2s ease infinite;
       }
- 
-      .home-logo {
-        width: 76px;
-        height: 76px;
+      @keyframes pulse-dot {
+        0%,100% { opacity:1; transform:scale(1); }
+        50%      { opacity:0.5; transform:scale(1.4); }
+      }
+
+      /* ── LOGO ── */
+      .logo-wrap {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 24px;
+        animation: fadeDown 0.9s ease 0.1s both;
+      }
+      .logo-ring {
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 1.5px solid transparent;
+        background: conic-gradient(from 0deg, #3b82f6, #10b981, #f43f5e, #3b82f6) border-box;
+        border: 2px solid transparent;
+background: conic-gradient(from 0deg, #3b82f6, #10b981, #f43f5e, #3b82f6);
+background-clip: border-box;
+        animation: spin 6s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .logo-img {
+        width: 90px; height: 90px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid rgba(255,255,255,0.2);
-        box-shadow: 0 0 36px rgba(139,92,246,0.45);
-        margin-bottom: 16px;
+        border: 3px solid rgba(255,255,255,0.1);
       }
- 
-      .home-header h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 30px;
-        color: #fff;
-        letter-spacing: -0.5px;
-        margin-bottom: 6px;
+
+      /* ── HEADING ── */
+      .heading-group {
+        text-align: center;
+        margin-bottom: 10px;
+        animation: fadeDown 1s ease 0.2s both;
       }
- 
-      .home-subtitle {
-        font-size: 13px;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        font-weight: 500;
+      .heading-group h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(36px, 7vw, 58px);
+        font-weight: 800;
+        letter-spacing: -2px;
+        line-height: 1.05;
+        background: linear-gradient(135deg, #ffffff 30%, rgba(160,180,255,0.8) 70%, #10b981 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
- 
-      /* DIVIDER */
+      .heading-sub {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+        font-weight: 400;
+        animation: fadeDown 1s ease 0.3s both;
+      }
+
+      /* ── DIVIDER ── */
       .divider {
-        height: 1px;
-        background: rgba(255,255,255,0.1);
-        margin: 0 0 28px;
-        border-radius: 2px;
-      }
- 
-      /* ROLE BUTTONS */
-      .role-btn {
-        display: flex;
-        align-items: center;
-        gap: 16px;
         width: 100%;
-        padding: 18px 20px;
-        margin-bottom: 14px;
-        border: none;
-        border-radius: 16px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        cursor: pointer;
-        transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
-        text-align: left;
+        max-width: 440px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+        margin: 28px 0;
+        animation: fadeDown 1s ease 0.4s both;
       }
- 
-      .role-btn:last-child { margin-bottom: 0; }
- 
-      .btn-icon {
-        font-size: 24px;
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+
+      /* ── CARDS ── */
+      .cards {
+        width: 100%;
+        max-width: 440px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .role-btn {
+        position: relative;
         display: flex;
         align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.15);
-        flex-shrink: 0;
+        gap: 18px;
+        width: 100%;
+        padding: 20px 22px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: var(--surface);
+        backdrop-filter: blur(20px);
+        cursor: pointer;
+        text-align: left;
+        font-family: 'DM Sans', sans-serif;
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
+        overflow: hidden;
+        animation: fadeUp 0.8s ease both;
       }
- 
+      .role-btn:nth-child(1){ animation-delay: 0.45s; }
+      .role-btn:nth-child(2){ animation-delay: 0.55s; }
+      .role-btn:nth-child(3){ animation-delay: 0.65s; }
+
+      /* shimmer sweep on hover */
+      .role-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+        transform: translateX(-100%);
+        transition: transform 0.5s ease;
+      }
+      .role-btn:hover::before { transform: translateX(100%); }
+
+      /* glow layer */
+      .role-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .btn-teacher::after { box-shadow: inset 0 0 40px var(--glow-t); }
+      .btn-student::after { box-shadow: inset 0 0 40px var(--glow-s); }
+      .btn-admin::after   { box-shadow: inset 0 0 40px var(--glow-a); }
+      .role-btn:hover::after { opacity: 1; }
+
+      .role-btn:hover {
+        transform: translateY(-4px) scale(1.01);
+      }
+      .btn-teacher:hover { border-color: rgba(59,130,246,0.5);  box-shadow: 0 20px 50px rgba(59,130,246,0.2); }
+      .btn-student:hover { border-color: rgba(16,185,129,0.5); box-shadow: 0 20px 50px rgba(16,185,129,0.2); }
+      .btn-admin:hover   { border-color: rgba(244,63,94,0.5);  box-shadow: 0 20px 50px rgba(244,63,94,0.2); }
+      .role-btn:active   { transform: translateY(-1px) scale(0.99); }
+
+      /* icon */
+      .btn-icon {
+        position: relative;
+        width: 52px; height: 52px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      }
+      .role-btn:hover .btn-icon { transform: scale(1.15) rotate(-5deg); }
+      .btn-teacher .btn-icon { background: rgba(59,130,246,0.15);  border: 1px solid rgba(59,130,246,0.25); }
+      .btn-student .btn-icon { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.25); }
+      .btn-admin   .btn-icon { background: rgba(244,63,94,0.15);  border: 1px solid rgba(244,63,94,0.25); }
+
+      /* text */
       .btn-text { flex: 1; }
- 
       .btn-text strong {
         display: block;
+        font-family: 'Syne', sans-serif;
         font-size: 15px;
         font-weight: 700;
-        color: white;
+        color: #fff;
         margin-bottom: 3px;
+        letter-spacing: -0.3px;
       }
- 
       .btn-text span {
-        display: block;
         font-size: 12px;
-        font-weight: 500;
-        color: rgba(255,255,255,0.65);
-        letter-spacing: 0.3px;
+        font-weight: 400;
+        color: var(--muted);
+        letter-spacing: 0.2px;
       }
- 
+
+      /* accent line */
+      .btn-accent {
+        width: 3px; height: 32px;
+        border-radius: 4px;
+        flex-shrink: 0;
+        transition: height 0.3s ease;
+      }
+      .role-btn:hover .btn-accent { height: 44px; }
+      .btn-teacher .btn-accent { background: linear-gradient(180deg,#60a5fa,#1d4ed8); }
+      .btn-student .btn-accent { background: linear-gradient(180deg,#34d399,#047857); }
+      .btn-admin   .btn-accent { background: linear-gradient(180deg,#fb7185,#be123c); }
+
+      /* arrow */
       .btn-arrow {
         font-size: 18px;
-        color: rgba(255,255,255,0.5);
-        transition: transform 0.25s ease;
+        color: rgba(255,255,255,0.3);
+        transition: transform 0.3s ease, color 0.3s ease;
+        flex-shrink: 0;
       }
- 
-      .role-btn:hover .btn-arrow { transform: translateX(4px); color: white; }
- 
-      .role-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-      }
- 
-      .btn-teacher { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
-      .btn-student { background: linear-gradient(135deg, #047857, #10b981); }
-      .btn-admin   { background: linear-gradient(135deg, #be123c, #f43f5e); }
- 
-      /* FOOTER TEXT */
+      .role-btn:hover .btn-arrow { transform: translateX(5px); color: white; }
+
+      /* ── FOOTER ── */
       .home-footer {
-        text-align: center;
-        margin-top: 28px;
+        margin-top: 36px;
         font-size: 12px;
-        color: #475569;
+        color: rgba(255,255,255,0.2);
+        letter-spacing: 0.5px;
+        text-align: center;
+        animation: fadeUp 1s ease 0.8s both;
       }
- 
-      /* RESPONSIVE */
-      @media (max-width: 480px) {
-        .home-header h1 { font-size: 26px; }
-        .role-btn { padding: 16px 16px; }
-        .btn-icon { width: 44px; height: 44px; font-size: 20px; }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeDown {
+        from { opacity:0; transform:translateY(-20px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+      @keyframes fadeUp {
+        from { opacity:0; transform:translateY(24px); }
+        to   { opacity:1; transform:translateY(0); }
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width:480px) {
+        .heading-group h1 { font-size: 32px; }
+        .role-btn { padding: 17px 18px; }
+        .btn-icon { width:46px; height:46px; font-size:21px; }
       }
     </style>
 </head>
 <body>
- 
-<div class="home-wrapper">
- 
-  <!-- HEADER -->
-  <div class="home-header">
-    <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="home-logo">
-    <h1>SVPCET</h1>
-    <p class="home-subtitle">Attendance Management System</p>
+
+<!-- Background canvas for particles -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Ambient orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Grid overlay -->
+<div class="grid-overlay"></div>
+
+<div class="wrapper">
+
+  <!-- Live badge -->
+  <div class="badge">
+    <span class="badge-dot"></span>
+    System Online
   </div>
- 
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <div class="logo-ring"></div>
+    <img
+      src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg"
+      class="logo-img" alt="SVPCET Logo">
+  </div>
+
+  <!-- Heading -->
+  <div class="heading-group">
+    <h1>SVPCET</h1>
+    <p class="heading-sub">Attendance Management System · Puttur, AP</p>
+  </div>
+
   <div class="divider"></div>
- 
-  <!-- ROLE BUTTONS -->
-  <button class="role-btn btn-teacher" onclick="window.location.href='teacher.html'">
-    <div class="btn-icon">👨‍🏫</div>
-    <div class="btn-text">
-      <strong>Faculty Login</strong>
-      <span>Mark & manage attendance</span>
-    </div>
-    <div class="btn-arrow">→</div>
-  </button>
- 
-  <button class="role-btn btn-student" onclick="window.location.href='student.html'">
-    <div class="btn-icon">👨‍🎓</div>
-    <div class="btn-text">
-      <strong>Student Login</strong>
-      <span>View your attendance records</span>
-    </div>
-    <div class="btn-arrow">→</div>
-  </button>
- 
-  <button class="role-btn btn-admin" onclick="window.location.href='admin.html'">
-    <div class="btn-icon">🛡️</div>
-    <div class="btn-text">
-      <strong>Admin Panel</strong>
-      <span>Manage system & records</span>
-    </div>
-    <div class="btn-arrow">→</div>
-  </button>
- 
+
+  <!-- Role cards -->
+  <div class="cards">
+
+    <button class="role-btn btn-teacher" onclick="window.location.href='teacher.html'">
+      <div class="btn-icon">👨‍🏫</div>
+      <div class="btn-text">
+        <strong>Faculty Login</strong>
+        <span>Mark &amp; manage attendance</span>
+      </div>
+      <div class="btn-accent"></div>
+      <div class="btn-arrow">→</div>
+    </button>
+
+    <button class="role-btn btn-student" onclick="window.location.href='student.html'">
+      <div class="btn-icon">👨‍🎓</div>
+      <div class="btn-text">
+        <strong>Student Login</strong>
+        <span>View your attendance records</span>
+      </div>
+      <div class="btn-accent"></div>
+      <div class="btn-arrow">→</div>
+    </button>
+
+    <button class="role-btn btn-admin" onclick="window.location.href='admin.html'">
+      <div class="btn-icon">🛡️</div>
+      <div class="btn-text">
+        <strong>Admin Panel</strong>
+        <span>Manage system &amp; records</span>
+      </div>
+      <div class="btn-accent"></div>
+      <div class="btn-arrow">→</div>
+    </button>
+
+  </div>
+
   <div class="home-footer">© 2025 SVPCET · Puttur, Andhra Pradesh</div>
+
 </div>
- 
+
+<script>
+// ── PARTICLE FIELD ──
+(function(){
+  const canvas = document.getElementById("bg-canvas");
+  const ctx    = canvas.getContext("2d");
+  let W, H, particles = [];
+
+  const COLORS = ["59,130,246","16,185,129","244,63,94","168,85,247"];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function rand(min, max){ return Math.random()*(max-min)+min; }
+
+  function makeParticle(){
+    const c = COLORS[Math.floor(Math.random()*COLORS.length)];
+    return {
+      x:     rand(0,W),
+      y:     rand(0,H),
+      r:     rand(0.5, 2.2),
+      vx:    rand(-0.25, 0.25),
+      vy:    rand(-0.4, -0.1),
+      alpha: rand(0.1, 0.6),
+      color: c,
+      life:  0,
+      maxLife: rand(200, 600)
+    };
+  }
+
+  function init(){
+    particles = [];
+    for(let i=0; i<120; i++){
+      const p = makeParticle();
+      p.life = Math.random()*p.maxLife; // stagger
+      particles.push(p);
+    }
+  }
+
+  function drawConnections(){
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx = particles[i].x-particles[j].x;
+        const dy = particles[i].y-particles[j].y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist < 110){
+          const a = (1-dist/110)*0.08;
+          ctx.strokeStyle = `rgba(255,255,255,${a})`;
+          ctx.lineWidth   = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate(){
+    ctx.clearRect(0,0,W,H);
+    drawConnections();
+    for(let i=0;i<particles.length;i++){
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life++;
+      // fade in/out
+      const progress = p.life / p.maxLife;
+      const fade = progress < 0.1 ? progress/0.1 : progress > 0.8 ? (1-progress)/0.2 : 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha*fade})`;
+      ctx.fill();
+      if(p.life >= p.maxLife) particles[i] = makeParticle();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener("resize", ()=>{ resize(); init(); });
+  resize(); init(); animate();
+})();
+
+// ── MAGNETIC HOVER EFFECT on cards ──
+document.querySelectorAll(".role-btn").forEach(btn => {
+  btn.addEventListener("mousemove", e => {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top  + rect.height / 2;
+    const dx = (e.clientX - cx) / rect.width  * 10;
+    const dy = (e.clientY - cy) / rect.height * 6;
+    btn.style.transform = `translateY(-4px) scale(1.01) rotateX(${-dy}deg) rotateY(${dx}deg)`;
+    btn.style.perspective = "800px";
+  });
+  btn.addEventListener("mouseleave", () => {
+    btn.style.transform = "";
+    btn.style.perspective = "";
+  });
+});
+</script>
+
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
 </body>
