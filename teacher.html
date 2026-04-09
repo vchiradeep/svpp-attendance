@@ -1,103 +1,256 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Faculty Login — SVPCET</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/svpp-logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap');
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
-        min-height: 100vh;
-        background: linear-gradient(145deg, #eff6ff, #dbeafe, #eff6ff);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        padding: 24px;
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg:      #04050f;
+        --card:    rgba(255,255,255,0.04);
+        --border:  rgba(255,255,255,0.08);
+        --accent:  #3b82f6;
+        --accent2: #1d4ed8;
+        --glow:    rgba(59,130,246,0.3);
+        --text:    #f0f0ff;
+        --muted:   rgba(200,200,240,0.45);
+        --input-bg:rgba(255,255,255,0.05);
+        --input-border: rgba(255,255,255,0.1);
       }
-      .login-wrapper {
-        width: 100%;
-        max-width: 400px;
-        background: white;
-        border-radius: 22px;
-        padding: 40px 36px;
-        box-shadow: 0 20px 60px rgba(26,86,219,0.12);
-        border-top: 5px solid #1a56db;
-        animation: fadeUp 0.5s ease;
+
+      html, body {
+        height: 100%;
+        background: var(--bg);
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text);
+        overflow-x: hidden;
       }
-      @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+      /* ── CANVAS ── */
+      #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+      /* ── ORBS ── */
+      .orb { position:fixed; border-radius:50%; filter:blur(90px); opacity:0.15; pointer-events:none; z-index:0; animation:drift 18s ease-in-out infinite alternate; }
+      .orb-1 { width:500px; height:500px; background:#3b82f6; top:-140px; left:-120px; animation-delay:0s; }
+      .orb-2 { width:350px; height:350px; background:#6366f1; bottom:-60px; right:-80px; animation-delay:-8s; }
+      @keyframes drift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,30px) scale(1.08)} 100%{transform:translate(-20px,50px) scale(0.95)} }
+
+      /* ── GRID ── */
+      .grid-overlay {
+        position:fixed; inset:0; z-index:0; pointer-events:none;
+        background-image: linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+      }
+
+      /* ── WRAPPER ── */
+      .wrapper {
+        position:relative; z-index:10;
+        min-height:100vh;
+        display:flex; flex-direction:column;
+        align-items:center; justify-content:center;
+        padding:40px 24px;
+      }
+
+      /* ── CARD ── */
+      .login-card {
+        width:100%; max-width:420px;
+        background: rgba(255,255,255,0.04);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 24px;
+        padding: 44px 40px;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
+        position: relative;
+        overflow: hidden;
+      }
+      /* top accent line */
+      .login-card::before {
+        content:'';
+        position:absolute; top:0; left:0; right:0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #3b82f6, #6366f1, transparent);
+        border-radius: 24px 24px 0 0;
+      }
+      @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+      /* ── BADGE ── */
+      .badge {
+        display:inline-flex; align-items:center; gap:7px;
+        padding:5px 14px; border-radius:100px;
+        background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2);
+        font-family:'Syne',sans-serif; font-size:10px; font-weight:600;
+        color:rgba(147,197,253,0.8); letter-spacing:2px; text-transform:uppercase;
+        margin:0 auto 22px; display:flex; width:fit-content;
+      }
+      .badge-dot { width:6px; height:6px; border-radius:50%; background:#3b82f6; box-shadow:0 0 8px #3b82f6; animation:pulse-dot 2s ease infinite; }
+      @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+
+      /* ── ICON ── */
       .login-icon {
-        width: 64px; height: 64px;
-        background: linear-gradient(135deg, #1a56db, #3b82f6);
-        border-radius: 16px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 28px;
-        margin: 0 auto 20px;
-        box-shadow: 0 8px 22px rgba(26,86,219,0.28);
+        width:68px; height:68px;
+        background: linear-gradient(135deg,rgba(59,130,246,0.2),rgba(99,102,241,0.2));
+        border: 1px solid rgba(59,130,246,0.3);
+        border-radius: 18px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:30px; margin:0 auto 18px;
+        box-shadow: 0 8px 24px rgba(59,130,246,0.2);
+        animation: iconFloat 3s ease-in-out infinite;
       }
-      h2 { text-align:center; font-family:'Playfair Display',serif; font-size:24px; color:#1e3a8a; margin-bottom:6px; }
-      .subtitle { text-align:center; font-size:13px; color:#6b7280; margin-bottom:28px; }
-      .input-label { display:block; font-size:12px; font-weight:700; color:#1e3a8a; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+      @keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+      /* ── HEADING ── */
+      .card-title {
+        font-family:'Syne',sans-serif; font-size:26px; font-weight:800;
+        text-align:center; letter-spacing:-0.5px;
+        background:linear-gradient(135deg,#ffffff 40%,#93c5fd 100%);
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        margin-bottom:6px;
+      }
+      .card-sub { text-align:center; font-size:13px; color:var(--muted); margin-bottom:28px; }
+
+      /* ── DIVIDER ── */
+      .divider {
+        height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+        margin-bottom:24px;
+      }
+
+      /* ── LABELS & INPUTS ── */
+      .input-label {
+        display:block; font-family:'Syne',sans-serif; font-size:10px; font-weight:700;
+        color:rgba(147,197,253,0.7); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;
+      }
       .input-group { margin-bottom:18px; }
+
       input, select {
-        width:100%; padding:13px 15px;
-        border:2px solid #dbeafe; border-radius:11px;
-        font-size:14px; font-family:'Plus Jakarta Sans',sans-serif;
-        color:#1e293b; background:#eff6ff; outline:none;
-        transition:all 0.25s;
+        width:100%; padding:13px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius:12px;
+        font-size:14px; font-family:'DM Sans',sans-serif;
+        color: #f0f0ff;
+        outline:none; transition:all 0.25s;
+        appearance:none;
       }
-      input:focus, select:focus { border-color:#1a56db; background:white; box-shadow:0 0 0 4px rgba(26,86,219,0.09); }
+      input::placeholder { color:rgba(200,200,240,0.3); }
+      input:focus, select:focus {
+        border-color: rgba(59,130,246,0.6);
+        background: rgba(59,130,246,0.06);
+        box-shadow: 0 0 0 4px rgba(59,130,246,0.1);
+      }
+      select option { background:#0f172a; color:#f0f0ff; }
+
+      /* Password eye */
       .pass-wrap { position:relative; display:flex; align-items:center; }
       .pass-wrap input { padding-right:46px; }
-      .toggle-eye { position:absolute; right:14px; cursor:pointer; font-size:18px; user-select:none; color:#94a3b8; }
+      .toggle-eye { position:absolute; right:14px; cursor:pointer; font-size:17px; color:rgba(200,200,240,0.4); transition:color 0.2s; }
+      .toggle-eye:hover { color:rgba(200,200,240,0.8); }
+
+      /* ── LOGIN BUTTON ── */
       .login-btn {
         width:100%; padding:14px;
-        background:linear-gradient(135deg,#1a56db,#3b82f6);
+        background: linear-gradient(135deg,#1d4ed8,#3b82f6);
         color:white; border:none; border-radius:12px;
-        font-size:15px; font-weight:700;
-        font-family:'Plus Jakarta Sans',sans-serif;
-        cursor:pointer; transition:all 0.25s;
-        margin-top:6px; letter-spacing:0.3px;
+        font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+        letter-spacing:0.5px; cursor:pointer; transition:all 0.3s;
+        margin-top:6px; position:relative; overflow:hidden;
       }
-      .login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,86,219,0.35); }
-      .error-msg { color:#dc2626; font-size:13px; font-weight:600; margin-top:10px; text-align:center; display:none; }
-      .back-link { display:block; text-align:center; margin-top:20px; font-size:13px; color:#1a56db; text-decoration:none; font-weight:600; }
-      .back-link:hover { color:#1d4ed8; }
+      .login-btn::before {
+        content:''; position:absolute; inset:0;
+        background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.12) 50%,transparent 60%);
+        transform:translateX(-100%); transition:transform 0.5s ease;
+      }
+      .login-btn:hover::before { transform:translateX(100%); }
+      .login-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(59,130,246,0.4); }
+      .login-btn:active { transform:translateY(0); }
+
+      /* ── ERROR ── */
+      .error-msg {
+        display:none; margin-top:12px; padding:10px 14px;
+        background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25);
+        border-radius:10px; font-size:13px; font-weight:500;
+        color:#fca5a5; text-align:center;
+      }
+
+      /* ── BACK LINK ── */
+      .back-link {
+        display:block; text-align:center; margin-top:20px;
+        font-size:13px; color:rgba(147,197,253,0.6);
+        text-decoration:none; font-weight:500; transition:color 0.2s;
+      }
+      .back-link:hover { color:#93c5fd; }
+
+      /* ── SUCCESS OVERLAY ── */
+      .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+      .overlay.show { display:flex; }
+      .popup { background:linear-gradient(135deg,#0f172a,#1e293b); border:1px solid rgba(59,130,246,0.2); border-radius:22px; padding:40px 36px; text-align:center; max-width:320px; width:90%; animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 30px 80px rgba(0,0,0,0.6); }
+      @keyframes popIn { from{opacity:0;transform:scale(0.65)} to{opacity:1;transform:scale(1)} }
+      .pop-icon { font-size:52px; margin-bottom:14px; display:block; }
+      .pop-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; margin-bottom:8px; }
+      .pop-sub { font-size:13px; color:var(--muted); margin-bottom:6px; }
+      .pop-subject { font-size:15px; font-weight:700; color:#60a5fa; margin:10px 0; font-family:'Syne',sans-serif; }
     </style>
 </head>
 <body>
 
-<div class="login-wrapper">
-  <div class="login-icon">👨‍🏫</div>
-  <h2>Faculty Login</h2>
-  <p class="subtitle">Select your subject and enter password</p>
+<canvas id="bg-canvas"></canvas>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="grid-overlay"></div>
 
-  <div class="input-group">
-    <label class="input-label">Subject</label>
-    <select id="subject">
-      <option value="">Select Subject</option>
-      <option value="PHY">Physics</option>
-      <option value="BEEE">Electrical (BEEE)</option>
-      <option value="ECE">Electronics (BEEE)</option>
-      <option value="DS">Data Structures</option>
-      <option value="IT WORKSHOP">IT Workshop</option>
-      <option value="EG LAB">Engineering Graphics</option>
-      <option value="DEVC">DE&VC</option>
-    </select>
-  </div>
+<div class="wrapper">
+  <div class="login-card">
 
-  <div class="input-group">
-    <label class="input-label">Password</label>
-    <div class="pass-wrap">
-      <input type="password" id="password" placeholder="Enter your password">
-      <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+    <div class="badge"><span class="badge-dot"></span>Faculty Portal</div>
+
+    <div class="login-icon">👨‍🏫</div>
+    <div class="card-title">Faculty Login</div>
+    <p class="card-sub">Select your subject and enter password</p>
+
+    <div class="divider"></div>
+
+    <div class="input-group">
+      <label class="input-label">Subject</label>
+      <select id="subject">
+        <option value="">Select Subject</option>
+        <option value="PHY">Physics</option>
+        <option value="BEEE">Electrical (BEEE)</option>
+        <option value="ECE">Electronics (BEEE)</option>
+        <option value="DS">Data Structures</option>
+        <option value="IT WORKSHOP">IT Workshop</option>
+        <option value="EG LAB">Engineering Graphics</option>
+        <option value="DEVC">DE&VC</option>
+      </select>
     </div>
+
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <div class="pass-wrap">
+        <input type="password" id="password" placeholder="Enter your password" onkeydown="if(event.key==='Enter')login()">
+        <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+      </div>
+    </div>
+
+    <p class="error-msg" id="errorMsg">❌ Wrong password. Please try again.</p>
+
+    <button class="login-btn" onclick="login()">Login →</button>
+    <a href="index.html" class="back-link">← Back to Home</a>
+
   </div>
+</div>
 
-  <p class="error-msg" id="errorMsg">❌ Wrong password. Please try again.</p>
-
-  <button class="login-btn" onclick="login()">Login →</button>
-  <a href="index.html" class="back-link">← Back to Home</a>
+<!-- SUCCESS POPUP -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <span class="pop-icon">👨‍🏫</span>
+    <div class="pop-title">Welcome, Faculty!</div>
+    <div class="pop-subject" id="popSubject"></div>
+    <div class="pop-sub">Redirecting to your dashboard...</div>
+  </div>
 </div>
 
 <script>
@@ -105,19 +258,11 @@ function login(){
   const subject  = document.getElementById("subject").value;
   const password = document.getElementById("password").value;
   const errorMsg = document.getElementById("errorMsg");
-
   errorMsg.style.display = "none";
 
-  if(!subject){
-    alert("Please select subject");
-    return;
-  }
-  if(!password){
-    alert("Enter password");
-    return;
-  }
+  if(!subject){ alert("Please select subject"); return; }
+  if(!password){ alert("Enter password"); return; }
 
-  // ✅ FIXED: Password must be "svpp"
   if(password !== "svpp"){
     errorMsg.style.display = "block";
     document.getElementById("password").value = "";
@@ -127,7 +272,12 @@ function login(){
 
   localStorage.setItem("subject", subject);
   sessionStorage.setItem("justLoggedIn", "true");
-  window.location.href = "teacherhome.html";
+
+  const labels = {"PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)","DS":"Data Structures","IT WORKSHOP":"IT Workshop","EG LAB":"Engineering Graphics","DEVC":"DE&VC"};
+  document.getElementById("popSubject").textContent = labels[subject] || subject;
+  document.getElementById("overlay").classList.add("show");
+
+  setTimeout(() => { window.location.href = "teacherhome.html"; }, 1600);
 }
 
 function togglePassword(){
@@ -135,10 +285,42 @@ function togglePassword(){
   pwd.type = (pwd.type === "password") ? "text" : "password";
 }
 
-// Allow Enter key to login
-document.addEventListener("keydown", function(e){
-  if(e.key === "Enter") login();
-});
+document.addEventListener("keydown", e => { if(e.key === "Enter") login(); });
+</script>
+
+<!-- PARTICLE BACKGROUND -->
+<script>
+(function(){
+  const canvas=document.getElementById("bg-canvas");
+  const ctx=canvas.getContext("2d");
+  let W,H,particles=[];
+  const COLORS=["59,130,246","99,102,241","147,197,253"];
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  function rand(a,b){return Math.random()*(b-a)+a;}
+  function mkP(){
+    const c=COLORS[Math.floor(Math.random()*COLORS.length)];
+    return{x:rand(0,W),y:rand(0,H),r:rand(0.5,2),vx:rand(-0.2,0.2),vy:rand(-0.35,-0.08),alpha:rand(0.1,0.5),color:c,life:0,maxLife:rand(200,500)};
+  }
+  function init(){ particles=[]; for(let i=0;i<80;i++){const p=mkP();p.life=Math.random()*p.maxLife;particles.push(p);} }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<particles.length;i++){
+      const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.life++;
+      const pr=p.life/p.maxLife;
+      const fade=pr<0.1?pr/0.1:pr>0.8?(1-pr)/0.2:1;
+      for(let j=i+1;j<particles.length;j++){
+        const q=particles[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<100){ctx.strokeStyle=`rgba(255,255,255,${(1-d/100)*0.06})`;ctx.lineWidth=0.4;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+      }
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.color},${p.alpha*fade})`; ctx.fill();
+      if(p.life>=p.maxLife) particles[i]=mkP();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener("resize",()=>{resize();init();});
+  resize(); init(); draw();
+})();
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
