@@ -8,7 +8,11 @@ const cron       = require("node-cron");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "https://s-v-p-p-attendance.onrender.com",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // ✅ Case-insensitive static file middleware for Render
