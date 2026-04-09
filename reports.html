@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="report-bg">
+ 
+<div class="navbar">
+    <h2>🎓 Attendance System</h2>
+    <div>
+        <a href="dashboard.html">Home</a>
+        <a href="mark.html">Mark</a>
+        <a href="reports.html">Reports</a>
+        <a href="index.html">Logout</a>
+    </div>
+</div>
+ 
+<div class="container">
+    <h2>📋 Attendance Reports</h2>
+ 
+    <table border="1" id="table">
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </table>
+</div>
+ 
+<script src="script.js"></script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
+<script src="utils.js"></script>
+</body>
+</html>

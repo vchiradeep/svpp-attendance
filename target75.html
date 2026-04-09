@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>75% Target</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+ 
+<body class="student-bg">
+ 
+<div class="container">
+ 
+    <h2>🎯 75% Attendance Target</h2>
+ 
+    <p id="result"></p>
+ 
+</div>
+ 
+<script>
+// ✅ FIXED: was "http://localhost:3000" — breaks on Render
+const API = window.location.origin;
+const roll = localStorage.getItem("studentRoll");
+ 
+showLoader();
+ 
+fetch(API + "/attendance?studentName=" + roll)
+.then(res => res.json())
+.then(data => {
+ 
+    let present = 0;
+    let total = data.length;
+ 
+    data.forEach(item => {
+        if(item.status === "Present") present++;
+    });
+ 
+    let needed = 0;
+ 
+    while((present / (total + needed)) < 0.75){
+        needed++;
+        present++;
+    }
+ 
+    document.getElementById("result").innerText =
+        "You need to attend " + needed + " more classes to reach 75%";
+ 
+    hideLoader();
+})
+.catch(() => {
+    hideLoader();
+    alert("❌ Failed to load data");
+});
+</script>
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<script src="utils.js"></script>
+</body>
+</html>

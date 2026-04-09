@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.card {
+  background: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.highlight {
+  background: #e3f2fd;
+}
+</style>
+
+</head>
+
+<body class="student-bg">
+
+<div class="container">
+
+<h2>📊 Student Dashboard</h2>
+<h3 id="rollDisplay"></h3>
+
+<!-- 🔔 Notification -->
+<div id="notification" style="
+  display:none;
+  background:#4caf50;
+  color:white;
+  padding:10px;
+  border-radius:8px;
+  margin:10px 0;
+">
+  ✅ Attendance Updated
+</div>
+
+<button onclick="toggleDark()">🌙 Dark Mode</button>
+
+<div class="card">
+  <p>Present: <span id="present">0</span></p>
+  <p>Absent: <span id="absent">0</span></p>
+  <p>Percentage: <span id="percent">0%</span></p>
+</div>
+
+<canvas id="chart"></canvas>
+
+<h2>📊 Monthly Attendance</h2>
+<canvas id="weeklyChart"></canvas>
+
+<h2>📅 Attendance Dates</h2>
+<div id="attendanceTable"></div>
+
+<h2>📋 Period-wise Details</h2>
+<div id="dateDetails"></div>
+
+<h2>📅 Calendar View</h2>
+<input type="date" id="calendarPicker" onchange="filterByDate()">
+<div id="calendarResult"></div>
+
+<h2>📚 Subject-wise</h2>
+<div id="subjectStats"></div>
+
+<h2>🎯 75% Status</h2>
+<p id="targetMessage"></p>
+
+</div>
+
+<script>
+// ✅ FIXED: Use window.location.origin instead of hardcoded localhost
+// was: const API = "http://localhost:3000";  ❌ BREAKS ON RENDER
+const API = window.location.origin;
+
+const roll = localStorage.getItem("studentRoll");
+
+if(!roll){
+  alert("Login again");
+  window.location.href = "student.html";
+}
+
+document.getElementById("rollDisplay").innerText = "Roll: " + roll;
+
+// 🎯 PIE CHART
+let chart = new Chart(document.getElementById("chart"), {
+  type: "doughnut",
+  data: {
+    labels: ["Present", "Absent"],
+    datasets: [{
+      data: [0,0],
+      backgroundColor: ["#4caf50","#f44336"]
+    }]
+  }
+});
+
+// 📊 MONTHLY CHART
+let weeklyChart = new Chart(document.getElementById("weeklyChart"), {
+  type: "bar",
+  data: {
+    labels: [],
+    datasets: [{
+      label: "Attendance %",
+      data: [],
+      backgroundColor: "#42a5f5"
+    }]
+  }
+});
+
+let globalData = [];
+let lastHash = "";
+
+// 🔔 Notification
+function showNotification(msg, color="#4caf50"){
+  const box = document.getElementById("notification");
+  box.innerText = msg;
+  box.style.background = color;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
+
+// 🔥 MAIN FUNCTION
+async function loadAttendance(showLoad = true){
+  if(showLoad) showLoader();
+
+  const res = await fetch(API + "/attendance?studentName=" + roll);
+  const data = await res.json();
+
+  let currentHash = JSON.stringify(data);
+
+  if(lastHash && currentHash !== lastHash){
+    showNotification("📢 Attendance Updated!");
+  }
+  lastHash = currentHash;
+
+  globalData = data;
+
+  let present = 0, absent = 0;
+  let dates = {};
+  let subjectMap = {};
+  let monthMap = {};
+
+  data.forEach(item => {
+
+    if(item.status === "Present") present++;
+    else absent++;
+
+    if(!dates[item.date]) dates[item.date] = [];
+    dates[item.date].push(item);
+
+    if(!subjectMap[item.subject]){
+      subjectMap[item.subject] = {p:0,t:0};
+    }
+    subjectMap[item.subject].t++;
+    if(item.status === "Present") subjectMap[item.subject].p++;
+
+    let parts = item.date.split("/");
+    let month = parts[1] + "/" + parts[2]; // mm/yyyy
+
+    if(!monthMap[month]){
+      monthMap[month] = {p:0,t:0};
+    }
+
+    monthMap[month].t++;
+    if(item.status === "Present") monthMap[month].p++;
+  });
+
+  let total = present + absent;
+  let percent = total ? ((present/total)*100).toFixed(1) : 0;
+
+  document.getElementById("present").innerText = present;
+  document.getElementById("absent").innerText = absent;
+  document.getElementById("percent").innerText = percent + "%";
+
+  chart.data.datasets[0].data = [present, absent];
+  chart.update();
+
+  // 📅 DATE LIST
+  let html = "";
+  let today = convertToDDMMYYYY(new Date());
+
+  Object.keys(dates).sort().reverse().forEach(date => {
+    html += `
+      <div class="card ${date===today ? 'highlight':''}" 
+           onclick="showDateDetails('${date}')">
+        📅 ${date}
+      </div>
+    `;
+  });
+
+  document.getElementById("attendanceTable").innerHTML = html;
+
+  // 🎯 TARGET
+  let required = Math.ceil(0.75 * total);
+  let msg = present >= required
+    ? "✅ Safe (Above 75%)"
+    : `⚠ Need ${required - present} more classes`;
+
+  document.getElementById("targetMessage").innerText = msg;
+
+  // 📚 SUBJECT
+  let subHTML = "";
+  for(let sub in subjectMap){
+    let p = subjectMap[sub].p;
+    let t = subjectMap[sub].t;
+    let per = ((p/t)*100).toFixed(1);
+
+    subHTML += `
+      <div class="card">
+        ${sub} → ${per}% (${p}/${t})
+      </div>
+    `;
+  }
+
+  document.getElementById("subjectStats").innerHTML = subHTML;
+
+  // 📊 MONTHLY GRAPH
+  let labels = [];
+  let values = [];
+
+  Object.keys(monthMap).sort().forEach(m => {
+    labels.push(m);
+    let per = (monthMap[m].p / monthMap[m].t) * 100;
+    values.push(per.toFixed(1));
+  });
+
+  weeklyChart.data.labels = labels;
+  weeklyChart.data.datasets[0].data = values;
+  weeklyChart.update();
+  if(showLoad) hideLoader();
+}
+
+// 📋 DATE DETAILS
+function showDateDetails(date){
+
+  let filtered = globalData.filter(x => x.date === date);
+
+  let html = `<h3>${date}</h3>`;
+
+  filtered.forEach(item => {
+    html += `
+      <div class="card">
+        ${item.subject} →
+        <b style="color:${item.status==="Present"?"green":"red"}">
+          ${item.status}
+        </b>
+      </div>
+    `;
+  });
+
+  document.getElementById("dateDetails").innerHTML = html;
+}
+
+function convertToDDMMYYYY(dateStr){
+  const d = new Date(dateStr);
+  return String(d.getDate()).padStart(2, '0') + '/' +
+         String(d.getMonth() + 1).padStart(2, '0') + '/' +
+         d.getFullYear();
+}
+
+// 📅 CALENDAR FILTER
+function filterByDate(){
+
+  let selected = document.getElementById("calendarPicker").value;
+
+  let formattedDate = convertToDDMMYYYY(selected);
+
+  let filtered = globalData.filter(x => x.date === formattedDate);
+
+  let html = `<h3>${formattedDate}</h3>`;
+
+  if(filtered.length === 0){
+    html += "<p>No attendance data</p>";
+  } else {
+    filtered.forEach(item => {
+      html += `
+        <div class="card">
+          ${item.subject} →
+          <b style="color:${item.status==="Present"?"green":"red"}">
+            ${item.status}
+          </b>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("calendarResult").innerHTML = html;
+}
+
+// 🌙 DARK MODE
+function toggleDark(){
+  document.body.classList.toggle("dark");
+}
+
+// SSE + POLL AUTO REFRESH (NEW real-time)
+let eventSource = null;
+function connectSSE() {
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource(API + "/events");
+  eventSource.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === "attendance" || data.type === "connected") {
+      showNotification("📢 Attendance Updated!", "#4caf50");
+      loadAttendance(false);
+    }
+  };
+  eventSource.onerror = () => {
+    console.log("SSE reconnecting...");
+    setTimeout(connectSSE, 5000);
+  };
+}
+setInterval(() => loadAttendance(false), 10000); // fallback polling
+
+connectSSE();
+loadAttendance();
+</script>
+
+<!-- 🔄 LOADER -->
+<div id="loader" style="display:none;">
+  <div class="spinner"></div>
+</div>
+<!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
+<script src="utils.js"></script>
+</body>
+</html>

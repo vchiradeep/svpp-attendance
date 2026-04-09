@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leaderboard — SVPCET</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background:linear-gradient(145deg,#0f0c29,#302b63,#24243e); min-height:100vh; font-family:'Plus Jakarta Sans',sans-serif; }
+
+  .page-header {
+    background:rgba(255,255,255,0.08); backdrop-filter:blur(12px);
+    padding:18px 28px; display:flex; align-items:center;
+    justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1);
+    position:sticky; top:0; z-index:100;
+  }
+  .page-header h1 { font-size:20px; font-weight:800; color:white; margin:0; }
+  .back-btn { padding:9px 18px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:10px; color:white; font-weight:700; font-size:13px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; transition:0.2s; text-decoration:none; }
+  .back-btn:hover { background:rgba(255,255,255,0.22); }
+
+  .container { max-width:900px; margin:0 auto; padding:28px 16px 50px; }
+
+  .tabs { display:flex; gap:12px; margin-bottom:28px; }
+  .tab { padding:12px 28px; border-radius:12px; border:2px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.6); font-weight:700; font-size:14px; cursor:pointer; transition:0.25s; font-family:'Plus Jakarta Sans',sans-serif; }
+  .tab.active { background:linear-gradient(135deg,#f59e0b,#d97706); color:#1c1917; border-color:#f59e0b; box-shadow:0 4px 16px rgba(245,158,11,0.4); }
+
+  /* TOP 3 PODIUM */
+  .podium { display:flex; justify-content:center; align-items:flex-end; gap:16px; margin-bottom:32px; flex-wrap:wrap; }
+  .podium-card {
+    background:rgba(255,255,255,0.1); backdrop-filter:blur(10px);
+    border-radius:16px; padding:20px 16px; text-align:center;
+    border:2px solid rgba(255,255,255,0.15); transition:0.25s; min-width:140px;
+  }
+  .podium-card:hover { transform:translateY(-4px); }
+  .podium-card.gold   { border-color:#fbbf24; background:rgba(251,191,36,0.12); }
+  .podium-card.silver { border-color:#94a3b8; background:rgba(148,163,184,0.1); }
+  .podium-card.bronze { border-color:#b45309; background:rgba(180,83,9,0.1); }
+  .podium-medal { font-size:36px; margin-bottom:8px; display:block; }
+  .podium-rank  { font-size:12px; font-weight:700; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .podium-name  { font-size:14px; font-weight:800; color:white; margin-bottom:4px; word-break:break-all; }
+  .podium-pct   { font-size:22px; font-weight:800; }
+  .gold   .podium-pct { color:#fbbf24; }
+  .silver .podium-pct { color:#94a3b8; }
+  .bronze .podium-pct { color:#b45309; }
+  .podium-sub   { font-size:11px; color:rgba(255,255,255,0.5); margin-top:4px; }
+
+  /* RANK LIST */
+  .rank-list { display:flex; flex-direction:column; gap:8px; }
+  .rank-item {
+    background:rgba(255,255,255,0.07); backdrop-filter:blur(8px);
+    border-radius:12px; padding:14px 18px;
+    display:flex; align-items:center; gap:14px;
+    border:1px solid rgba(255,255,255,0.1);
+    transition:0.2s; cursor:default;
+  }
+  .rank-item:hover { background:rgba(255,255,255,0.12); transform:translateX(4px); }
+  .rank-num { font-size:16px; font-weight:800; color:rgba(255,255,255,0.4); min-width:32px; text-align:center; }
+  .rank-info { flex:1; }
+  .rank-info strong { font-size:14px; font-weight:700; color:white; display:block; margin-bottom:2px; }
+  .rank-info span   { font-size:12px; color:rgba(255,255,255,0.5); }
+  .rank-pct { font-size:16px; font-weight:800; }
+  .rank-bar-wrap { width:80px; height:6px; background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden; }
+  .rank-bar { height:100%; border-radius:6px; }
+
+  /* SECTION BADGE */
+  .sec-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.6); margin-left:6px; }
+
+  /* MY RANK CARD */
+  .my-rank-card {
+    background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(217,119,6,0.1));
+    border:2px solid #f59e0b; border-radius:14px; padding:16px 20px;
+    margin-bottom:20px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .my-rank-card .mrc-icon { font-size:28px; }
+  .my-rank-card strong { font-size:15px; font-weight:800; color:#fbbf24; }
+  .my-rank-card p { font-size:13px; color:rgba(255,255,255,0.7); margin:2px 0 0; }
+
+  .empty { text-align:center; padding:60px 20px; color:rgba(255,255,255,0.4); font-size:15px; }
+  .empty .big { font-size:48px; margin-bottom:12px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>🏆 Leaderboard</h1>
+  <a href="index.html" class="back-btn">← Home</a>
+</div>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" id="tab-student" onclick="switchTab('student')">🎓 Students</button>
+    <button class="tab" id="tab-teacher" onclick="switchTab('teacher')">👨‍🏫 Teachers</button>
+  </div>
+
+  <!-- MY RANK (shown if student logged in) -->
+  <div class="my-rank-card" id="myRankCard" style="display:none;">
+    <div class="mrc-icon">⭐</div>
+    <div>
+      <strong id="myRankText">Loading...</strong>
+      <p id="myRankSub"></p>
+    </div>
+  </div>
+
+  <!-- PODIUM TOP 3 -->
+  <div class="podium" id="podium"></div>
+
+  <!-- FULL LIST -->
+  <div class="rank-list" id="rankList"></div>
+
+</div>
+
+<script>
+const roll = localStorage.getItem("studentRoll");
+let currentTab = "student";
+
+async function loadStudentLeaderboard() {
+  const res  = await fetch("/leaderboard/students");
+  const data = await res.json();
+  if (!data.success || !data.leaderboard.length) {
+    showEmpty("No attendance data yet. Start attending classes!");
+    return;
+  }
+
+  const lb = data.leaderboard;
+
+  // Show my rank if logged in
+  if (roll) {
+    const myIdx = lb.findIndex(s => s.roll === roll);
+    if (myIdx !== -1) {
+      const me = lb[myIdx];
+      document.getElementById("myRankCard").style.display = "flex";
+      document.getElementById("myRankText").textContent = `Your Rank: #${myIdx+1} — ${me.pct}%`;
+      document.getElementById("myRankSub").textContent  = `${me.present} present out of ${me.total} classes · Section: ${me.section || "—"}`;
+    }
+  }
+
+  // PODIUM (top 3)
+  const medals = ["🥇","🥈","🥉"];
+  const classes = ["gold","silver","bronze"];
+  const podiumOrder = [1, 0, 2]; // silver left, gold center, bronze right
+  const podiumEl = document.getElementById("podium");
+  podiumEl.innerHTML = "";
+
+  podiumOrder.forEach(i => {
+    if (!lb[i]) return;
+    const s = lb[i];
+    const card = document.createElement("div");
+    card.className = `podium-card ${classes[i]}`;
+    card.style.animation = `fadeUp 0.${4+i*1}s ease`;
+    card.innerHTML = `
+      <span class="podium-medal">${medals[i]}</span>
+      <div class="podium-rank">Rank #${i+1}</div>
+      <div class="podium-name">${s.roll}</div>
+      <div class="podium-pct">${s.pct}%</div>
+      <div class="podium-sub">${s.present}/${s.total} classes · ${s.section||""}</div>
+    `;
+    podiumEl.appendChild(card);
+  });
+
+  // FULL LIST (from rank 4+)
+  const listEl = document.getElementById("rankList");
+  listEl.innerHTML = "";
+  lb.slice(3).forEach((s, i) => {
+    const color = s.pct >= 75 ? "#34d399" : s.pct >= 65 ? "#fbbf24" : "#f87171";
+    const isMe  = s.roll === roll;
+    const item  = document.createElement("div");
+    item.className = "rank-item";
+    if (isMe) item.style.border = "2px solid #f59e0b";
+    item.innerHTML = `
+      <div class="rank-num">${i+4}</div>
+      <div class="rank-info">
+        <strong>${s.roll} ${isMe ? "⭐" : ""}<span class="sec-badge">${s.section||""}</span></strong>
+        <span>${s.present} present / ${s.total} total</span>
+      </div>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${s.pct}%;background:${color};"></div></div>
+      <div class="rank-pct" style="color:${color}">${s.pct}%</div>
+    `;
+    listEl.appendChild(item);
+  });
+}
+
+async function loadTeacherLeaderboard() {
+  const res  = await fetch("/leaderboard/teachers");
+  const data = await res.json();
+  if (!data.success || !data.leaderboard.length) {
+    showEmpty("No teacher performance data yet.");
+    return;
+  }
+
+  const subjectLabels = {
+    "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
+    "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop"
+  };
+
+  const lb = data.leaderboard;
+
+  // PODIUM top 3
+  const medals  = ["🥇","🥈","🥉"];
+  const classes = ["gold","silver","bronze"];
+  const podiumOrder = [1, 0, 2];
+  const podiumEl = document.getElementById("podium");
+  podiumEl.innerHTML = "";
+
+  podiumOrder.forEach(i => {
+    if (!lb[i]) return;
+    const t = lb[i];
+    const grades = s => s >= 90 ? "⭐ Excellent" : s >= 80 ? "👍 Good" : s >= 65 ? "⚠️ Average" : "🚨 Low";
+    const card = document.createElement("div");
+    card.className = `podium-card ${classes[i]}`;
+    card.innerHTML = `
+      <span class="podium-medal">${medals[i]}</span>
+      <div class="podium-rank">Rank #${i+1}</div>
+      <div class="podium-name">${subjectLabels[t.subject]||t.subject}</div>
+      <div class="podium-pct">${t.score}%</div>
+      <div class="podium-sub">${grades(t.score)}</div>
+    `;
+    podiumEl.appendChild(card);
+  });
+
+  // FULL LIST
+  const listEl = document.getElementById("rankList");
+  listEl.innerHTML = "";
+  lb.slice(3).forEach((t, i) => {
+    const color = t.score >= 80 ? "#34d399" : t.score >= 65 ? "#fbbf24" : "#f87171";
+    const item  = document.createElement("div");
+    item.className = "rank-item";
+    item.innerHTML = `
+      <div class="rank-num">${i+4}</div>
+      <div class="rank-info">
+        <strong>${subjectLabels[t.subject]||t.subject}</strong>
+        <span>Marked ${t.markedDays}/${t.totalDays} days · On-time: ${t.onTime} · Late: ${t.late}</span>
+      </div>
+      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${t.score}%;background:${color};"></div></div>
+      <div class="rank-pct" style="color:${color}">${t.score}%</div>
+    `;
+    listEl.appendChild(item);
+  });
+}
+
+function showEmpty(msg) {
+  document.getElementById("podium").innerHTML = "";
+  document.getElementById("rankList").innerHTML = `<div class="empty"><div class="big">📊</div>${msg}</div>`;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById("myRankCard").style.display = "none";
+  document.getElementById("tab-student").classList.toggle("active", tab === "student");
+  document.getElementById("tab-teacher").classList.toggle("active", tab === "teacher");
+  document.getElementById("podium").innerHTML = "";
+  document.getElementById("rankList").innerHTML = "";
+  if (tab === "student") loadStudentLeaderboard();
+  else loadTeacherLeaderboard();
+}
+
+// Init
+showLoader();
+loadStudentLeaderboard().finally(() => hideLoader());
+</script>
+
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
+<script src="utils.js"></script>
+</body>
+</html>

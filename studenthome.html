@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard — SVPCET</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body{background:linear-gradient(160deg,#ecfdf5,#d1fae5,#f0fdf4);min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;}
+
+      /* TOP BAR */
+      .top-nav{background:#059669;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+      .top-nav h2{font-size:16px;font-weight:800;margin:0;}
+      .nav-btns{display:flex;gap:8px;flex-wrap:wrap;}
+      .nav-btn{padding:7px 14px;background:rgba(255,255,255,0.18);border:none;border-radius:8px;color:white;font-weight:700;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;transition:0.2s;display:inline-block;}
+      .nav-btn:hover{background:rgba(255,255,255,0.3);}
+      .nav-btn.logout{background:rgba(239,68,68,0.7);}
+
+      .page{max-width:860px;margin:0 auto;padding:22px 16px 50px;}
+
+      /* WELCOME */
+      .welcome{background:linear-gradient(135deg,#059669,#10b981);border-radius:18px;padding:22px;color:white;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;box-shadow:0 8px 28px rgba(5,150,105,0.3);}
+      .welcome h1{font-size:21px;font-weight:800;margin:0 0 4px;}
+      .welcome p{font-size:13px;opacity:0.85;margin:0;}
+      .welcome-ava{width:52px;height:52px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+
+      /* NOT MARKED NOTE */
+      .nm-note{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:600;color:#92400e;margin-bottom:16px;display:none;}
+
+      /* STATS */
+      .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px;}
+      .stat{background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.07);border-top:3px solid #e2e8f0;transition:0.25s;}
+      .stat:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+      .stat.green{border-top-color:#059669;}.stat.red{border-top-color:#ef4444;}
+      .stat.blue{border-top-color:#3b82f6;}.stat.amber{border-top-color:#f59e0b;}
+      .stat .val{font-size:26px;font-weight:800;color:#1e293b;}.stat .lbl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;}
+
+      /* AI BOX */
+      .ai-box{border-radius:16px;padding:20px 22px;margin-bottom:20px;border:2px solid;}
+      .ai-box.safe{background:#f0fdf4;border-color:#22c55e;}.ai-box.warn{background:#fffbeb;border-color:#f59e0b;}.ai-box.danger{background:#fef2f2;border-color:#ef4444;}
+      .ai-title{font-size:15px;font-weight:800;margin-bottom:8px;}
+      .ai-box.safe .ai-title{color:#166534;}.ai-box.warn .ai-title{color:#92400e;}.ai-box.danger .ai-title{color:#991b1b;}
+      .ai-body{font-size:13.5px;line-height:1.7;}.ai-box.safe .ai-body{color:#14532d;}.ai-box.warn .ai-body{color:#78350f;}.ai-box.danger .ai-body{color:#7f1d1d;}
+      .ai-tip{margin-top:10px;padding:10px 14px;background:rgba(255,255,255,0.7);border-radius:9px;font-size:13px;font-weight:600;}
+      .ai-box.safe .ai-tip{color:#059669;}.ai-box.warn .ai-tip{color:#d97706;}.ai-box.danger .ai-tip{color:#dc2626;}
+
+      /* CHART */
+      .card{background:white;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07);}
+      .card h3{font-size:15px;font-weight:800;color:#1e293b;margin-bottom:16px;}
+      .chart-wrap{width:190px;height:190px;margin:0 auto;}
+
+      /* PREDICTION */
+      .slider-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+      .slider-row label{font-size:13px;font-weight:600;color:#475569;white-space:nowrap;}
+      .slider-row input[type=range]{flex:1;min-width:100px;accent-color:#059669;}
+      .slider-val{font-size:14px;font-weight:800;color:#059669;min-width:50px;text-align:right;}
+      .predict-result{background:#f0fdf4;border-radius:10px;padding:14px 16px;font-size:13.5px;color:#065f46;font-weight:600;line-height:1.6;}
+      .predict-bar{height:10px;background:#e2e8f0;border-radius:10px;margin-top:10px;overflow:hidden;}
+      .predict-fill{height:100%;border-radius:10px;transition:width 0.4s ease;}
+
+      /* TARGETS */
+      .targets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+      .t-card{background:white;border-radius:14px;padding:16px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,0.07);transition:0.25s;}
+      .t-card:hover{transform:translateY(-2px);}
+      .t-card .t-pct{font-size:22px;font-weight:800;margin-bottom:6px;}
+      .t-card .t-msg{font-size:12px;color:#64748b;line-height:1.4;}
+      .t-card.reached .t-pct{color:#059669;}.t-card.close .t-pct{color:#f59e0b;}.t-card.far .t-pct{color:#ef4444;}
+
+      /* DATE VIEW */
+      .date-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+      .date-row input{flex:1;min-width:160px;padding:11px 14px;border:2px solid #d1fae5;border-radius:10px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;background:#f0fdf4;color:#1e293b;transition:0.25s;}
+      .date-row input:focus{border-color:#059669;}
+      .check-btn{padding:11px 20px;background:#059669;color:white;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:0.2s;}
+      .check-btn:hover{background:#047857;}
+      table{width:100%;border-collapse:collapse;font-size:14px;}
+      th{background:#059669;color:white;padding:11px 14px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
+      td{padding:11px 14px;border-bottom:1px solid #f0fdf4;color:#374151;}
+      tr:last-child td{border-bottom:none;}
+      tr:hover td{background:#f0fdf4;}
+      .sp{color:#059669;font-weight:700;}.sa{color:#ef4444;font-weight:700;}.sn{color:#f59e0b;font-weight:700;}
+
+      /* AUTO REFRESH INDICATOR */
+      .refresh-bar{text-align:right;font-size:12px;color:#94a3b8;margin-bottom:8px;padding-right:4px;}
+
+      @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+      @media(max-width:600px){.chart-wrap{width:160px;height:160px;}.welcome h1{font-size:17px;}}
+    </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <h2>🎓 Student Dashboard — SVPCET</h2>
+  <div class="nav-btns">
+    <a href="leaderboard.html" class="nav-btn">🏆 Leaderboard</a>
+    <a href="leaverequest.html" class="nav-btn">📋 Leave</a>
+    <button class="nav-btn logout" onclick="logout()">🚪 Logout</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- WELCOME -->
+  <div class="welcome">
+    <div>
+      <h1>Welcome, <span id="rollName">Student</span>!</h1>
+      <p>Section: <span id="sectionName">—</span> &nbsp;·&nbsp; <span id="todayDate"></span></p>
+    </div>
+    <div class="welcome-ava">👨‍🎓</div>
+  </div>
+
+  <!-- AUTO REFRESH -->
+  <div class="refresh-bar" id="refreshBar">🔄 Auto-refreshes every 30 seconds</div>
+
+  <!-- NOT MARKED NOTE -->
+  <div class="nm-note" id="nmNote"></div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat green"><div class="val" id="sTotalClasses">—</div><div class="lbl">Total Classes</div></div>
+    <div class="stat green"><div class="val" id="sAttended">—</div><div class="lbl">Attended</div></div>
+    <div class="stat red">  <div class="val" id="sAbsent">—</div>   <div class="lbl">Absent</div></div>
+    <div class="stat blue"> <div class="val" id="sPct">—</div>      <div class="lbl">Percentage</div></div>
+    <div class="stat amber"><div class="val" id="sNotMarked">—</div><div class="lbl">Not Marked</div></div>
+  </div>
+
+  <!-- AI PREDICTION -->
+  <div id="aiBox" class="ai-box safe" style="display:none;">
+    <div class="ai-title" id="aiTitle">🤖 AI Prediction</div>
+    <div class="ai-body"  id="aiBody"></div>
+    <div class="ai-tip"   id="aiTip"></div>
+  </div>
+
+  <!-- CHART -->
+  <div class="card">
+    <h3>📊 Attendance Overview</h3>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  </div>
+
+  <!-- PREDICTION SIMULATOR -->
+  <div class="card">
+    <h3>🔮 Future Attendance Simulator</h3>
+    <p style="font-size:13px;color:#64748b;margin-bottom:14px;">See how your % changes based on upcoming classes</p>
+    <div class="slider-row">
+      <label>Classes I will attend:</label>
+      <input type="range" id="attendSlider" min="0" max="30" value="5" oninput="simulate()">
+      <span class="slider-val" id="attendVal">5</span>
+    </div>
+    <div class="slider-row">
+      <label>Total upcoming classes:</label>
+      <input type="range" id="totalSlider" min="1" max="60" value="10" oninput="simulate()">
+      <span class="slider-val" id="totalVal">10</span>
+    </div>
+    <div class="predict-result" id="simResult">Adjust sliders to simulate...</div>
+    <div class="predict-bar"><div class="predict-fill" id="simBar" style="width:0%;background:#059669;"></div></div>
+  </div>
+
+  <!-- TARGETS -->
+  <h3 style="font-size:15px;font-weight:800;color:#1e293b;margin-bottom:12px;">🎯 Target Tracker</h3>
+  <div class="targets">
+    <div class="t-card" id="t75"><div class="t-pct">75%</div><div class="t-msg" id="t75m">Loading...</div></div>
+    <div class="t-card" id="t80"><div class="t-pct">80%</div><div class="t-msg" id="t80m">Loading...</div></div>
+    <div class="t-card" id="t90"><div class="t-pct">90%</div><div class="t-msg" id="t90m">Loading...</div></div>
+    <div class="t-card" id="t95"><div class="t-pct">95%</div><div class="t-msg" id="t95m">Loading...</div></div>
+  </div>
+
+  <!-- DATE VIEW -->
+  <div class="card">
+    <h3>📅 View Attendance by Date</h3>
+    <div class="date-row">
+      <input type="date" id="datePicker">
+      <button class="check-btn" onclick="showByDate()">Check →</button>
+    </div>
+    <table id="attTable">
+      <tr><th>Period</th><th>Subject</th><th>Status</th></tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const API     = window.location.origin;
+const roll    = localStorage.getItem("studentRoll");
+const section = localStorage.getItem("section");
+
+if(!roll || !section){ alert("Please login first"); window.location.href="student.html"; }
+
+document.getElementById("rollName").textContent  = roll;
+document.getElementById("sectionName").textContent = section;
+document.getElementById("todayDate").textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+let fullData     = [];
+let gPresent     = 0;
+let gTotal       = 0;
+let lastDataHash = "";
+
+// ===== CHART =====
+const chart = new Chart(document.getElementById("chart"), {
+  type:"doughnut",
+  data:{
+    labels:["Present","Absent","Not Marked"],
+    datasets:[{data:[0,0,0],backgroundColor:["#059669","#ef4444","#f59e0b"],borderWidth:0}]
+  },
+  options:{
+    plugins:{legend:{position:"bottom",labels:{font:{size:12},boxWidth:14}}},
+    cutout:"65%"
+  }
+});
+
+// ===== LOAD DATA =====
+async function loadData(showLoad=true){
+  if(showLoad) showLoader();
+  try {
+    const res  = await fetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    const data = await res.json();
+
+    // ✅ Check if data changed (for auto-refresh notification)
+    const hash = JSON.stringify(data);
+    const changed = lastDataHash && hash !== lastDataHash;
+    lastDataHash = hash;
+
+    if(changed){
+      document.getElementById("refreshBar").textContent = "🔔 Attendance updated! Data refreshed.";
+      setTimeout(()=>{ document.getElementById("refreshBar").textContent = "🔄 Auto-refreshes every 30 seconds"; }, 4000);
+    }
+
+    fullData = data;
+
+    let present=0, absent=0, notMarked=0, onLeave=0;
+    data.forEach(r => {
+      if(r.status==="Present")         present++;
+      else if(r.status==="Absent")     absent++;
+      else if(r.status==="NotMarked")  notMarked++;
+      else if(r.status==="OnLeave")    onLeave++;
+      // OnLeave does NOT count as absent — treated like Not Marked
+    });
+
+    const counted = present + absent;  // Only Present + Absent counted
+    const pct     = counted===0 ? 0 : ((present/counted)*100).toFixed(1);
+
+    gPresent = present;
+    gTotal   = counted;
+
+    // Update stats
+    document.getElementById("sTotalClasses").textContent = counted;
+    document.getElementById("sAttended").textContent     = present;
+    document.getElementById("sAbsent").textContent       = absent;
+    document.getElementById("sPct").textContent          = pct + "%";
+    document.getElementById("sNotMarked").textContent    = notMarked + (onLeave>0 ? ` (+${onLeave} On Leave)` : "");
+
+    // Not marked note
+    const nmEl = document.getElementById("nmNote");
+    if(notMarked > 0){
+      nmEl.style.display = "block";
+      nmEl.textContent = `ℹ️ ${notMarked} period(s) were not marked by your teacher — these are NOT counted in your attendance %.`;
+    } else {
+      nmEl.style.display = "none";
+    }
+
+    // Chart
+    chart.data.datasets[0].data = [present, absent, notMarked];
+    chart.update();
+
+    // AI Prediction
+    showAI(present, counted, parseFloat(pct));
+
+    // Targets
+    showTargets(present, counted);
+
+    // Simulator
+    simulate();
+
+  } catch(err){
+    console.error("Load error:", err);
+  }
+  if(showLoad) hideLoader();
+}
+
+// ===== AI PREDICTION =====
+function showAI(present, total, pct){
+  const box   = document.getElementById("aiBox");
+  const title = document.getElementById("aiTitle");
+  const body  = document.getElementById("aiBody");
+  const tip   = document.getElementById("aiTip");
+  box.style.display = "block";
+  box.className = "ai-box";
+
+  if(total === 0){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction";
+    body.textContent  = "No attendance data yet. Start attending classes!";
+    tip.textContent   = "💡 Your journey begins now.";
+    return;
+  }
+
+  // How many classes to attend to reach 75%
+  let need75 = 0;
+  if(pct < 75){
+    let p=present, t=total;
+    while(((p/t)*100)<75 && need75<500){ p++; t++; need75++; }
+  }
+
+  // How many can be skipped and still stay above 75%
+  let canSkip = 0;
+  if(pct >= 75){
+    let p=present, t=total;
+    while(true){ t++; if((p/t)*100 < 75) break; canSkip++; if(canSkip>100) break; }
+  }
+
+  // Predict after missing next 5
+  const miss5 = ((present/(total+5))*100).toFixed(1);
+
+  if(pct >= 85){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction: Excellent! 🌟";
+    body.innerHTML = `Your attendance is <b>${pct}%</b> — well above 75%.<br>Even if you miss <b>${canSkip}</b> more classes, you'll stay above 75%.<br>If you miss next 5: will drop to <b>${miss5}%</b>`;
+    tip.textContent = `💡 You can safely skip up to ${canSkip} classes. Keep attending!`;
+  } else if(pct >= 75){
+    box.classList.add("safe");
+    title.textContent = "🤖 AI Prediction: Safe ✅";
+    body.innerHTML = `Your attendance is <b>${pct}%</b> — above 75%.<br>You can skip <b>${canSkip}</b> more class(es) and remain above 75%.<br>If you miss next 5: will drop to <b>${miss5}%</b>`;
+    tip.textContent = canSkip<=3
+      ? `⚠️ Close to the limit — attend regularly! Only ${canSkip} skip(s) remaining.`
+      : `💡 You're safe. Attend next 3 classes to stay comfortably above 75%.`;
+  } else if(pct >= 65){
+    box.classList.add("warn");
+    title.textContent = "🤖 AI Prediction: ⚠️ Warning Zone!";
+    body.innerHTML = `Your attendance is <b>${pct}%</b> — below 75%.<br>You need to attend <b>${need75}</b> consecutive classes to reach 75%.<br>If you miss next 5 more: will drop to <b>${miss5}%</b>`;
+    tip.textContent = `🎯 Attend next ${need75} classes without fail to recover!`;
+  } else {
+    box.classList.add("danger");
+    title.textContent = "🤖 AI Prediction: 🚨 Critical!";
+    body.innerHTML = `Your attendance is <b>${pct}%</b> — critically low!<br>You need <b>${need75}</b> consecutive classes to reach 75%.<br>Missing next 5 more will bring it to <b>${miss5}%</b>`;
+    tip.textContent = `🚨 Immediate action needed! Attend ALL classes and meet your HOD.`;
+  }
+}
+
+// ===== SIMULATOR =====
+function simulate(){
+  const attend = Math.min(parseInt(document.getElementById("attendSlider").value),
+                          parseInt(document.getElementById("totalSlider").value));
+  const total  = parseInt(document.getElementById("totalSlider").value);
+  document.getElementById("attendVal").textContent = document.getElementById("attendSlider").value;
+  document.getElementById("totalVal").textContent  = total;
+
+  const futP   = gPresent + attend;
+  const futT   = gTotal + total;
+  const futPct = futT===0 ? 0 : ((futP/futT)*100).toFixed(1);
+  const curPct = gTotal===0 ? 0 : ((gPresent/gTotal)*100).toFixed(1);
+  const change = (futPct - curPct).toFixed(1);
+  const chStr  = change > 0 ? `+${change}%` : `${change}%`;
+  const color  = futPct>=75 ? "#059669" : futPct>=65 ? "#f59e0b" : "#ef4444";
+
+  document.getElementById("simBar").style.width      = futPct + "%";
+  document.getElementById("simBar").style.background = color;
+  document.getElementById("simResult").innerHTML =
+    `After attending <b>${attend}</b> of <b>${total}</b> upcoming classes:<br>` +
+    `Attendance → <b style="font-size:17px;color:${color}">${futPct}%</b> ` +
+    `<span style="color:${futPct>=curPct?'#059669':'#ef4444'};font-weight:700;">(${chStr})</span>` +
+    `<br>${futPct>=75?'<span style="color:#059669">✅ Above 75% — Safe!</span>':'<span style="color:#ef4444">❌ Below 75% — Attend more classes!</span>'}`;
+}
+
+// ===== TARGETS =====
+function showTargets(present, total){
+  function calc(target){
+    const t = target/100;
+    if(total===0) return {msg:"No data yet",cls:"far"};
+    const cur = (present/total)*100;
+    if(cur >= target){
+      let skip=0, p=present, tt=total;
+      while(true){ tt++; if((p/tt)*100<target) break; skip++; if(skip>100)break; }
+      return {msg:`✅ Safe — can skip ${skip} more`,cls:"reached"};
+    }
+    let need=0, p=present, tt=total;
+    while(((p/(tt||1))*100)<target && need<500){ p++; tt++; need++; }
+    return {msg:`Attend ${need} more classes`,cls:need<=5?"close":"far"};
+  }
+  [75,80,90,95].forEach(t=>{
+    const r = calc(t);
+    document.getElementById(`t${t}`).className = `t-card ${r.cls}`;
+    document.getElementById(`t${t}m`).textContent = r.msg;
+  });
+}
+
+// ===== DATE VIEW =====
+const timetable = {
+  Monday:    [["1","BEEE"],["2","BEEE"],["3","EG LAB"],["4","EG LAB"],["5","DS LAB"],["6","DS LAB"],["7","DS LAB"]],
+  Tuesday:   [["1","DS"],["2","BEEE"],["3","EEE LAB"],["4","EEE LAB"],["5","PHY"],["6","PHY LAB"],["7","PHY LAB"]],
+  Wednesday: [["1","DS"],["2","DEVC"],["3","PHY"],["4","BEEE"],["5","BEEE"],["6","DEVC"],["7","DS"]],
+  Thursday:  [["1","DEVC"],["2","BEEE"],["3","DS"],["4","BEEE"],["5","IT WORKSHOP"],["6","IT WORKSHOP"],["7","IT WORKSHOP"]],
+  Friday:    [["1","DEVC"],["2","EG LAB"],["3","EG LAB"],["4","EG LAB"],["5","PHY"],["6","DEVC"],["7","DS"]]
+};
+const subNames = {
+  "BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)","DS":"Data Structures",
+  "DS LAB":"DS Lab","DEVC":"DE&VC","EG LAB":"EG Lab",
+  "IT WORKSHOP":"IT Workshop","PHY LAB":"Physics Lab","EEE LAB":"EEE Lab","PHY":"Physics"
+};
+
+function showByDate(){
+  const dateVal = document.getElementById("datePicker").value;
+  const table   = document.getElementById("attTable");
+  table.innerHTML = `<tr><th>Period</th><th>Subject</th><th>Status</th></tr>`;
+  if(!dateVal){ alert("Select a date"); return; }
+
+  const dayName = new Date(dateVal+"T12:00:00").toLocaleString('en-US',{weekday:'long'});
+  if(dayName==="Saturday"||dayName==="Sunday"){
+    const r=table.insertRow();
+    r.insertCell(0).colSpan=3;
+    r.cells[0].textContent="🎉 Weekend — No Classes";
+    return;
+  }
+
+  const tt = timetable[dayName];
+  if(!tt){ table.insertRow().cells[0 || table.insertRow().insertCell(0)].textContent="No timetable"; return; }
+
+  const today   = new Date().toISOString().split("T")[0];
+  const dayData = fullData.filter(x => x.studentName===roll && new Date(x.date).toISOString().split("T")[0]===dateVal);
+
+  tt.forEach(([pNo, sub])=>{
+    const rec = dayData.find(x=>(x.subject||"").trim().toLowerCase()===sub.toLowerCase());
+    let statusText="⚪ Not Yet", cls="";
+    if(rec){
+      if(rec.status==="Present")    { statusText="✅ Present";  cls="sp"; }
+      else if(rec.status==="Absent"){ statusText="❌ Absent";   cls="sa"; }
+      else if(rec.status==="OnLeave"){ statusText="🏥 On Leave"; cls="sn"; }
+      else                          { statusText="⚠️ Not Marked (Teacher)"; cls="sn"; }
+    } else if(dateVal < today){
+      statusText="❌ Absent"; cls="sa";
+    }
+    const row = table.insertRow();
+    row.insertCell(0).textContent = "P"+pNo;
+    row.insertCell(1).textContent = subNames[sub]||sub;
+    const sc = row.insertCell(2);
+    sc.textContent = statusText;
+    sc.className   = cls;
+  });
+}
+
+function logout(){ localStorage.clear(); window.location.href="index.html"; }
+
+// ===== INIT & AUTO-REFRESH =====
+loadData(true);
+
+// ✅ Auto-refresh every 30 seconds to pick up new attendance immediately
+setInterval(() => loadData(false), 30000);
+</script>
+
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
+<script src="utils.js"></script>
+</body>
+</html>
