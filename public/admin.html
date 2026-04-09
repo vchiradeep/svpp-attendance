@@ -1,125 +1,332 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <title>Admin Panel — SVPCET</title>
-<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="/svpp-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="rollgen.js"></script>
 <style>
-  body{background:#0f172a;min-height:100vh;color:#e2e8f0;font-family:'Plus Jakarta Sans',sans-serif;}
-  .admin-header{background:linear-gradient(135deg,#1e293b,#0f172a);padding:20px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #334155;}
-  .admin-header h1{font-size:20px;font-weight:800;color:#f1f5f9;}
-  .admin-badge{background:#f43f5e;color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;}
-  .admin-container{max-width:960px;margin:0 auto;padding:30px 20px;}
-  .login-box{background:#1e293b;border-radius:20px;padding:44px 40px;max-width:420px;margin:60px auto;border:1px solid #334155;box-shadow:0 25px 60px rgba(0,0,0,0.5);animation:fadeUp 0.5s ease;}
-  .admin-login-icon{width:70px;height:70px;background:linear-gradient(135deg,#f43f5e,#be123c);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;box-shadow:0 8px 24px rgba(244,63,94,0.4);}
-  .login-box h2{text-align:center;font-size:24px;font-weight:800;color:#f1f5f9;margin-bottom:6px;}
-  .login-box p{text-align:center;font-size:13px;color:#64748b;margin-bottom:24px;}
-  .admin-input{width:100%;padding:12px 16px;border:2px solid #334155;border-radius:10px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:#f1f5f9;background:#0f172a;outline:none;transition:all 0.3s;margin-bottom:12px;}
-  .admin-input:focus{border-color:#f43f5e;box-shadow:0 0 0 4px rgba(244,63,94,0.1);}
-  .admin-btn{width:100%;padding:14px;background:linear-gradient(135deg,#f43f5e,#be123c);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all 0.3s;}
-  .admin-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(244,63,94,0.4);}
-  #adminPanel{animation:fadeUp 0.4s ease;}
-  .panel-tabs{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
-  .tab-btn{padding:11px 20px;border-radius:12px;border:2px solid #334155;background:#1e293b;color:#94a3b8;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.3s;}
-  .tab-btn:hover,.tab-btn.active{background:#f43f5e;color:white;border-color:#f43f5e;transform:translateY(-1px);box-shadow:0 4px 16px rgba(244,63,94,0.3);}
-  .dark-card{background:#1e293b;border-radius:14px;padding:22px;margin:14px 0;border:1px solid #334155;animation:fadeUp 0.4s ease;}
-  .dark-card h3{font-size:16px;font-weight:700;color:#f1f5f9;margin-bottom:14px;}
-  .dark-card input,.dark-card select{background:#0f172a;border:2px solid #334155;color:#f1f5f9;border-radius:10px;padding:10px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;width:100%;margin:6px 0;outline:none;transition:all 0.3s;}
-  .dark-card input:focus,.dark-card select:focus{border-color:#f43f5e;box-shadow:0 0 0 3px rgba(244,63,94,0.1);}
-  .dark-card button{background:#f43f5e;color:white;padding:10px 20px;border:none;border-radius:10px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.3s;margin:4px 4px 4px 0;}
-  .dark-card button:hover{background:#be123c;transform:translateY(-1px);}
-  .dark-card button.secondary{background:#334155;color:#e2e8f0;}
-  .dark-card button.secondary:hover{background:#475569;}
-  .dark-card button.amber{background:#f59e0b;color:#1c1917;}
-  .dark-card button.amber:hover{background:#d97706;}
-  .dark-card button.purple{background:#7c3aed;color:white;}
-  .dark-card button.purple:hover{background:#6d28d9;}
-  .dark-card button.green{background:#059669;color:white;}
-  .dark-card button.green:hover{background:#047857;}
-  .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-  .search-row input{flex:1;min-width:200px;}
-  .dark-table{width:100%;border-collapse:collapse;font-size:13px;background:#0f172a;border-radius:10px;overflow:hidden;}
-  .dark-table th{background:#1e293b;color:#94a3b8;padding:11px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;}
-  .dark-table td{padding:11px 14px;border-bottom:1px solid #1e293b;color:#cbd5e1;}
-  .dark-table tr:hover td{background:#1e293b;}
-  .dark-table tr:last-child td{border-bottom:none;}
-  .scroll-box{max-height:350px;overflow-y:auto;border-radius:10px;}
-  .scroll-box::-webkit-scrollbar{width:4px;}
-  .scroll-box::-webkit-scrollbar-thumb{background:#334155;border-radius:4px;}
-  .green{color:#34d399;font-weight:700;}.red{color:#f87171;font-weight:700;}.amber{color:#fbbf24;font-weight:700;}
-  .eye{cursor:pointer;font-size:18px;}
-  .stats-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0;}
-  .mini-stat{background:#0f172a;border-radius:10px;padding:14px 20px;text-align:center;border:1px solid #334155;min-width:90px;}
-  .mini-stat p{font-size:22px;font-weight:800;color:#f1f5f9;margin-bottom:3px;}
-  .mini-stat span{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;}
-  .missed-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #334155;flex-wrap:wrap;gap:10px;}
-  .missed-row:last-child{border-bottom:none;}
-  .pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
-  .pill-warn{background:#78350f;color:#fcd34d;}.pill-success{background:#14532d;color:#86efac;}
-  .pill-gray{background:#334155;color:#94a3b8;}.pill-blue{background:#1e3a8a;color:#93c5fd;}
-  .input-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:4px;margin-top:10px;}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  @media(max-width:580px){.form-grid{grid-template-columns:1fr;}}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
-  /* LEAVE REQUEST CARDS */
-  .leave-card{background:#0f172a;border-radius:12px;padding:16px 18px;margin-bottom:12px;border:1px solid #334155;}
-  .leave-card.pending{border-left:3px solid #f59e0b;}
-  .leave-card h4{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:6px;}
-  .leave-meta{font-size:12px;color:#64748b;margin-bottom:10px;}
-  .leave-reason{font-size:13px;color:#94a3b8;margin-bottom:12px;}
-  .leave-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .leave-actions input{flex:1;min-width:140px;padding:8px 12px;font-size:13px;}
+:root {
+  --bg:      #04050f;
+  --surface: #0d1117;
+  --card:    #111827;
+  --card2:   #1f2937;
+  --border:  #1f2937;
+  --border2: #374151;
+  --text:    #f1f5f9;
+  --muted:   #64748b;
+  --accent:  #f43f5e;
+  --accent2: #be123c;
+  --green:   #34d399;
+  --red:     #f87171;
+  --amber:   #fbbf24;
+  --blue:    #60a5fa;
+  --purple:  #a78bfa;
+}
 
-  /* AUDIT LOG */
-  .audit-row{padding:10px 0;border-bottom:1px solid #334155;display:flex;gap:12px;align-items:flex-start;font-size:13px;}
-  .audit-row:last-child{border-bottom:none;}
-  .audit-action{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+body { background:var(--bg); min-height:100vh; color:var(--text); font-family:'DM Sans',sans-serif; }
 
-  /* SCORE CARD */
-  .score-card{background:#0f172a;border-radius:14px;padding:20px;margin-bottom:16px;text-align:center;}
-  .score-num{font-size:48px;font-weight:800;line-height:1;}
-  .score-grade{font-size:18px;font-weight:700;margin:8px 0;}
-  .score-msg{font-size:13px;color:#94a3b8;}
-  .score-bar{background:#1e293b;border-radius:10px;height:10px;margin:14px 0;overflow:hidden;}
-  .score-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+/* ── HEADER ── */
+.admin-header {
+  background:linear-gradient(135deg,#0d1117,#111827);
+  padding:16px 28px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  backdrop-filter:blur(10px);
+}
+.admin-header-left { display:flex; align-items:center; gap:14px; }
+.admin-logo {
+  width:40px; height:40px; border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; box-shadow:0 4px 14px rgba(244,63,94,0.3);
+}
+.admin-header h1 { font-family:'Syne',sans-serif; font-size:17px; font-weight:800; color:var(--text); }
+.admin-badge {
+  background:rgba(244,63,94,0.15); color:#fb7185;
+  font-size:10px; font-weight:700; padding:3px 10px;
+  border-radius:20px; text-transform:uppercase; letter-spacing:1.5px;
+  border:1px solid rgba(244,63,94,0.25);
+}
+.header-right { display:flex; align-items:center; gap:12px; }
+.refresh-btn {
+  padding:7px 14px; border-radius:8px; border:1px solid var(--border2);
+  background:transparent; color:var(--muted); font-size:12px;
+  font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s;
+}
+.refresh-btn:hover { color:var(--text); border-color:var(--border2); background:var(--card2); }
+.back-btn { color:var(--muted); text-decoration:none; font-size:13px; font-weight:500; transition:color 0.2s; }
+.back-btn:hover { color:var(--text); }
 
-  /* POPUP */
-  .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:none;align-items:center;justify-content:center;}
-  .popup-overlay.show{display:flex;}
-  .popup-box{background:white;border-radius:20px;padding:36px 32px;text-align:center;max-width:320px;width:90%;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
-  @keyframes popIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}
-  .popup-icon{font-size:48px;margin-bottom:12px;}
-  .popup-title{font-size:18px;font-weight:800;color:#1e293b;margin-bottom:8px;}
-  .popup-msg{font-size:13px;color:#64748b;margin-bottom:16px;}
-  .popup-btn{padding:10px 24px;background:#f43f5e;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+/* ── LOGIN ── */
+.login-overlay {
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; align-items:center; justify-content:center; z-index:200; padding:24px;
+}
+.login-card {
+  width:100%; max-width:400px;
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px; padding:44px 40px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  animation:fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+  position:relative; overflow:hidden;
+}
+.login-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,transparent,#f43f5e,#fb7185,transparent);
+  border-radius:24px 24px 0 0;
+}
+.badge-sm {
+  display:flex; align-items:center; gap:6px; width:fit-content;
+  padding:4px 12px; border-radius:100px; margin:0 auto 20px;
+  background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.2);
+  font-family:'Syne',sans-serif; font-size:10px; font-weight:600;
+  color:rgba(251,113,133,0.8); letter-spacing:2px; text-transform:uppercase;
+}
+.badge-dot { width:5px; height:5px; border-radius:50%; background:#f43f5e; box-shadow:0 0 6px #f43f5e; animation:pdot 2s ease infinite; }
+@keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+.login-icon {
+  width:68px; height:68px; border-radius:18px; margin:0 auto 18px;
+  background:linear-gradient(135deg,rgba(244,63,94,0.2),rgba(190,18,60,0.2));
+  border:1px solid rgba(244,63,94,0.3);
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+  box-shadow:0 8px 24px rgba(244,63,94,0.2);
+  animation:iconFloat 3s ease-in-out infinite;
+}
+@keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.card-title {
+  font-family:'Syne',sans-serif; font-size:24px; font-weight:800;
+  text-align:center; letter-spacing:-0.5px;
+  background:linear-gradient(135deg,#fff 40%,#fda4af 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:6px;
+}
+.card-sub { text-align:center; font-size:13px; color:var(--muted); margin-bottom:28px; }
+.login-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent); margin-bottom:22px; }
+.field-label { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:rgba(251,113,133,0.7); text-transform:uppercase; letter-spacing:1.5px; display:block; margin-bottom:8px; }
+.field-wrap { position:relative; margin-bottom:16px; }
+.field-wrap input {
+  width:100%; padding:13px 44px 13px 16px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px; font-size:14px; font-family:'DM Sans',sans-serif;
+  color:var(--text); outline:none; transition:all 0.25s;
+}
+.field-wrap input::placeholder { color:rgba(200,200,240,0.3); }
+.field-wrap input:focus { border-color:rgba(244,63,94,0.6); background:rgba(244,63,94,0.05); box-shadow:0 0 0 4px rgba(244,63,94,0.1); }
+.eye-btn { position:absolute; right:14px; top:50%; transform:translateY(-50%); cursor:pointer; font-size:17px; color:rgba(200,200,240,0.4); transition:color 0.2s; }
+.eye-btn:hover { color:rgba(200,200,240,0.8); }
+.login-submit {
+  width:100%; padding:14px; border:none; border-radius:12px;
+  background:linear-gradient(135deg,#be123c,#f43f5e); color:white;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  letter-spacing:0.5px; cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
+}
+.login-submit::before { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.12) 50%,transparent 60%); transform:translateX(-100%); transition:transform 0.5s ease; }
+.login-submit:hover::before { transform:translateX(100%); }
+.login-submit:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(244,63,94,0.4); }
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* ── MAIN CONTAINER ── */
+.admin-container { max-width:1040px; margin:0 auto; padding:28px 20px 60px; }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px; margin-bottom:24px;
+}
+.stat-tile {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:16px 18px; transition:all 0.25s; cursor:default;
+}
+.stat-tile:hover { border-color:var(--border2); transform:translateY(-2px); }
+.stat-tile .st-val { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; display:block; margin-bottom:4px; }
+.stat-tile .st-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-weight:600; }
+
+/* ── TABS ── */
+.panel-tabs { display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap; }
+.tab-btn {
+  padding:10px 20px; border-radius:10px;
+  border:1px solid var(--border2); background:var(--card);
+  color:var(--muted); font-weight:600; font-family:'DM Sans',sans-serif;
+  font-size:13px; cursor:pointer; transition:all 0.25s;
+}
+.tab-btn:hover { color:var(--text); border-color:#4b5563; }
+.tab-btn.active { background:var(--accent); color:white; border-color:var(--accent); box-shadow:0 4px 16px rgba(244,63,94,0.3); }
+
+/* ── CARDS ── */
+.dark-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:20px 22px; margin-bottom:14px;
+  animation:fadeUp 0.3s ease both;
+}
+.dark-card h3 { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px; }
+.card-desc { font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+
+/* ── INPUTS INSIDE CARDS ── */
+.dark-card input, .dark-card select, .dark-card textarea {
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--text); border-radius:10px; padding:10px 14px;
+  font-family:'DM Sans',sans-serif; font-size:14px;
+  width:100%; margin:5px 0; outline:none; transition:all 0.25s;
+}
+.dark-card input:focus, .dark-card select:focus {
+  border-color:rgba(244,63,94,0.5); box-shadow:0 0 0 3px rgba(244,63,94,0.08);
+}
+.dark-card input::placeholder { color:rgba(200,200,240,0.25); }
+.dark-card select option { background:#0d1117; }
+
+/* ── BUTTONS ── */
+.dark-card button, .btn {
+  background:var(--accent); color:white; padding:10px 18px;
+  border:none; border-radius:9px; font-weight:700;
+  font-family:'DM Sans',sans-serif; font-size:13px;
+  cursor:pointer; transition:all 0.25s; margin:4px 4px 4px 0;
+}
+.dark-card button:hover, .btn:hover { opacity:0.88; transform:translateY(-1px); }
+.btn-secondary { background:var(--card2) !important; color:var(--text) !important; border:1px solid var(--border2) !important; }
+.btn-amber  { background:#d97706 !important; }
+.btn-green  { background:#059669 !important; }
+.btn-purple { background:#7c3aed !important; }
+.btn-red    { background:#991b1b !important; }
+.btn-sm { padding:7px 12px !important; font-size:12px !important; }
+
+/* ── SEARCH ROW ── */
+.search-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.search-row input { flex:1; min-width:200px; }
+
+/* ── TABLE ── */
+.table-wrap { border-radius:10px; overflow:hidden; }
+.dark-table { width:100%; border-collapse:collapse; font-size:13px; }
+.dark-table th { background:var(--surface); color:var(--muted); padding:11px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; font-weight:700; }
+.dark-table td { padding:11px 14px; border-bottom:1px solid var(--border); color:#cbd5e1; }
+.dark-table tr:last-child td { border-bottom:none; }
+.dark-table tr:hover td { background:rgba(255,255,255,0.02); }
+.scroll-box { max-height:360px; overflow-y:auto; }
+.scroll-box::-webkit-scrollbar { width:4px; }
+.scroll-box::-webkit-scrollbar-thumb { background:var(--border2); border-radius:4px; }
+
+/* STATUS COLOURS */
+.col-green  { color:#34d399; font-weight:700; }
+.col-red    { color:#f87171; font-weight:700; }
+.col-amber  { color:#fbbf24; font-weight:700; }
+.col-blue   { color:#60a5fa; font-weight:700; }
+.col-purple { color:#a78bfa; font-weight:700; }
+
+/* ── MINI STATS ── */
+.mini-stats { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+.mini-stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; text-align:center; min-width:80px; }
+.mini-stat .val { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--text); display:block; margin-bottom:3px; }
+.mini-stat .lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; }
+
+/* ── PILLS ── */
+.pill { font-size:10px; font-weight:700; padding:3px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+.pill-warn    { background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.2); }
+.pill-success { background:rgba(52,211,153,0.1);  color:#34d399;  border:1px solid rgba(52,211,153,0.2); }
+.pill-gray    { background:rgba(100,116,139,0.1); color:#94a3b8;  border:1px solid var(--border2); }
+.pill-blue    { background:rgba(96,165,250,0.1);  color:#60a5fa;  border:1px solid rgba(96,165,250,0.2); }
+.pill-red     { background:rgba(248,113,113,0.1); color:#f87171;  border:1px solid rgba(248,113,113,0.2); }
+.auto-tag { font-size:10px; background:rgba(120,53,15,0.5); color:#fcd34d; padding:2px 7px; border-radius:8px; font-weight:700; margin-left:5px; }
+
+/* ── FORM GRID ── */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:600px){ .form-grid{grid-template-columns:1fr;} }
+.input-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; display:block; margin-bottom:5px; margin-top:10px; font-weight:600; }
+
+/* ── MISSED ROW ── */
+.missed-row { display:flex; align-items:center; justify-content:space-between; padding:13px 0; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:10px; }
+.missed-row:last-child { border-bottom:none; }
+
+/* ── LEAVE CARD ── */
+.leave-card { background:var(--surface); border-radius:12px; padding:16px 18px; margin-bottom:10px; border:1px solid var(--border); border-left:3px solid var(--amber); }
+.leave-card h4 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.leave-meta { font-size:12px; color:var(--muted); margin-bottom:8px; }
+.leave-reason { font-size:13px; color:#94a3b8; margin-bottom:12px; line-height:1.5; }
+.leave-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.leave-actions input { flex:1; min-width:130px !important; padding:8px 12px !important; font-size:13px !important; margin:0 !important; }
+
+/* ── SCORE CARD ── */
+.score-card { background:var(--surface); border-radius:14px; padding:20px; margin-bottom:14px; text-align:center; border:2px solid var(--border2); }
+.score-num { font-family:'Syne',sans-serif; font-size:52px; font-weight:800; line-height:1; }
+.score-grade { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin:8px 0 4px; }
+.score-msg { font-size:13px; color:var(--muted); }
+.score-bar { background:var(--card2); border-radius:10px; height:8px; margin:14px 0 10px; overflow:hidden; }
+.score-fill { height:100%; border-radius:10px; transition:width 1.2s ease; }
+
+/* ── AUDIT ACTION TAG ── */
+.audit-action { font-size:10px; font-weight:700; padding:3px 8px; border-radius:7px; white-space:nowrap; flex-shrink:0; }
+
+/* ── POPUP ── */
+.popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.popup-overlay.show { display:flex; }
+.popup-box {
+  background:linear-gradient(135deg,#0d1117,#1a1f2e);
+  border:1px solid rgba(244,63,94,0.2); border-radius:20px;
+  padding:36px 32px; text-align:center; max-width:320px; width:90%;
+  animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+}
+@keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+.popup-icon { font-size:46px; margin-bottom:12px; display:block; }
+.popup-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:var(--text); margin-bottom:8px; }
+.popup-msg { font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.5; }
+.popup-btn { padding:10px 24px; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+.popup-btn:hover { background:var(--accent2); transform:translateY(-1px); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 </style>
 </head>
 <body>
 
+<!-- ── HEADER ── -->
 <div class="admin-header">
-  <h1>🛡️ Admin Panel <span class="admin-badge">Secure</span></h1>
-  <a href="index.html" style="color:#64748b;text-decoration:none;font-size:13px;font-weight:600;">← Home</a>
+  <div class="admin-header-left">
+    <div class="admin-logo">🛡️</div>
+    <div>
+      <h1>Admin Panel <span class="admin-badge">Secure</span></h1>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="refresh-btn" onclick="refreshCurrentTab()">↺ Refresh</button>
+    <a href="index.html" class="back-btn">← Home</a>
+  </div>
 </div>
 
-<div class="admin-container">
-
-  <!-- LOGIN -->
-  <div id="loginBox" class="login-box">
-    <div class="admin-login-icon">🛡️</div>
-    <h2>Admin Login</h2>
-    <p>Enter your admin password to continue</p>
-    <div style="position:relative;display:flex;align-items:center;">
-      <input class="admin-input" type="password" id="adminPass" placeholder="Enter admin password" style="padding-right:44px;">
-      <span class="eye" onclick="togglePwd()" style="position:absolute;right:14px;">👁️</span>
+<!-- ── LOGIN OVERLAY ── -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="badge-sm"><span class="badge-dot"></span>Admin Portal</div>
+    <div class="login-icon">🛡️</div>
+    <div class="card-title">Admin Login</div>
+    <p class="card-sub">Enter your password to access the panel</p>
+    <div class="login-divider"></div>
+    <label class="field-label">Password</label>
+    <div class="field-wrap">
+      <input type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkLogin()">
+      <span class="eye-btn" onclick="togglePwd()">👁️</span>
     </div>
-    <button class="admin-btn" onclick="checkLogin()">Login →</button>
+    <button class="login-submit" onclick="checkLogin()">Access Panel →</button>
   </div>
+</div>
 
-  <!-- ADMIN PANEL -->
-  <div id="adminPanel" style="display:none;">
+<!-- ── ADMIN PANEL ── -->
+<div id="adminPanel" style="display:none;">
+  <div class="admin-container">
 
+    <!-- STATS BAR -->
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-tile"><span class="st-val col-blue"  id="st-students">—</span><span class="st-lbl">Total Students</span></div>
+      <div class="stat-tile"><span class="st-val col-green" id="st-present">—</span><span class="st-lbl">Present Today</span></div>
+      <div class="stat-tile"><span class="st-val col-red"   id="st-absent">—</span><span class="st-lbl">Absent Today</span></div>
+      <div class="stat-tile"><span class="st-val col-amber" id="st-missed">—</span><span class="st-lbl">Missed Markings</span></div>
+      <div class="stat-tile"><span class="st-val col-purple"id="st-leaves">—</span><span class="st-lbl">Pending Leaves</span></div>
+    </div>
+
+    <!-- TABS -->
     <div class="panel-tabs">
       <button class="tab-btn active" id="tab-student" onclick="showSection('student')">🎓 Student Controls</button>
       <button class="tab-btn" id="tab-teacher" onclick="showSection('teacher')">👩‍🏫 Teacher Tracking</button>
@@ -127,45 +334,66 @@
       <button class="tab-btn" id="tab-audit"   onclick="showSection('audit')">🔒 Audit Log</button>
     </div>
 
-    <!-- ===== STUDENT SECTION ===== -->
+    <!-- ══════════ STUDENT SECTION ══════════ -->
     <div id="studentSection">
+
       <div class="dark-card">
-        <h3>🔍 Search Student Records</h3>
+        <h3>🔍 Search Student Attendance</h3>
+        <p class="card-desc">Enter a student's roll number to view all their attendance records.</p>
         <div class="search-row">
-          <input type="text" id="searchRoll" placeholder="Enter Roll Number (e.g. 25G01A0501)">
+          <input type="text" id="searchRoll" placeholder="e.g. 25G01A0501" onkeydown="if(event.key==='Enter')searchStudent()">
           <button onclick="searchStudent()">Search</button>
         </div>
       </div>
+
       <div id="result"></div>
+
       <div class="dark-card" id="updateBox" style="display:none;">
         <h3>✏️ Update Attendance Record</h3>
+        <p class="card-desc">Manually update a specific attendance entry.</p>
         <input type="text" id="updateRoll" placeholder="Student Roll No">
-        <input type="date" id="updateDate" onchange="updatePeriods()">
-        <select id="period"><option>Select Date First</option></select>
-        <select id="status"><option value="Present">Present</option><option value="Absent">Absent</option></select>
-        <button onclick="updateAttendance()">✅ Update</button>
+        <div class="form-grid" style="margin-top:4px;">
+          <div>
+            <label class="input-label">Date</label>
+            <input type="date" id="updateDate" onchange="updatePeriods()">
+          </div>
+          <div>
+            <label class="input-label">Subject / Period</label>
+            <select id="period"><option>Select Date First</option></select>
+          </div>
+        </div>
+        <div style="margin-top:4px;">
+          <label class="input-label">Status</label>
+          <select id="status">
+            <option value="Present">✅ Present</option>
+            <option value="Absent">❌ Absent</option>
+          </select>
+        </div>
+        <div style="margin-top:12px;">
+          <button onclick="updateAttendance()">✅ Update Record</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('updateBox').style.display='none'">Cancel</button>
+        </div>
       </div>
+
     </div>
 
-    <!-- ===== TEACHER SECTION ===== -->
+    <!-- ══════════ TEACHER SECTION ══════════ -->
     <div id="teacherSection" style="display:none;">
 
-      <!-- MISSED MONITOR -->
       <div class="dark-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
           <div>
-            <h3 style="margin-bottom:4px;">⚠️ Missed Marking Monitor</h3>
-            <p style="font-size:13px;color:#64748b;">Dates where teachers forgot to mark attendance</p>
+            <h3>⚠️ Missed Marking Monitor</h3>
+            <p class="card-desc" style="margin:0;">Dates where teachers didn't mark attendance — auto-marked by system.</p>
           </div>
-          <button class="secondary" onclick="loadMissedSummary()" style="font-size:13px;padding:9px 16px;">🔄 Refresh</button>
+          <button onclick="loadMissedSummary()" class="btn btn-secondary btn-sm">🔄 Refresh</button>
         </div>
-        <div id="missedSummary" style="margin-top:16px;"><p style="color:#64748b;font-size:13px;">Click Refresh to load.</p></div>
+        <div id="missedSummary" style="margin-top:16px;"><p style="color:var(--muted);font-size:13px;">Click Refresh to load.</p></div>
       </div>
 
-      <!-- UNLOCK -->
       <div class="dark-card">
-        <h3>🔓 Unlock Date for Teacher</h3>
-        <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Give a teacher permission to re-mark a missed date</p>
+        <h3>🔓 Unlock Date for Re-marking</h3>
+        <p class="card-desc">Give a teacher permission to re-mark attendance for a date they missed.</p>
         <div class="form-grid">
           <div>
             <label class="input-label">Subject</label>
@@ -198,70 +426,69 @@
         </div>
         <label class="input-label">Date to Unlock</label>
         <input type="date" id="unlockDate">
-        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="amber" onclick="unlockForTeacher()">🔓 Unlock for Teacher</button>
-          <button class="purple" onclick="showAdminMarkForm()">👑 Admin Mark on Behalf</button>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-amber" onclick="unlockForTeacher()">🔓 Unlock for Teacher</button>
+          <button class="btn btn-purple" onclick="showAdminMarkForm()">👑 Mark on Behalf</button>
         </div>
-        <div id="unlockResult" style="margin-top:12px;display:none;font-size:13px;padding:12px;border-radius:10px;background:#0f172a;border:1px solid #334155;"></div>
+        <div id="unlockResult" style="display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border2);font-size:13px;"></div>
       </div>
 
-      <!-- ADMIN MARK FORM -->
       <div class="dark-card" id="adminMarkForm" style="display:none;">
         <h3>👑 Mark Attendance on Teacher's Behalf</h3>
-        <p style="font-size:13px;color:#64748b;margin-bottom:14px;" id="adminMarkInfo"></p>
+        <p class="card-desc" id="adminMarkInfo"></p>
         <div id="adminMarkStudentList"></div>
-        <div style="margin-top:14px;display:flex;gap:10px;">
-          <button class="green" onclick="submitAdminMark()">✅ Submit Attendance</button>
-          <button class="secondary" onclick="document.getElementById('adminMarkForm').style.display='none'">Cancel</button>
+        <div style="margin-top:14px;display:flex;gap:8px;">
+          <button class="btn btn-green" onclick="submitAdminMark()">✅ Submit Attendance</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('adminMarkForm').style.display='none'">✕ Cancel</button>
         </div>
       </div>
 
-      <!-- TEACHER PERFORMANCE -->
       <div class="dark-card">
         <h3>📊 Teacher Performance Scores</h3>
-        <button onclick="loadTeachers()" style="font-size:13px;padding:9px 16px;">📋 Load All Teachers</button>
+        <p class="card-desc">View marking consistency and punctuality scores for each faculty member.</p>
+        <button onclick="loadTeachers()">📋 Load All Faculty</button>
       </div>
       <div id="teacherResult"></div>
 
     </div>
 
-    <!-- ===== LEAVE REQUESTS SECTION ===== -->
+    <!-- ══════════ LEAVE REQUESTS ══════════ -->
     <div id="leaveSection" style="display:none;">
       <div class="dark-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
           <div>
-            <h3 style="margin-bottom:4px;">📋 Leave Requests</h3>
-            <p style="font-size:13px;color:#64748b;">Review and approve/reject student leave requests</p>
+            <h3>📋 Leave Requests</h3>
+            <p class="card-desc" style="margin:0;">Review and approve or reject student leave applications.</p>
           </div>
           <div style="display:flex;gap:8px;">
-            <button class="secondary" onclick="loadLeaveRequests('Pending')" style="font-size:13px;padding:9px 14px;">⏳ Pending</button>
-            <button class="secondary" onclick="loadLeaveRequests('All')"     style="font-size:13px;padding:9px 14px;">📋 All</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadLeaveRequests('Pending')">⏳ Pending</button>
+            <button class="btn btn-secondary btn-sm" onclick="loadLeaveRequests('All')">📋 All</button>
           </div>
         </div>
-        <div id="leaveList" style="margin-top:16px;"><p style="color:#64748b;font-size:13px;">Click "Pending" to load requests.</p></div>
+        <div id="leaveList" style="margin-top:16px;"><p style="color:var(--muted);font-size:13px;">Click "⏳ Pending" to load requests.</p></div>
       </div>
     </div>
 
-    <!-- ===== AUDIT LOG SECTION ===== -->
+    <!-- ══════════ AUDIT LOG ══════════ -->
     <div id="auditSection" style="display:none;">
       <div class="dark-card">
-        <h3>🔒 Audit Log — All Attendance Changes</h3>
-        <p style="font-size:13px;color:#64748b;margin-bottom:14px;">Track every change: who marked, edited, deleted, or approved what</p>
-        <div class="search-row" style="margin-bottom:14px;">
-          <input type="text" id="auditRollFilter" placeholder="Filter by student roll number (optional)">
+        <h3>🔒 Audit Log</h3>
+        <p class="card-desc">Complete trail of every attendance change — who did what and when.</p>
+        <div class="search-row" style="margin-bottom:4px;">
+          <input type="text" id="auditRollFilter" placeholder="Filter by roll number (optional)" onkeydown="if(event.key==='Enter')loadAuditLog()">
           <button onclick="loadAuditLog()">🔍 Load Log</button>
         </div>
-        <div id="auditList"><p style="color:#64748b;font-size:13px;">Click Load Log to view the audit trail.</p></div>
+        <div id="auditList" style="margin-top:14px;"><p style="color:var(--muted);font-size:13px;">Click Load Log to view the audit trail.</p></div>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- SUCCESS POPUP -->
+<!-- POPUP -->
 <div class="popup-overlay" id="successPopup">
   <div class="popup-box">
-    <div class="popup-icon" id="popupIcon">✅</div>
+    <span class="popup-icon" id="popupIcon">✅</span>
     <div class="popup-title" id="popupTitle">Success!</div>
     <div class="popup-msg" id="popupMsg"></div>
     <button class="popup-btn" onclick="document.getElementById('successPopup').classList.remove('show')">OK</button>
@@ -270,22 +497,21 @@
 
 <script>
 const API = window.location.origin;
+let currentSection = 'student';
 
 const timetable = {
-  Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
-  Tuesday:   [["1","9:30-10:20","DS"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EEE LAB"],["4","12:00-12:50","EEE LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","PHY LAB"],["7","3:10-4:00","PHY LAB"]],
-  Wednesday: [["1","9:30-10:20","DS"],["2","10:20-11:10","DEVC"],["3","11:10-12:00","PHY"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","BEEE"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]],
-  Thursday:  [["1","9:30-10:20","DEVC"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","DS"],["4","12:00-12:50","BEEE"],["5","1:30-2:20","IT WORKSHOP"],["6","2:20-3:10","IT WORKSHOP"],["7","3:10-4:00","IT WORKSHOP"]],
-  Friday:    [["1","9:30-10:20","DEVC"],["2","10:20-11:10","EG LAB"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","PHY"],["6","2:20-3:10","DEVC"],["7","3:10-4:00","DS"]]
+  Monday:    [["1","BEEE"],["2","BEEE"],["3","EG LAB"],["4","EG LAB"],["5","DS LAB"],["6","DS LAB"],["7","DS LAB"]],
+  Tuesday:   [["1","DS"],["2","BEEE"],["3","EEE LAB"],["4","EEE LAB"],["5","PHY"],["6","PHY LAB"],["7","PHY LAB"]],
+  Wednesday: [["1","DS"],["2","DEVC"],["3","PHY"],["4","BEEE"],["5","BEEE"],["6","DEVC"],["7","DS"]],
+  Thursday:  [["1","DEVC"],["2","BEEE"],["3","DS"],["4","BEEE"],["5","IT WORKSHOP"],["6","IT WORKSHOP"],["7","IT WORKSHOP"]],
+  Friday:    [["1","DEVC"],["2","EG LAB"],["3","EG LAB"],["4","EG LAB"],["5","PHY"],["6","DEVC"],["7","DS"]]
 };
-
-const subjects      = ["PHY","BEEE","ECE","DS","DEVC","EG LAB","IT WORKSHOP"];
+const subjects = ["PHY","BEEE","ECE","DS","DEVC","EG LAB","IT WORKSHOP"];
 const subjectLabels = {
   "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
   "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop",
   "PHY LAB":"Physics Lab","EEE LAB":"EEE Lab","DS LAB":"DS Lab"
 };
-
 let adminMarkData = {};
 
 function showPopup(icon, title, msg){
@@ -295,25 +521,61 @@ function showPopup(icon, title, msg){
   document.getElementById("successPopup").classList.add("show");
 }
 
-function togglePwd(){ const i=document.getElementById("adminPass"); i.type=i.type==="password"?"text":"password"; }
+function togglePwd(){
+  const i = document.getElementById("adminPass");
+  i.type = i.type === "password" ? "text" : "password";
+}
 
 function checkLogin(){
   const pwd = document.getElementById("adminPass").value;
   if(pwd === "chiru1122"){
-    document.getElementById("loginBox").style.display  = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    showPopup("🛡️","Login Successful!","Welcome, Admin! You have full access.");
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("adminPanel").style.display   = "block";
+    loadStats();
+    showPopup("🛡️","Welcome, Admin!","You have full access to the system.");
   } else {
-    alert("❌ Wrong Password. Try again.");
+    document.getElementById("adminPass").style.borderColor = "rgba(244,63,94,0.7)";
+    document.getElementById("adminPass").style.boxShadow   = "0 0 0 4px rgba(244,63,94,0.1)";
+    document.getElementById("adminPass").value = "";
+    document.getElementById("adminPass").placeholder = "❌ Wrong password — try again";
+    setTimeout(() => {
+      document.getElementById("adminPass").style.borderColor = "";
+      document.getElementById("adminPass").style.boxShadow = "";
+      document.getElementById("adminPass").placeholder = "Enter admin password";
+    }, 2000);
   }
 }
 
-// Allow Enter key
-document.addEventListener("keydown", e => {
-  if(e.key==="Enter" && document.getElementById("loginBox").style.display !== "none") checkLogin();
-});
+// ── STATS BAR ──
+async function loadStats(){
+  try {
+    const [attRes, leaveRes, missedRes] = await Promise.all([
+      fetch(API+"/attendance"),
+      fetch(API+"/leave/pending"),
+      fetch(API+"/admin/missed-summary")
+    ]);
+    const attData    = await attRes.json();
+    const leaveData  = await leaveRes.json();
+    const missedData = await missedRes.json();
+
+    const today      = new Date().toISOString().split("T")[0];
+    const todayRecs  = attData.filter(d => new Date(d.date).toISOString().split("T")[0] === today);
+    const presentToday = todayRecs.filter(d=>d.status==="Present").length;
+    const absentToday  = todayRecs.filter(d=>d.status==="Absent").length;
+    const uniqueStudents = [...new Set(attData.map(d=>d.studentName))].length;
+    const pendingLeaves  = leaveData.requests?.length || 0;
+    const missedCount    = missedData.missed?.filter(m=>!m.used).length || 0;
+
+    document.getElementById("st-students").textContent = uniqueStudents;
+    document.getElementById("st-present").textContent  = presentToday;
+    document.getElementById("st-absent").textContent   = absentToday;
+    document.getElementById("st-missed").textContent   = missedCount;
+    document.getElementById("st-leaves").textContent   = pendingLeaves;
+  } catch(e){ console.log("Stats error:",e); }
+}
 
 function showSection(type){
+  currentSection = type;
   ["student","teacher","leave","audit"].forEach(t=>{
     const s = document.getElementById(t+"Section");
     const b = document.getElementById("tab-"+t);
@@ -324,50 +586,60 @@ function showSection(type){
   document.getElementById("tab-"+type).classList.add("active");
 }
 
-// ===== STUDENT =====
+function refreshCurrentTab(){
+  loadStats();
+  if(currentSection==="teacher") loadMissedSummary();
+  if(currentSection==="leave")   loadLeaveRequests("Pending");
+  if(currentSection==="audit")   loadAuditLog();
+}
+
+// ══════════ STUDENT ══════════
 async function searchStudent(){
   const roll = document.getElementById("searchRoll").value.trim();
   if(!roll){ alert("Enter Roll No"); return; }
   showLoader();
-  const res  = await fetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+  const res  = await fetch(API+"/attendance?studentName="+encodeURIComponent(roll));
   const data = await res.json();
   hideLoader();
 
   const result = document.getElementById("result");
   if(!data.length){
-    result.innerHTML = `<div class="dark-card"><p style="color:#64748b;">No records found for <b>${roll}</b>. Make sure the roll number is correct.</p></div>`;
+    result.innerHTML = `<div class="dark-card"><p style="color:var(--muted);">No records found for <b>${roll}</b>.</p></div>`;
     return;
   }
 
   const present   = data.filter(d=>d.status==="Present").length;
   const absent    = data.filter(d=>d.status==="Absent").length;
   const notMarked = data.filter(d=>d.status==="NotMarked").length;
+  const onLeave   = data.filter(d=>d.status==="OnLeave").length;
   const pct       = ((present/((present+absent)||1))*100).toFixed(1);
+  const pctColor  = pct>=75?"col-green":pct>=65?"col-amber":"col-red";
 
   let html = `<div class="dark-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
       <h3 style="margin:0;">🎓 ${roll}</h3>
-      <button onclick="deleteAllStudentRecords('${roll}')" style="background:#7f1d1d;font-size:12px;padding:8px 14px;">🗑 Delete All Records</button>
+      <button onclick="deleteAllStudentRecords('${roll}')" class="btn btn-red btn-sm">🗑 Delete All</button>
     </div>
-    <div class="stats-row">
-      <div class="mini-stat"><p>${present+absent}</p><span>Counted</span></div>
-      <div class="mini-stat"><p style="color:#34d399">${present}</p><span>Present</span></div>
-      <div class="mini-stat"><p style="color:#f87171">${absent}</p><span>Absent</span></div>
-      <div class="mini-stat"><p style="color:#fbbf24">${pct}%</p><span>Percentage</span></div>
-      <div class="mini-stat"><p style="color:#94a3b8">${notMarked}</p><span>Not Marked</span></div>
+    <div class="mini-stats">
+      <div class="mini-stat"><span class="val">${present+absent}</span><span class="lbl">Counted</span></div>
+      <div class="mini-stat"><span class="val col-green">${present}</span><span class="lbl">Present</span></div>
+      <div class="mini-stat"><span class="val col-red">${absent}</span><span class="lbl">Absent</span></div>
+      <div class="mini-stat"><span class="val ${pctColor}">${pct}%</span><span class="lbl">Percentage</span></div>
+      <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
+      <div class="mini-stat"><span class="val col-blue">${onLeave}</span><span class="lbl">On Leave</span></div>
     </div>
-    <div class="scroll-box"><table class="dark-table">
+    <div class="table-wrap scroll-box"><table class="dark-table">
       <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>`;
 
   data.forEach(d=>{
-    const autoTag = d.autoMarked ? `<span style="font-size:10px;background:#78350f;color:#fcd34d;padding:2px 7px;border-radius:10px;font-weight:700;margin-left:5px;">AUTO</span>` : "";
-    const sc = d.status==="Present"?"green":d.status==="Absent"?"red":"amber";
+    const autoTag = d.autoMarked ? `<span class="auto-tag">AUTO</span>` : "";
+    const sc = d.status==="Present"?"col-green":d.status==="Absent"?"col-red":d.status==="OnLeave"?"col-blue":"col-amber";
     html += `<tr>
-      <td>${new Date(d.date).toLocaleDateString()}</td>
+      <td>${new Date(d.date).toLocaleDateString('en-IN')}</td>
       <td>${subjectLabels[d.subject]||d.subject}</td>
       <td class="${sc}">${d.status}${autoTag}</td>
-      <td style="font-size:11px;">${new Date(d.updatedAt).toLocaleString()}</td>
-      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" style="padding:5px 10px;font-size:11px;background:#7f1d1d;">🗑</button></td>
+      <td style="font-size:11px;color:var(--muted);">${new Date(d.updatedAt).toLocaleString('en-IN')}</td>
+      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" class="btn btn-red btn-sm">🗑</button></td>
     </tr>`;
   });
 
@@ -387,135 +659,126 @@ async function deleteRecord(name,date,subject){
 }
 
 async function deleteAllStudentRecords(roll){
-  if(!confirm(`⚠️ Delete ALL attendance records for ${roll}? This cannot be undone.`)) return;
+  if(!confirm(`⚠️ Delete ALL records for ${roll}? Cannot be undone.`)) return;
   showLoader();
   await fetch(API+"/delete-all",{method:"POST"});
   hideLoader();
-  showPopup("🗑️","All Deleted","All records deleted successfully.");
+  showPopup("🗑️","Deleted","All records deleted.");
   document.getElementById("result").innerHTML="";
 }
 
 async function updateAttendance(){
-  const roll    = document.getElementById("updateRoll").value;
-  const date    = document.getElementById("updateDate").value;
-  const subject = document.getElementById("period").value;
-  const status  = document.getElementById("status").value;
-  if(!roll||!date||!subject){ alert("Fill all fields"); return; }
+  const roll=document.getElementById("updateRoll").value;
+  const date=document.getElementById("updateDate").value;
+  const subject=document.getElementById("period").value;
+  const status=document.getElementById("status").value;
+  if(!roll||!date||!subject||subject==="Select Date First"){ alert("Fill all fields"); return; }
   showLoader();
-  const d = {}; d[roll] = status;
-  const res  = await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data:d,section:"A"})});
-  const data = await res.json();
+  const d={}; d[roll]=status;
+  const res=await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data:d,section:"Unknown"})});
+  const data=await res.json();
   hideLoader();
-  if(data.success){ showPopup("✅","Updated!",`Attendance for ${roll} updated to ${status}.`); searchStudent(); }
-  else alert("❌ Update failed");
+  if(data.success){ showPopup("✅","Updated!",`${roll} marked ${status} for ${subjectLabels[subject]||subject}.`); searchStudent(); }
+  else alert("❌ Update failed: "+(data.message||"Server error"));
 }
 
 function updatePeriods(){
-  const date = document.getElementById("updateDate").value;
+  const date=document.getElementById("updateDate").value;
   if(!date) return;
-  const day      = new Date(date).toLocaleDateString('en-US',{weekday:'long'});
-  const dropdown = document.getElementById("period");
-  dropdown.innerHTML = "";
-  const dayData  = timetable[day];
+  const day=new Date(date+"T12:00:00").toLocaleString('en-US',{weekday:'long'});
+  const dropdown=document.getElementById("period");
+  dropdown.innerHTML="";
+  const dayData=timetable[day];
   if(!dayData){ dropdown.innerHTML="<option>No Classes</option>"; return; }
-  dayData.forEach(r=>{ const o=document.createElement("option"); o.value=r[2]; o.text=`Period ${r[0]} — ${subjectLabels[r[2]]||r[2]}`; dropdown.appendChild(o); });
+  dayData.forEach(r=>{ const o=document.createElement("option"); o.value=r[1]; o.text=`Period ${r[0]} — ${subjectLabels[r[1]]||r[1]}`; dropdown.appendChild(o); });
 }
 
-// ===== MISSED MONITOR =====
+// ══════════ MISSED ══════════
 async function loadMissedSummary(){
-  const box = document.getElementById("missedSummary");
-  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
-  const res  = await fetch(API+"/admin/missed-summary");
-  const data = await res.json();
-
+  const box=document.getElementById("missedSummary");
+  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  const res=await fetch(API+"/admin/missed-summary");
+  const data=await res.json();
   if(!data.success||!data.missed||!data.missed.length){
-    box.innerHTML = `<p style="color:#34d399;font-size:13px;">✅ No missed marking found! All teachers are up to date.</p>`;
+    box.innerHTML=`<p style="color:var(--green);font-size:13px;">✅ No missed markings — all teachers up to date.</p>`;
     return;
   }
-
-  box.innerHTML = data.missed.map(item=>{
-    const date = new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    let pillClass="pill-warn", pillText="⚠️ Not Marked";
-    if(item.used)     { pillClass="pill-success"; pillText="✅ Re-marked"; }
-    if(item.unlocked) { pillClass="pill-blue";    pillText="🔓 Unlocked"; }
-    const iso = new Date(item.date).toISOString().split("T")[0];
+  box.innerHTML=data.missed.map(item=>{
+    const date=new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    let pillClass="pill-warn",pillText="⚠️ Not Marked";
+    if(item.used){pillClass="pill-success";pillText="✅ Re-marked";}
+    if(item.unlocked){pillClass="pill-blue";pillText="🔓 Unlocked";}
+    const iso=new Date(item.date).toISOString().split("T")[0];
     return `<div class="missed-row">
       <div>
-        <strong style="color:#f1f5f9;font-size:14px;">${subjectLabels[item.subject]||item.subject} — ${item.section}</strong>
-        <p style="color:#64748b;font-size:12px;margin-top:2px;">${date} · ${item.count} students</p>
+        <strong style="color:var(--text);font-size:14px;">${subjectLabels[item.subject]||item.subject} — ${item.section}</strong>
+        <p style="color:var(--muted);font-size:12px;margin-top:2px;">${date} · ${item.count} students</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <span class="pill ${pillClass}">${pillText}</span>
-        ${!item.used ? `<button class="amber" onclick="quickUnlock('${item.subject}','${item.section}','${iso}')" style="padding:6px 10px;font-size:12px;">🔓 Unlock</button>` : ""}
+        ${!item.used?`<button class="btn btn-amber btn-sm" onclick="quickUnlock('${item.subject}','${item.section}','${iso}')">🔓 Unlock</button>`:""}
       </div>
     </div>`;
   }).join("");
+  loadStats();
 }
 
 async function quickUnlock(subject,section,date){
   showLoader();
-  const res  = await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data = await res.json();
+  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const data=await res.json();
   hideLoader();
   if(data.success){ showPopup("🔓","Unlocked!",data.message); loadMissedSummary(); }
   else alert("❌ "+data.message);
 }
 
 async function unlockForTeacher(){
-  const subject = document.getElementById("unlockSubject").value;
-  const section = document.getElementById("unlockSection").value;
-  const date    = document.getElementById("unlockDate").value;
+  const subject=document.getElementById("unlockSubject").value;
+  const section=document.getElementById("unlockSection").value;
+  const date=document.getElementById("unlockDate").value;
   if(!subject||!section||!date){ alert("Please fill Subject, Section and Date"); return; }
   showLoader();
-  const res  = await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data = await res.json();
+  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const data=await res.json();
   hideLoader();
-  const box = document.getElementById("unlockResult");
+  const box=document.getElementById("unlockResult");
   box.style.display="block";
-  box.style.color = data.success?"#34d399":"#f87171";
-  box.textContent = data.success?"✅ "+data.message:"❌ "+data.message;
-  if(data.success) showPopup("🔓","Unlocked!",data.message);
+  box.style.color=data.success?"#34d399":"#f87171";
+  box.textContent=(data.success?"✅ ":"❌ ")+data.message;
+  if(data.success){ showPopup("🔓","Unlocked!",data.message); loadMissedSummary(); }
 }
 
 function showAdminMarkForm(){
-  const subject = document.getElementById("unlockSubject").value;
-  const section = document.getElementById("unlockSection").value;
-  const date    = document.getElementById("unlockDate").value;
+  const subject=document.getElementById("unlockSubject").value;
+  const section=document.getElementById("unlockSection").value;
+  const date=document.getElementById("unlockDate").value;
   if(!subject||!section||!date){ alert("Please fill Subject, Section and Date first"); return; }
-
-  // ✅ Use rollgen.js to get correct students
-  const students = getStudentsForSection(section);
+  const students=getStudentsForSection(section);
   if(!students.length){ alert("Invalid section: "+section); return; }
-
-  document.getElementById("adminMarkInfo").textContent =
-    `Marking ${subjectLabels[subject]||subject} for ${section} on ${new Date(date).toLocaleDateString()} (${students.length} students)`;
-
-  adminMarkData = {};
-  students.forEach(r => adminMarkData[r] = "Present"); // default all present
-
-  const listEl = document.getElementById("adminMarkStudentList");
-  listEl.innerHTML = `
-    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-      <button class="amber" onclick="markAllAdmin('Present')">✅ All Present</button>
-      <button style="background:#ef4444;" onclick="markAllAdmin('Absent')">❌ All Absent</button>
-      <span style="font-size:12px;color:#64748b;align-self:center;">${students.length} students</span>
+  document.getElementById("adminMarkInfo").textContent=
+    `Marking ${subjectLabels[subject]||subject} for ${section} on ${new Date(date).toLocaleDateString('en-IN')} (${students.length} students)`;
+  adminMarkData={};
+  students.forEach(r=>adminMarkData[r]="Present");
+  const listEl=document.getElementById("adminMarkStudentList");
+  listEl.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button class="btn btn-green btn-sm" onclick="markAllAdmin('Present')">✅ All Present</button>
+      <button class="btn btn-red btn-sm" onclick="markAllAdmin('Absent')">❌ All Absent</button>
+      <span style="font-size:12px;color:var(--muted);align-self:center;">${students.length} students</span>
     </div>
-    <div class="scroll-box" style="max-height:300px;">
+    <div class="scroll-box" style="max-height:280px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
     <table class="dark-table">
       <tr><th>Roll No</th><th>Present</th><th>Absent</th></tr>
-      ${students.map(r=>`
-        <tr>
-          <td style="font-size:12px;">${r}</td>
-          <td><input type="radio" name="atd_${r}" value="Present" onchange="adminMarkData['${r}']='Present'" checked></td>
-          <td><input type="radio" name="atd_${r}" value="Absent"  onchange="adminMarkData['${r}']='Absent'"></td>
-        </tr>`).join("")}
+      ${students.map(r=>`<tr>
+        <td style="font-size:12px;">${r}</td>
+        <td><input type="radio" name="atd_${r}" value="Present" onchange="adminMarkData['${r}']='Present'" checked></td>
+        <td><input type="radio" name="atd_${r}" value="Absent"  onchange="adminMarkData['${r}']='Absent'"></td>
+      </tr>`).join("")}
     </table></div>`;
-
-  document.getElementById("adminMarkForm").style.display = "block";
-  document.getElementById("adminMarkForm").scrollIntoView({behavior:"smooth"});
-  document.getElementById("adminMarkForm").dataset.subject = subject;
-  document.getElementById("adminMarkForm").dataset.section = section;
-  document.getElementById("adminMarkForm").dataset.date    = date;
+  const form=document.getElementById("adminMarkForm");
+  form.style.display="block";
+  form.dataset.subject=subject; form.dataset.section=section; form.dataset.date=date;
+  form.scrollIntoView({behavior:"smooth"});
 }
 
 function markAllAdmin(status){
@@ -524,213 +787,182 @@ function markAllAdmin(status){
 }
 
 async function submitAdminMark(){
-  const form    = document.getElementById("adminMarkForm");
-  const subject = form.dataset.subject;
-  const section = form.dataset.section;
-  const date    = form.dataset.date;
+  const form=document.getElementById("adminMarkForm");
+  const{subject,section,date}=form.dataset;
   if(!subject||!section||!date){ alert("Missing data"); return; }
-
   showLoader();
-  const res  = await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
-  const data = await res.json();
+  const res=await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
+  const data=await res.json();
   hideLoader();
-
-  if(data.success){
-    form.style.display = "none";
-    showPopup("✅","Attendance Marked!","Attendance has been marked on behalf of the teacher.");
-    loadMissedSummary();
-  } else {
-    alert("❌ "+data.message);
-  }
+  if(data.success){ form.style.display="none"; showPopup("✅","Marked!","Attendance submitted successfully."); loadMissedSummary(); }
+  else alert("❌ "+data.message);
 }
 
-// ===== TEACHER PERFORMANCE =====
-function getPerformanceScore(markedDays,totalDays,onTime,late,notMarked){
-  if(totalDays===0) return {score:0,grade:"N/A",color:"#94a3b8",msg:"No data"};
-  const markingScore    = (markedDays/totalDays)*60;
-  const totalActions    = onTime+late;
-  const punctualScore   = totalActions>0?(onTime/totalActions)*30:30;
-  const penalty         = (notMarked/(totalDays||1))*10;
-  const score           = Math.max(0,Math.min(100,markingScore+punctualScore-penalty)).toFixed(1);
+// ══════════ TEACHER PERFORMANCE ══════════
+function getPerf(markedDays,totalDays,onTime,late,notMarked){
+  if(!totalDays) return{score:0,grade:"N/A",color:"#94a3b8",msg:"No data yet"};
+  const s=Math.max(0,Math.min(100,(markedDays/totalDays)*60+(onTime+late>0?(onTime/(onTime+late))*30:30)-(notMarked/(totalDays||1))*10)).toFixed(1);
   let grade,color,msg;
-  if(score>=90)     {grade="⭐ Excellent";       color="#34d399";msg="Outstanding consistency and punctuality!";}
-  else if(score>=80){grade="👍 Good";             color="#60a5fa";msg="Good performance. Minor improvements needed.";}
-  else if(score>=65){grade="⚠️ Average";          color="#fbbf24";msg="Needs improvement in consistency.";}
-  else              {grade="🚨 Needs Attention";  color="#f87171";msg="Multiple missed markings. Admin review needed.";}
-  return {score,grade,color,msg};
+  if(s>=90){grade="⭐ Excellent";color="#34d399";msg="Outstanding consistency!";}
+  else if(s>=80){grade="👍 Good";color="#60a5fa";msg="Good performance, minor improvements.";}
+  else if(s>=65){grade="⚠️ Average";color="#fbbf24";msg="Needs improvement in consistency.";}
+  else{grade="🚨 Needs Attention";color:"#f87171";msg="Multiple missed markings detected.";}
+  return{score:s,grade,color,msg};
 }
 
 function loadTeachers(){
-  let html = `<div class="dark-card"><h3>👩‍🏫 Faculty Performance Board</h3>
-    <div class="scroll-box"><table class="dark-table">
-      <tr><th>Subject</th><th>Action</th></tr>
-      ${subjects.map(sub=>`<tr><td>${subjectLabels[sub]}</td><td><button onclick="viewTeacher('${sub}')" style="padding:6px 12px;font-size:12px;">📊 View Score</button></td></tr>`).join("")}
+  document.getElementById("teacherResult").innerHTML=`
+    <div class="dark-card"><h3>👩‍🏫 Faculty Performance Board</h3>
+    <div class="table-wrap"><table class="dark-table">
+      <tr><th>Subject</th><th>Faculty</th><th>Action</th></tr>
+      ${subjects.map(s=>`<tr>
+        <td>${subjectLabels[s]||s}</td>
+        <td style="color:var(--muted);font-size:12px;">${s} Faculty</td>
+        <td><button class="btn btn-sm" onclick="viewTeacher('${s}')">📊 View Score</button></td>
+      </tr>`).join("")}
     </table></div></div><div id="teacherDetails"></div>`;
-  document.getElementById("teacherResult").innerHTML = html;
 }
 
 async function viewTeacher(subject){
   showLoader();
-  const res  = await fetch(API+"/attendance");
-  const data = await res.json();
+  const res=await fetch(API+"/attendance");
+  const data=await res.json();
   hideLoader();
-
-  const filtered = data.filter(d=>d.subject===subject);
+  const filtered=data.filter(d=>d.subject===subject);
   if(!filtered.length){
-    document.getElementById("teacherDetails").innerHTML =
-      `<div class="dark-card"><p style="color:#64748b;">No data for ${subjectLabels[subject]||subject} yet. Mark some attendance first.</p></div>`;
+    document.getElementById("teacherDetails").innerHTML=`<div class="dark-card"><p style="color:var(--muted);">No data for ${subjectLabels[subject]||subject} yet.</p></div>`;
     return;
   }
-
   let present=0,absent=0,notMarked=0,onTime=0,late=0;
   const dateMap={};
-
   filtered.forEach(d=>{
     if(d.status==="Present")present++;
     else if(d.status==="Absent")absent++;
     else notMarked++;
-    const dk=new Date(d.date).toLocaleDateString();
+    const dk=new Date(d.date).toLocaleDateString('en-IN');
     if(!dateMap[dk]) dateMap[dk]={present:0,absent:0,notMarked:0,teacherMarked:!d.autoMarked};
     if(d.status==="Present")dateMap[dk].present++;
     else if(d.status==="Absent")dateMap[dk].absent++;
     else dateMap[dk].notMarked++;
     if(!d.autoMarked&&d.updatedAt){const t=new Date(d.updatedAt);if(!isNaN(t.getTime())){if(t.getHours()<=10)onTime++;else late++;}}
   });
-
-  const counted    = present+absent;
-  const studentPct = counted?((present/counted)*100).toFixed(1):0;
-  const totalDays  = Object.keys(dateMap).length;
-  const markedDays = Object.values(dateMap).filter(d=>d.teacherMarked).length;
-  const missedDays = totalDays-markedDays;
-  const perf       = getPerformanceScore(markedDays,totalDays,onTime,late,notMarked);
-
-  let html = `<div class="dark-card">
+  const counted=present+absent;
+  const studentPct=counted?((present/counted)*100).toFixed(1):0;
+  const totalDays=Object.keys(dateMap).length;
+  const markedDays=Object.values(dateMap).filter(d=>d.teacherMarked).length;
+  const perf=getPerf(markedDays,totalDays,onTime,late,notMarked);
+  let html=`<div class="dark-card">
     <h3>📊 ${subjectLabels[subject]||subject} — Performance Report</h3>
-    <div class="score-card" style="border:2px solid ${perf.color};">
+    <div class="score-card" style="border-color:${perf.color};">
       <div class="score-num" style="color:${perf.color};">${perf.score}%</div>
       <div class="score-grade" style="color:${perf.color};">${perf.grade}</div>
       <div class="score-msg">${perf.msg}</div>
       <div class="score-bar"><div class="score-fill" style="width:${perf.score}%;background:${perf.color};"></div></div>
-      <div style="display:flex;justify-content:center;gap:16px;font-size:12px;color:#64748b;flex-wrap:wrap;">
-        <span>📋 Marking: <b style="color:#f1f5f9">60%</b></span>
-        <span>⏰ Punctuality: <b style="color:#f1f5f9">30%</b></span>
-        <span>❌ Missed Penalty: <b style="color:#f1f5f9">10%</b></span>
+      <div style="display:flex;justify-content:center;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap;">
+        <span>📋 Marking: <b style="color:var(--text)">60%</b></span>
+        <span>⏰ Punctuality: <b style="color:var(--text)">30%</b></span>
+        <span>❌ Penalty: <b style="color:var(--text)">10%</b></span>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="mini-stat"><p style="color:#34d399">${markedDays}</p><span>Days Marked</span></div>
-      <div class="mini-stat"><p style="color:#f87171">${missedDays}</p><span>Days Missed</span></div>
-      <div class="mini-stat"><p style="color:#60a5fa">${onTime}</p><span>On Time</span></div>
-      <div class="mini-stat"><p style="color:#f97316">${late}</p><span>Late Entries</span></div>
-      <div class="mini-stat"><p style="color:#fbbf24">${notMarked}</p><span>Not Marked</span></div>
-      <div class="mini-stat"><p style="color:#a78bfa">${studentPct}%</p><span>Student Avg%</span></div>
+    <div class="mini-stats">
+      <div class="mini-stat"><span class="val col-green">${markedDays}</span><span class="lbl">Marked</span></div>
+      <div class="mini-stat"><span class="val col-red">${totalDays-markedDays}</span><span class="lbl">Missed</span></div>
+      <div class="mini-stat"><span class="val col-blue">${onTime}</span><span class="lbl">On Time</span></div>
+      <div class="mini-stat"><span class="val col-amber">${late}</span><span class="lbl">Late</span></div>
+      <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
+      <div class="mini-stat"><span class="val col-purple">${studentPct}%</span><span class="lbl">Student Avg</span></div>
     </div>
-    <h4 style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 10px;">Date-wise Breakdown</h4>
-    <div class="scroll-box"><table class="dark-table">
-      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Teacher Status</th></tr>`;
-
-  for(const [d,dm] of Object.entries(dateMap)){
-    const ts = dm.teacherMarked
-      ? '<span class="pill pill-success">✅ Marked</span>'
-      : '<span class="pill pill-warn">⚠️ Missed</span>';
-    html += `<tr><td>${d}</td><td class="green">${dm.present}</td><td class="red">${dm.absent}</td><td class="amber">${dm.notMarked}</td><td>${ts}</td></tr>`;
+    <h4 style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 10px;">Date-wise Breakdown</h4>
+    <div class="table-wrap scroll-box"><table class="dark-table">
+      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Status</th></tr>`;
+  for(const[d,dm]of Object.entries(dateMap)){
+    const ts=dm.teacherMarked?'<span class="pill pill-success">✅ Marked</span>':'<span class="pill pill-warn">⚠️ Missed</span>';
+    html+=`<tr><td>${d}</td><td class="col-green">${dm.present}</td><td class="col-red">${dm.absent}</td><td class="col-amber">${dm.notMarked}</td><td>${ts}</td></tr>`;
   }
-  html += `</table></div></div>`;
-  document.getElementById("teacherDetails").innerHTML = html;
+  html+=`</table></div></div>`;
+  document.getElementById("teacherDetails").innerHTML=html;
 }
 
-// ===== LEAVE REQUESTS =====
+// ══════════ LEAVE REQUESTS ══════════
 async function loadLeaveRequests(filter){
-  const box = document.getElementById("leaveList");
-  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
-
-  try {
-    const url = filter==="All" ? API+"/leave/pending?all=true" : API+"/leave/pending";
-    const res  = await fetch(url);
-    const data = await res.json();
-
+  const box=document.getElementById("leaveList");
+  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  try{
+    const url=filter==="All"?API+"/leave/pending?all=true":API+"/leave/pending";
+    const res=await fetch(url);
+    const data=await res.json();
     if(!data.success||!data.requests||!data.requests.length){
-      box.innerHTML = `<p style="color:#34d399;font-size:13px;">✅ No ${filter==="All"?"":"pending "}leave requests found.</p>`;
+      box.innerHTML=`<p style="color:var(--green);font-size:13px;">✅ No ${filter==="All"?"":"pending "}leave requests.</p>`;
       return;
     }
-
-    box.innerHTML = data.requests.map(r=>{
-      const date = new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-      const subLabel = r.subject?(subjectLabels[r.subject]||r.subject):"Full Day";
-      return `<div class="leave-card pending">
-        <h4>🎓 ${r.studentName} <span style="font-size:12px;color:#64748b;font-weight:400;">— ${r.section}</span></h4>
-        <div class="leave-meta">📅 ${date} &nbsp;·&nbsp; 📘 ${subLabel} &nbsp;·&nbsp; ⏰ ${new Date(r.createdAt).toLocaleString()}</div>
+    box.innerHTML=data.requests.map(r=>{
+      const date=new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      const subLabel=r.subject?(subjectLabels[r.subject]||r.subject):"Full Day";
+      return `<div class="leave-card">
+        <h4>🎓 ${r.studentName} <span style="font-size:12px;color:var(--muted);font-weight:400;">— ${r.section}</span></h4>
+        <div class="leave-meta">📅 ${date} &nbsp;·&nbsp; 📘 ${subLabel} &nbsp;·&nbsp; ⏰ ${new Date(r.createdAt).toLocaleString('en-IN')}</div>
         <div class="leave-reason">💬 "${r.reason}"</div>
         <div class="leave-actions">
-          <input type="text" placeholder="Remarks (optional)" id="rem_${r._id}" style="flex:1;min-width:140px;padding:8px 12px;font-size:13px;background:#1e293b;border:1px solid #334155;color:#f1f5f9;border-radius:8px;">
-          <button class="green" onclick="reviewLeave('${r._id}','Approved')" style="padding:8px 14px;font-size:12px;">✅ Approve</button>
-          <button style="background:#7f1d1d;color:#fca5a5;padding:8px 14px;font-size:12px;" onclick="reviewLeave('${r._id}','Rejected')">❌ Reject</button>
+          <input type="text" placeholder="Remarks (optional)" id="rem_${r._id}">
+          <button class="btn btn-green btn-sm" onclick="reviewLeave('${r._id}','Approved')">✅ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="reviewLeave('${r._id}','Rejected')">❌ Reject</button>
         </div>
       </div>`;
     }).join("");
-  } catch(err){
-    box.innerHTML = `<p style="color:#f87171;">Failed to load leave requests. Check server connection.</p>`;
-  }
+    loadStats();
+  }catch(err){ box.innerHTML=`<p style="color:var(--red);">Failed to load. Check connection.</p>`; }
 }
 
 async function reviewLeave(id,status){
-  const remarks = document.getElementById("rem_"+id)?.value||"";
+  const remarks=document.getElementById("rem_"+id)?.value||"";
   showLoader();
-  const res  = await fetch(API+"/leave/review",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:"admin",remarks})});
-  const data = await res.json();
+  const res=await fetch(API+"/leave/review",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:"admin",remarks})});
+  const data=await res.json();
   hideLoader();
-  if(data.success){
-    showPopup(status==="Approved"?"✅":"❌", status+"!", `Leave request ${status.toLowerCase()} successfully.`);
-    loadLeaveRequests("Pending");
-  } else {
-    alert("❌ "+data.message);
-  }
+  if(data.success){ showPopup(status==="Approved"?"✅":"❌",status+"!",`Leave ${status.toLowerCase()} successfully.`); loadLeaveRequests("Pending"); }
+  else alert("❌ "+data.message);
 }
 
-// ===== AUDIT LOG =====
+// ══════════ AUDIT LOG ══════════
 async function loadAuditLog(){
-  const box  = document.getElementById("auditList");
-  const roll = document.getElementById("auditRollFilter").value.trim();
-  box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading audit log...</p>`;
-
-  try {
-    const url  = roll ? `/audit-log?studentName=${encodeURIComponent(roll)}&limit=100` : `/audit-log?limit=100`;
-    const res  = await fetch(API+url);
-    const data = await res.json();
-
+  const box=document.getElementById("auditList");
+  const roll=document.getElementById("auditRollFilter").value.trim();
+  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  try{
+    const url=roll?`/audit-log?studentName=${encodeURIComponent(roll)}&limit=100`:"/audit-log?limit=100";
+    const res=await fetch(API+url);
+    const data=await res.json();
     if(!data.success||!data.logs||!data.logs.length){
-      box.innerHTML = `<p style="color:#64748b;font-size:13px;">No audit records found${roll?" for "+roll:""}.</p>`;
+      box.innerHTML=`<p style="color:var(--muted);font-size:13px;">No records found${roll?" for "+roll:""}.</p>`;
       return;
     }
-
-    const actionColors = {
+    const actionColors={
       "MARKED":"#34d399","EDITED":"#fbbf24","DELETED":"#f87171",
       "AUTO_MARKED":"#94a3b8","ADMIN_MARKED":"#a78bfa",
       "LEAVE_APPROVED":"#60a5fa","LEAVE_REQUESTED":"#38bdf8",
       "UNLOCK_GRANTED":"#fb923c","DELETE_ALL":"#ef4444"
     };
-
-    box.innerHTML = `<div class="scroll-box" style="max-height:400px;">
+    box.innerHTML=`<div class="table-wrap scroll-box" style="max-height:400px;">
       <table class="dark-table">
         <tr><th>Time</th><th>Action</th><th>By</th><th>Student</th><th>Subject</th><th>Change</th></tr>
         ${data.logs.map(l=>{
-          const color  = actionColors[l.action]||"#94a3b8";
-          const time   = new Date(l.timestamp).toLocaleString('en-IN');
-          const change = l.oldStatus&&l.newStatus ? `${l.oldStatus} → ${l.newStatus}` : l.newStatus||"—";
+          const color=actionColors[l.action]||"#94a3b8";
+          const time=new Date(l.timestamp).toLocaleString('en-IN');
+          const change=l.oldStatus&&l.newStatus?`${l.oldStatus} → ${l.newStatus}`:l.newStatus||"—";
           return `<tr>
-            <td style="font-size:11px;">${time}</td>
-            <td><span class="audit-action" style="background:${color}22;color:${color};">${l.action}</span></td>
+            <td style="font-size:11px;color:var(--muted);">${time}</td>
+            <td><span class="audit-action" style="background:${color}20;color:${color};">${l.action}</span></td>
             <td style="font-size:12px;">${l.performedBy||"—"}</td>
             <td style="font-size:12px;">${l.studentName||"—"}</td>
             <td style="font-size:12px;">${subjectLabels[l.subject]||l.subject||"—"}</td>
-            <td style="font-size:12px;color:#94a3b8;">${change}</td>
+            <td style="font-size:12px;color:var(--muted);">${change}</td>
           </tr>`;
         }).join("")}
       </table></div>`;
-  } catch(err){
-    box.innerHTML = `<p style="color:#f87171;">Failed to load audit log. Check server connection.</p>`;
-  }
+  }catch(err){ box.innerHTML=`<p style="color:var(--red);">Failed to load audit log.</p>`; }
 }
+
+document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&document.getElementById("loginOverlay")?.style.display!=="none") checkLogin(); });
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
