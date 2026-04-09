@@ -32,13 +32,12 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "public")));
 
 // CONNECT DB
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log("MongoDB Connected");
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
-.catch(err => {
-  console.error("MongoDB error:", err);
-});
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => console.error("❌ MongoDB Error:", err));
 
 // ===================== MODELS =====================
 // ✅ Use mongoose.models to avoid OverwriteModelError on hot reload
