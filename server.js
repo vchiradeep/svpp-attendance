@@ -7,12 +7,7 @@ const fs         = require("fs");
 const cron       = require("node-cron");
 
 const app = express();
-app.use(express.json());
-app.use(cors({
-  origin: "https://s-v-p-p-attendance.onrender.com",
-  methods: ["GET", "POST"],
-  credentials: true
-}));
+app.use(cors());
 app.use(bodyParser.json());
 
 // ✅ Case-insensitive static file middleware for Render
@@ -28,22 +23,19 @@ app.use((req, res, next) => {
   }
   next();
 });
-// TEST CHANGE
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // CONNECT DB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.error("❌ MongoDB Error:", err));
+mongoose.connect("mongodb+srv://vchiru1122_db_user:Chiradeep1122@attendance-cluster.iakzknl.mongodb.net/attendanceDB?retryWrites=true&w=majority")
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log("❌ MongoDB connection error:", err));
 
 // ===================== MODELS =====================
 // ✅ Use mongoose.models to avoid OverwriteModelError on hot reload
 const Attendance    = require("./models/Attendance");
 const Teacher       = require("./models/teacher");
-const UnlockRequest = require("./models/unlockrequest");
+const UnlockRequest = require("./models/UnlockRequest");
 const AuditLog      = require("./models/AuditLog");
 const LeaveRequest  = require("./models/Leaverequest");
 
@@ -172,7 +164,6 @@ cron.schedule("31 18 * * *",()=>autoMarkNotMarked());
 // ===================== ATTENDANCE ROUTES =====================
 
 app.post("/submit-attendance", async (req, res) => {
-  console.log("🔥 API HIT");
   // ✅ Log entry point so Render logs show the route was reached
   console.log("📥 /submit-attendance called, body keys:", Object.keys(req.body || {}));
 
@@ -255,6 +246,7 @@ app.post("/submit-attendance", async (req, res) => {
     }
 
     console.log(`✅ submit-attendance done: ${markedCount} records saved`);
+    broadcastUpdate(); // ✅ instantly push to all connected student/admin pages
     return res.status(200).json({ success:true, markedCount:markedCount });
 
   } catch (err) {
@@ -506,6 +498,7 @@ app.post("/leave/review", async (req, res) => {
         }
       }
       await writeAudit({ action:"LEAVE_APPROVED", performedBy:reviewedBy||"admin", studentName:lr.studentName, subject:lr.subject||"ALL", section:lr.section, date:startOfDay, newStatus:"OnLeave" });
+      broadcastUpdate();
     }
 
     return res.json({ success:true, message:`Leave ${status} successfully` });
@@ -597,6 +590,7 @@ app.post("/admin/mark-on-behalf", async (req, res) => {
       }
       await writeAudit({action:"ADMIN_MARKED",performedBy:"admin",studentName:studentRoll,subject,section,date,newStatus:status,req});
     }
+    broadcastUpdate();
     res.json({success:true,message:"Attendance marked by admin"});
   } catch(err){res.status(500).json({success:false,error:err.message});}
 });
@@ -607,6 +601,9 @@ app.post("/admin/auto-mark-absent", async (req, res) => {
 });
 
 // ===================== SSE REAL-TIME UPDATES =====================
+// ✅ Store all connected clients so we can broadcast instantly
+const sseClients = new Set();
+
 app.get("/events", (req, res) => {
   res.writeHead(200, {
     "Content-Type":                "text/event-stream",
@@ -614,10 +611,29 @@ app.get("/events", (req, res) => {
     "Connection":                  "keep-alive",
     "Access-Control-Allow-Origin": "*",
   });
-  const heartbeat = setInterval(() => res.write("data: :heartbeat\n\n"), 30000);
-  req.on("close", () => { clearInterval(heartbeat); res.end(); });
-  res.write("data: {\"type\":\"connected\",\"message\":\"Real-time updates enabled\"}\n\n");
+
+  sseClients.add(res);
+  const heartbeat = setInterval(() => {
+    try { res.write("data: :heartbeat\n\n"); } catch(e){}
+  }, 25000);
+
+  req.on("close", () => {
+    clearInterval(heartbeat);
+    sseClients.delete(res);
+    try { res.end(); } catch(e){}
+  });
+
+  res.write(`data: {"type":"connected"}\n\n`);
 });
+
+// ✅ Broadcast to all SSE clients — called after attendance is submitted
+function broadcastUpdate() {
+  const msg = `data: {"type":"attendance_update","ts":${Date.now()}}\n\n`;
+  for(const client of sseClients) {
+    try { client.write(msg); } catch(e){ sseClients.delete(client); }
+  }
+  console.log(`📡 Broadcast sent to ${sseClients.size} client(s)`);
+}
 
 // TEACHERS
 app.get("/teachers",       async (req,res)=>res.json(await Teacher.find()));
