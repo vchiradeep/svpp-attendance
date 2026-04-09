@@ -1,0 +1,16 @@
+{
+  "name": "svpcet-attendance",
+  "version": "1.0.0",
+  "description": "SVPCET Attendance Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "node-cron": "^3.0.3"
+  }
+}

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVPCET — Faculty Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      body{background:#f1f5f9;}
+      .alert-banner{display:none;margin:16px 24px 0;border-radius:14px;padding:18px 22px;border:2px solid;animation:fadeUp 0.4s ease;}
+      .alert-banner.warning{background:#fffbeb;border-color:#f59e0b;}
+      .alert-banner.success{background:#f0fdf4;border-color:#22c55e;}
+      .alert-banner.info{background:#eff6ff;border-color:#3b82f6;}
+      .alert-title{font-size:15px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+      .alert-banner.warning .alert-title{color:#92400e;}
+      .alert-banner.success .alert-title{color:#166634;}
+      .alert-banner.info .alert-title{color:#1e40af;}
+      .alert-body{font-size:13px;line-height:1.6;}
+      .alert-banner.warning .alert-body{color:#78350f;}
+      .alert-banner.success .alert-body{color:#14532d;}
+      .alert-banner.info .alert-body{color:#1e3a8a;}
+      .alert-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+      .alert-btn{padding:9px 18px;border:none;border-radius:9px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;transition:0.2s;}
+      .alert-btn.primary{background:#f59e0b;color:#1c1917;}
+      .alert-btn.secondary{background:#e2e8f0;color:#374151;}
+      .alert-btn.blue{background:#3b82f6;color:white;}
+      .missed-list{margin:16px 24px;display:none;animation:fadeUp 0.4s ease;}
+      .missed-item{background:white;border-radius:12px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,0.06);border-left:4px solid #f59e0b;flex-wrap:wrap;gap:10px;}
+      .missed-item.unlocked{border-left-color:#22c55e;}
+      .missed-item.used{border-left-color:#94a3b8;opacity:0.7;}
+      .missed-info strong{font-size:14px;color:#1e293b;display:block;margin-bottom:3px;}
+      .missed-info span{font-size:12px;color:#64748b;}
+      .status-pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:0.5px;}
+      .pill-warning{background:#fef3c7;color:#92400e;}
+      .pill-success{background:#dcfce7;color:#166534;}
+      .pill-gray{background:#f1f5f9;color:#64748b;}
+      .pill-blue{background:#eff6ff;color:#1e40af;}
+
+      /* LEAVE REQUESTS */
+      .leave-section{margin:0 24px 24px;}
+      .leave-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+      .leave-header h3{font-size:16px;font-weight:800;color:#1e293b;margin:0;}
+      .leave-card{background:white;border-radius:14px;padding:16px 20px;margin-bottom:10px;border-left:4px solid #f59e0b;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+      .leave-card h4{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
+      .leave-card .lmeta{font-size:12px;color:#64748b;margin-bottom:8px;}
+      .leave-card .lreason{font-size:13px;color:#374151;margin-bottom:10px;}
+      .leave-letter-preview{background:#fafafa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12px;line-height:1.7;color:#374151;font-family:Georgia,serif;white-space:pre-wrap;display:none;margin-bottom:10px;max-height:200px;overflow-y:auto;}
+      .leave-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+      .leave-actions input{flex:1;min-width:140px;padding:8px 12px;font-size:13px;border:2px solid #e2e8f0;border-radius:8px;outline:none;font-family:'Plus Jakarta Sans',sans-serif;}
+      .leave-actions input:focus{border-color:#059669;}
+      .approve-btn{padding:9px 16px;background:#dcfce7;color:#166534;border:none;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+      .reject-btn{padding:9px 16px;background:#fee2e2;color:#991b1b;border:none;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+      .view-letter-btn{padding:7px 12px;background:#eff6ff;color:#1a56db;border:none;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+      /* COLLEGE SECTIONS */
+      .placement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px;}
+      .placement-stat{background:white;border-radius:14px;padding:20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.07);border-bottom:3px solid #1a56db;transition:all 0.3s;}
+      .placement-stat:hover{transform:translateY(-4px);}
+      .placement-stat .p-icon{font-size:28px;margin-bottom:8px;display:block;}
+      .placement-stat .p-value{font-size:26px;font-weight:800;color:#1e293b;display:block;}
+      .placement-stat .p-label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-top:4px;display:block;}
+      .recruiter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+      .recruiter-card{background:white;border-radius:12px;padding:14px;text-align:center;font-size:13px;font-weight:700;color:#1e293b;box-shadow:0 2px 10px rgba(0,0,0,0.06);border:1.5px solid #e2e8f0;transition:all 0.25s;}
+      .recruiter-card:hover{border-color:#1a56db;color:#1a56db;transform:translateY(-2px);}
+      .recruiter-card .r-icon{font-size:20px;display:block;margin-bottom:5px;}
+      .highlight-strip{background:linear-gradient(135deg,#1a56db,#2563eb);color:white;border-radius:14px;padding:20px 28px;margin-bottom:18px;display:flex;align-items:center;gap:16px;box-shadow:0 8px 24px rgba(26,86,219,0.25);}
+      .highlight-strip .hs-icon{font-size:36px;flex-shrink:0;}
+      .highlight-strip h4{font-size:16px;font-weight:700;margin-bottom:3px;}
+      .highlight-strip p{font-size:13px;opacity:0.85;}
+
+      /* POPUP */
+      .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:none;align-items:center;justify-content:center;}
+      .popup-overlay.show{display:flex;}
+      .popup-box{background:white;border-radius:20px;padding:36px 32px;text-align:center;max-width:320px;width:90%;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+      @keyframes popIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}
+      .popup-icon{font-size:52px;margin-bottom:14px;}
+      .popup-title{font-size:20px;font-weight:800;color:#1e293b;margin-bottom:8px;}
+      .popup-msg{font-size:14px;color:#64748b;line-height:1.5;margin-bottom:20px;}
+      .popup-btn{padding:12px 28px;background:#1a56db;color:white;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+
+      @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ admission@svpcet.org &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, AP
+</div>
+
+<div class="college-header">
+    <img src="https://cache.careers360.mobi/media/colleges/social-media/logo/Sri_Venkatesa_Perumal_College_of_Engineering_and_Technology_Puttur.jpg" class="logo">
+    <div class="college-title">
+        <h1>SRI VENKATESA PERUMAL COLLEGE OF ENGINEERING & TECHNOLOGY</h1>
+        <p class="sub">AUTONOMOUS | NAAC Accredited | NBA Approved | AICTE Approved | Affiliated to JNTUA</p>
+        <p>RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh — 517583</p>
+    </div>
+</div>
+
+<div class="navbar">
+    <h2>👨‍🏫 Faculty Dashboard</h2>
+    <div class="nav-buttons">
+        <button onclick="goMark()">📝 Mark Attendance</button>
+        <button onclick="toggleMissedHistory()">📋 Missed History</button>
+        <button onclick="toggleLeaveRequests()" id="leaveBtn">📬 Leave Requests <span id="leaveBadge" style="display:none;background:#ef4444;color:white;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:4px;">0</span></button>
+        <button onclick="goRanking()">🏆 Ranking</button>
+        <button onclick="logout()" style="background:#ef4444;">🚪 Logout</button>
+    </div>
+</div>
+
+<!-- MISSED ALERT -->
+<div class="alert-banner" id="missedAlert">
+    <div class="alert-title" id="missedAlertTitle">⚠️ Attendance Not Marked!</div>
+    <div class="alert-body" id="missedAlertBody">Loading...</div>
+    <div class="alert-actions">
+        <button class="alert-btn primary" id="reMarkBtn" style="display:none;" onclick="goToRemark()">✏️ Mark Now (Admin Unlocked)</button>
+        <button class="alert-btn secondary" onclick="document.getElementById('missedAlert').style.display='none'">Dismiss</button>
+    </div>
+</div>
+
+<div class="alert-banner success" id="allGoodAlert">
+    <div class="alert-title">✅ All Attendance Marked!</div>
+    <div class="alert-body">Great job! All scheduled classes marked today.</div>
+</div>
+
+<!-- MISSED HISTORY -->
+<div class="missed-list" id="missedHistory">
+    <h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:12px;">📋 Missed Marking History</h3>
+    <div id="missedHistoryItems"><p style="color:#64748b;font-size:13px;">Loading...</p></div>
+</div>
+
+<!-- LEAVE REQUESTS PANEL -->
+<div class="leave-section" id="leavePanel" style="display:none;">
+    <div class="leave-header">
+        <h3>📬 Student Leave Requests — <span id="leaveSubjectLabel"></span></h3>
+        <div style="display:flex;gap:8px;">
+            <button onclick="loadLeaveRequests('Pending')"  style="padding:8px 14px;border-radius:8px;border:2px solid #e2e8f0;background:white;font-weight:700;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">⏳ Pending</button>
+            <button onclick="loadLeaveRequests('All')"      style="padding:8px 14px;border-radius:8px;border:2px solid #e2e8f0;background:white;font-weight:700;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">📋 All</button>
+        </div>
+    </div>
+    <div id="leaveList"><p style="color:#64748b;font-size:13px;">Click "Pending" to load requests.</p></div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <img src="https://assets.allegiance-educare.com/colleges/1480077652001.jpg" alt="SVPCET">
+    <div class="hero-text">
+        <h2>Welcome to SVPCET</h2>
+        <p>Shaping Engineers · Building Futures Since 2001</p>
+    </div>
+</div>
+
+<div class="stats-strip">
+    <div class="stat-item"><h3>2001</h3><p>Established</p></div>
+    <div class="stat-item"><h3>25 Acres</h3><p>Campus</p></div>
+    <div class="stat-item"><h3>30+</h3><p>Courses</p></div>
+    <div class="stat-item"><h3>1361</h3><p>Students</p></div>
+    <div class="stat-item"><h3>7.6 LPA</h3><p>Highest Package</p></div>
+</div>
+
+<div class="section">
+    <div class="section-title">🏫 About SVPCET</div>
+    <div class="about-card">Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in <strong>2001</strong>, is a premier interdisciplinary technological institute spread across <strong>25 acres</strong> in Puttur, AP. Affiliated to <strong>JNTUA</strong>, recognized by <strong>UGC & AICTE</strong>, accredited by <strong>NAAC</strong> and approved by <strong>NBA</strong>.</div>
+</div>
+
+<div class="section">
+    <div class="section-title">💼 Placements 2024</div>
+    <div class="highlight-strip"><div class="hs-icon">🏆</div><div><h4>Outstanding Placement Record</h4><p>Dedicated T&P Cell with mock interviews, aptitude training, and industry partnerships.</p></div></div>
+    <div class="placement-grid">
+        <div class="placement-stat"><span class="p-icon">👨‍🎓</span><span class="p-value">283</span><span class="p-label">Placed</span></div>
+        <div class="placement-stat"><span class="p-icon">💰</span><span class="p-value">₹5.76 LPA</span><span class="p-label">Median</span></div>
+        <div class="placement-stat"><span class="p-icon">🚀</span><span class="p-value">₹7.6 LPA</span><span class="p-label">Highest</span></div>
+        <div class="placement-stat"><span class="p-icon">🏢</span><span class="p-value">50+</span><span class="p-label">Companies</span></div>
+    </div>
+    <div class="recruiter-grid">
+        <div class="recruiter-card"><span class="r-icon">🔵</span>TCS</div>
+        <div class="recruiter-card"><span class="r-icon">🟣</span>Infosys</div>
+        <div class="recruiter-card"><span class="r-icon">🟠</span>Tech Mahindra</div>
+        <div class="recruiter-card"><span class="r-icon">🔴</span>Bosch</div>
+        <div class="recruiter-card"><span class="r-icon">🟡</span>Wipro</div>
+        <div class="recruiter-card"><span class="r-icon">🟢</span>Alchemy Techsol</div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-title">🏅 Accreditations</div>
+    <div class="accred-list">
+        <span class="accred-badge">✅ NAAC</span><span class="accred-badge">✅ NBA</span>
+        <span class="accred-badge">✅ AICTE</span><span class="accred-badge">✅ UGC Autonomous</span>
+        <span class="accred-badge">✅ JNTUA</span>
+    </div>
+</div>
+
+<footer>© 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur.</footer>
+
+<!-- SUCCESS POPUP -->
+<div class="popup-overlay" id="loginPopup">
+  <div class="popup-box">
+    <div class="popup-icon">👨‍🏫</div>
+    <div class="popup-title">Welcome, Faculty!</div>
+    <div class="popup-msg" id="loginPopupMsg">Logged in successfully.</div>
+    <button class="popup-btn" onclick="document.getElementById('loginPopup').classList.remove('show')">Continue →</button>
+  </div>
+</div>
+
+<div class="popup-overlay" id="actionPopup">
+  <div class="popup-box">
+    <div class="popup-icon" id="actionPopupIcon">✅</div>
+    <div class="popup-title" id="actionPopupTitle">Done!</div>
+    <div class="popup-msg" id="actionPopupMsg"></div>
+    <button class="popup-btn" onclick="document.getElementById('actionPopup').classList.remove('show')">OK</button>
+  </div>
+</div>
+
+<script>
+const API     = window.location.origin;
+const subject = localStorage.getItem("subject");
+const subjectLabels = {
+  "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
+  "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop"
+};
+let missedInfo=null, historyLoaded=false, leaveVisible=false;
+
+document.getElementById("leaveSubjectLabel").textContent = subjectLabels[subject]||subject||"";
+
+// Show login popup
+if(sessionStorage.getItem("justLoggedIn")==="true"){
+  sessionStorage.removeItem("justLoggedIn");
+  document.getElementById("loginPopupMsg").textContent=`Logged in as ${subjectLabels[subject]||subject} faculty. Welcome!`;
+  document.getElementById("loginPopup").classList.add("show");
+}
+
+function showActionPopup(icon,title,msg){
+  document.getElementById("actionPopupIcon").textContent=icon;
+  document.getElementById("actionPopupTitle").textContent=title;
+  document.getElementById("actionPopupMsg").textContent=msg;
+  document.getElementById("actionPopup").classList.add("show");
+}
+
+// ===== MISSED ATTENDANCE CHECK =====
+async function checkMissedAttendance(){
+  if(!subject)return;
+  try{
+    const res=await fetch(`${API}/teacher/missed/${subject}`);
+    const data=await res.json();
+    if(!data.success)return;
+    if(data.missed){
+      missedInfo=data;
+      const dateStr=new Date(data.date).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+      const alertEl=document.getElementById("missedAlert");
+      const bodyEl=document.getElementById("missedAlertBody");
+      const btnEl=document.getElementById("reMarkBtn");
+      const titleEl=document.getElementById("missedAlertTitle");
+      alertEl.style.display="block";
+      document.getElementById("allGoodAlert").style.display="none";
+      if(data.unlocked){
+        alertEl.className="alert-banner info";
+        titleEl.textContent="🔓 Admin Unlocked Previous Date!";
+        bodyEl.innerHTML=`Admin unlocked <b>${dateStr}</b> for you to re-mark <b>${subjectLabels[subject]||subject}</b>. Please mark now.`;
+        btnEl.style.display="inline-block";
+        btnEl.dataset.date=data.date;
+        btnEl.dataset.unlockId=data.unlockId||"";
+      } else {
+        alertEl.className="alert-banner warning";
+        titleEl.textContent="⚠️ Attendance Not Marked Yesterday!";
+        bodyEl.innerHTML=`You did not mark <b>${subjectLabels[subject]||subject}</b> on <b>${dateStr}</b>.<br>Contact <b>Admin</b> to unlock. Students are tagged "Not Marked" — does NOT affect their %.`;
+        btnEl.style.display="none";
+      }
+    } else {
+      document.getElementById("allGoodAlert").style.display="block";
+      document.getElementById("missedAlert").style.display="none";
+      setTimeout(()=>{document.getElementById("allGoodAlert").style.display="none";},4000);
+    }
+  }catch(e){console.log("Missed check error:",e);}
+}
+
+function goToRemark(){
+  if(!missedInfo)return;
+  localStorage.setItem("selectedDate",new Date(missedInfo.date).toISOString().split("T")[0]);
+  localStorage.setItem("isRemark","true");
+  localStorage.setItem("reMarkUnlockId",missedInfo.unlockId||"");
+  window.location.href="timetable.html";
+}
+
+async function toggleMissedHistory(){
+  const el=document.getElementById("missedHistory");
+  if(el.style.display==="block"){el.style.display="none";return;}
+  el.style.display="block";
+  if(historyLoaded)return;
+  historyLoaded=true;
+  try{
+    const res=await fetch(`${API}/teacher/all-missed/${subject}`);
+    const data=await res.json();
+    const container=document.getElementById("missedHistoryItems");
+    if(!data.success||!data.missedDates||!data.missedDates.length){
+      container.innerHTML=`<p style="color:#059669;font-size:13px;">✅ No missed marking history! Great job.</p>`;return;
+    }
+    container.innerHTML=data.missedDates.map(item=>{
+      const date=new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      let pillClass="pill-warning",pillText="⚠️ Not Marked",cssClass="";
+      if(item.used){pillClass="pill-success";pillText="✅ Re-marked";cssClass="used";}
+      if(item.unlocked){pillClass="pill-blue";pillText="🔓 Unlocked";cssClass="unlocked";}
+      return `<div class="missed-item ${cssClass}">
+        <div class="missed-info"><strong>${subjectLabels[subject]||subject}</strong><span>${date}</span></div>
+        <span class="status-pill ${pillClass}">${pillText}</span>
+      </div>`;
+    }).join("");
+  }catch(e){document.getElementById("missedHistoryItems").innerHTML=`<p style="color:#ef4444;">Failed to load. Try again.</p>`;}
+}
+
+// ===== LEAVE REQUESTS =====
+async function toggleLeaveRequests(){
+  const panel=document.getElementById("leavePanel");
+  leaveVisible=!leaveVisible;
+  panel.style.display=leaveVisible?"block":"none";
+  if(leaveVisible) loadLeaveRequests("Pending");
+}
+
+async function loadLeaveRequests(filter){
+  const box=document.getElementById("leaveList");
+  box.innerHTML=`<p style="color:#64748b;font-size:13px;">Loading...</p>`;
+  try{
+    const url=filter==="All"
+      ? `${API}/leave/teacher/${subject}?status=All`
+      : `${API}/leave/teacher/${subject}?status=Pending`;
+    const res=await fetch(url);
+    const data=await res.json();
+
+    // Update badge
+    if(filter==="Pending"){
+      const badge=document.getElementById("leaveBadge");
+      if(data.requests&&data.requests.length>0){badge.style.display="inline";badge.textContent=data.requests.length;}
+      else badge.style.display="none";
+    }
+
+    if(!data.success||!data.requests||!data.requests.length){
+      box.innerHTML=`<p style="color:#64748b;font-size:13px;">No ${filter==="All"?"":"pending "}leave requests for your subject.</p>`;return;
+    }
+
+    box.innerHTML=data.requests.map((r,i)=>{
+      const date=new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      const subLabel=subjectLabels[r.subject]||r.subject||"Full Day";
+      const isPending=r.status==="Pending";
+      const statusColor=r.status==="Approved"?"#dcfce7;color:#166534":r.status==="Rejected"?"#fee2e2;color:#991b1b":"#fef3c7;color:#92400e";
+      return `<div class="leave-card">
+        <h4>🎓 ${r.studentName} &nbsp;<span style="font-size:11px;padding:3px 9px;border-radius:8px;font-weight:700;background:${statusColor}">${r.status}</span></h4>
+        <div class="lmeta">📅 ${date} · 📘 ${subLabel} · ${r.section}</div>
+        <div class="lreason">💬 "${r.reason}"</div>
+        ${r.leaveLetterText?`
+          <button class="view-letter-btn" onclick="toggleLLetter(${i})">📄 View Leave Letter</button>
+          <div class="leave-letter-preview" id="ll_${i}">${r.leaveLetterText}</div>
+        `:""}
+        ${isPending?`
+        <div class="leave-actions">
+          <input type="text" placeholder="Remarks (optional)" id="rem_${r._id}">
+          <button class="approve-btn" onclick="reviewLeave('${r._id}','Approved')">✅ Approve</button>
+          <button class="reject-btn"  onclick="reviewLeave('${r._id}','Rejected')">❌ Reject</button>
+        </div>`
+        :r.remarks?`<div style="font-size:13px;color:#64748b;margin-top:6px;">Your note: "${r.remarks}"</div>`:""}
+      </div>`;
+    }).join("");
+  }catch(err){box.innerHTML=`<p style="color:#ef4444;">Failed to load. Check connection.</p>`;}
+}
+
+function toggleLLetter(i){
+  const el=document.getElementById("ll_"+i);
+  el.style.display=el.style.display==="block"?"none":"block";
+}
+
+async function reviewLeave(id,status){
+  const remarks=document.getElementById("rem_"+id)?.value||"";
+  try{
+    const res=await fetch(`${API}/leave/review`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:subject,remarks})});
+    const data=await res.json();
+    if(data.success){
+      showActionPopup(status==="Approved"?"✅":"❌",status+"!",`Leave request ${status.toLowerCase()} successfully.`);
+      loadLeaveRequests("Pending");
+    } else {alert("❌ "+data.message);}
+  }catch(err){alert("❌ Network error.");}
+}
+
+function goMark()   {window.location.href="dateselect.html";}
+function goRanking(){window.location.href="leaderboard.html";}
+function logout()   {localStorage.clear();window.location.href="index.html";}
+
+checkMissedAttendance();
+// Check for pending leave requests on load
+setTimeout(async()=>{
+  try{
+    const res=await fetch(`${API}/leave/teacher/${subject}?status=Pending`);
+    const data=await res.json();
+    const badge=document.getElementById("leaveBadge");
+    if(data.requests&&data.requests.length>0){badge.style.display="inline";badge.textContent=data.requests.length;}
+  }catch(e){}
+},1500);
+</script>
+
+<div id="loader" style="display:none;"><div class="spinner"></div></div>
+<script src="utils.js"></script>
+<script src="reminders.js"></script>
+</body>
+</html>
