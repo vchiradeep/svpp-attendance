@@ -269,15 +269,11 @@ function switchTab(tab) {
 }
 
 // Init
-showLoader();
-
 if(role === "teacher"){
   loadTeacherLeaderboard();
 } else {
   loadStudentLeaderboard();
 }
-
-hideLoader();
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
