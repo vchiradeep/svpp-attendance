@@ -112,16 +112,26 @@ let currentTab = "student";
 
 async function loadStudentLeaderboard() {
   const section = localStorage.getItem("section");
-  const res  = await fetch("/leaderboard/students");
+  const res  = await fetch(window.location.origin + "/leaderboard/students");
   const data = await res.json();
   if (!data.success || !data.leaderboard.length) {
     showEmpty("No attendance data yet. Start attending classes!");
     return;
   }
 
-  const lb = data.leaderboard
-  .filter(s => s.section === section)
-  .sort((a, b) => b.pct - a.pct);
+  let lb = data.leaderboard.filter(
+  s => (s.section || "").toLowerCase() === (section || "").toLowerCase()
+);
+
+// ✅ ADD THIS LINE
+lb.sort((a, b) => b.pct - a.pct);
+// ✅ ADD THIS EXACTLY HERE
+if (!lb.length) {
+  showEmpty("No students found in your section");
+  return;
+}
+  console.log("SECTION:", section);
+console.log("DATA:", data.leaderboard);
 
   // Show my rank if logged in
   if (roll) {
@@ -182,7 +192,7 @@ ${lb.map((s, i) => `
 
 async function loadTeacherLeaderboard() {
   const section = localStorage.getItem("section");
-const res = await fetch("/leaderboard/teachers");
+const res = await fetch(window.location.origin + "/leaderboard/teachers");
   const data = await res.json();
   if (!data.success || !data.leaderboard.length) {
     showEmpty("No teacher performance data yet.");
@@ -226,15 +236,15 @@ listEl.innerHTML = `
 <table style="width:100%;color:white;border-collapse:collapse;">
 <tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
   <th>Rank</th>
-  <th>Roll No</th>
-  <th>Attendance %</th>
+  <th>Subject</th>
+  <th>Score %</th>
 </tr>
 
-${lb.map((s, i) => `
-<tr style="background:${s.roll === roll ? '#f59e0b33' : 'transparent'};text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);">
+${lb.map((t, i) => `
+<tr style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);">
   <td>${i+1}</td>
-  <td>${s.roll}</td>
-  <td>${s.pct}%</td>
+  <td>${t.subject}</td>
+  <td>${t.score}%</td>
 </tr>
 `).join("")}
 
