@@ -638,7 +638,10 @@ async function reviewLeave(id,status){
 }
 
 function goMark()   {window.location.href="dateselect.html";}
-function goRanking(){window.location.href="leaderboard.html";}
+function goRanking(){
+  localStorage.setItem("role","teacher");
+  window.location.href="leaderboard.html";
+}
 function logout()   {localStorage.clear();window.location.href="index.html";}
 
 checkMissedAttendance();
