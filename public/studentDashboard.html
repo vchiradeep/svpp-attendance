@@ -69,7 +69,7 @@
 <p id="targetMessage"></p>
 
 </div>
-
+<script src="utils.js"></script>
 <script>
 // ✅ FIXED: Use window.location.origin instead of hardcoded localhost
 // was: const API = "http://localhost:3000";  ❌ BREAKS ON RENDER
@@ -325,6 +325,5 @@ loadAttendance();
   <div class="spinner"></div>
 </div>
 <!-- ✅ FIXED: utils.js was included TWICE — removed duplicate -->
-<script src="utils.js"></script>
 </body>
 </html>

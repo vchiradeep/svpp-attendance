@@ -109,7 +109,7 @@
   <div class="rank-list" id="rankList"></div>
 
 </div>
-
+<script src="utils.js"></script>
 <script>
 const roll = localStorage.getItem("studentRoll");
 let currentTab = "student";
@@ -260,6 +260,5 @@ loadStudentLeaderboard().finally(() => hideLoader());
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
-<script src="utils.js"></script>
 </body>
 </html>

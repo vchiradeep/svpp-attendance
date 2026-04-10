@@ -14,7 +14,7 @@
     <p id="result"></p>
  
 </div>
- 
+ <script src="utils.js"></script>
 <script>
 // ✅ FIXED: was "http://localhost:3000" — breaks on Render
 const API = window.location.origin;
@@ -54,6 +54,5 @@ fetch(API + "/attendance?studentName=" + roll)
 <div id="loader" style="display:none;">
   <div class="spinner"></div>
 </div>
-<script src="utils.js"></script>
 </body>
 </html>
