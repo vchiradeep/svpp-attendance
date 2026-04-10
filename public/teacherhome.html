@@ -50,7 +50,7 @@
       .reject-btn{padding:9px 16px;background:#fee2e2;color:#991b1b;border:none;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
       .view-letter-btn{padding:7px 12px;background:#eff6ff;color:#1a56db;border:none;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
 
-      /* COLLEGE SECTIONS */
+      /* ── ORIGINAL COLLEGE SECTIONS ── */
       .placement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px;}
       .placement-stat{background:white;border-radius:14px;padding:20px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.07);border-bottom:3px solid #1a56db;transition:all 0.3s;}
       .placement-stat:hover{transform:translateY(-4px);}
@@ -65,6 +65,90 @@
       .highlight-strip .hs-icon{font-size:36px;flex-shrink:0;}
       .highlight-strip h4{font-size:16px;font-weight:700;margin-bottom:3px;}
       .highlight-strip p{font-size:13px;opacity:0.85;}
+
+      /* ── NEW: ANIMATED NUMBER COUNTER ── */
+      .counter-strip{background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);padding:36px 24px;display:flex;flex-wrap:wrap;justify-content:center;gap:0;position:relative;overflow:hidden;}
+      .counter-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(59,130,246,0.09) 0%,transparent 70%);pointer-events:none;}
+      .counter-item{flex:1;min-width:130px;max-width:200px;text-align:center;padding:22px 16px;border-right:1px solid rgba(255,255,255,0.06);position:relative;transition:background 0.3s;}
+      .counter-item:hover{background:rgba(255,255,255,0.04);}
+      .counter-item:last-child{border-right:none;}
+      .counter-item::after{content:'';display:block;width:0;height:2px;background:linear-gradient(90deg,#3b82f6,#60a5fa);margin:10px auto 0;border-radius:2px;transition:width 0.4s ease;}
+      .counter-item:hover::after{width:42px;}
+      .counter-num{font-size:38px;font-weight:800;display:block;line-height:1;margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#ffffff 40%,#93c5fd 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+      .counter-lbl{font-size:11px;color:rgba(148,163,184,0.85);text-transform:uppercase;letter-spacing:1px;font-weight:600;display:block;}
+
+      /* ── NEW: TICKER ── */
+      .news-ticker{background:linear-gradient(90deg,#1e3a8a,#1d4ed8,#1e3a8a);color:white;padding:9px 0;overflow:hidden;white-space:nowrap;font-size:12.5px;font-weight:600;letter-spacing:0.3px;border-bottom:2px solid rgba(255,255,255,0.1);}
+      .ticker-track{display:inline-block;animation:tickerScroll 38s linear infinite;}
+      .ticker-track:hover{animation-play-state:paused;}
+      @keyframes tickerScroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+
+      /* ── NEW: KEY INFO GRID ── */
+      .key-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px;}
+      .key-info-card{background:white;border-radius:16px;padding:20px;box-shadow:0 4px 18px rgba(0,0,0,0.07);border:1.5px solid #f1f5f9;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:flex-start;gap:14px;position:relative;overflow:hidden;}
+      .key-info-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a56db,#3b82f6);transform:scaleX(0);transform-origin:left;transition:transform 0.35s ease;border-radius:16px 16px 0 0;}
+      .key-info-card:hover{transform:translateY(-5px);border-color:#bfdbfe;box-shadow:0 14px 36px rgba(26,86,219,0.13);}
+      .key-info-card:hover::before{transform:scaleX(1);}
+      .ki-icon{font-size:22px;flex-shrink:0;width:46px;height:46px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid #bfdbfe;}
+      .ki-title{font-size:13px;font-weight:800;color:#1e293b;margin-bottom:5px;letter-spacing:-0.2px;}
+      .ki-text{font-size:12.5px;color:#64748b;line-height:1.65;}
+
+      /* ── NEW: COURSES GRID ── */
+      .courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:22px;}
+      .course-chip{background:white;border-radius:12px;padding:15px 16px;box-shadow:0 3px 12px rgba(0,0,0,0.07);border:1.5px solid #e2e8f0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);cursor:default;position:relative;overflow:hidden;}
+      .course-chip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#1a56db,#3b82f6);transform:scaleX(0);transition:transform 0.3s ease;}
+      .course-chip:hover{border-color:#93c5fd;background:linear-gradient(135deg,#eff6ff,#fff);transform:translateY(-4px) scale(1.02);box-shadow:0 10px 26px rgba(26,86,219,0.14);}
+      .course-chip:hover::after{transform:scaleX(1);}
+      .course-chip strong{display:block;font-size:14px;font-weight:800;color:#1e3a8a;margin-bottom:4px;letter-spacing:-0.3px;}
+      .course-chip span{font-size:11.5px;color:#64748b;line-height:1.5;}
+
+      /* ── NEW: FACILITIES GRID ── */
+      .facilities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:22px;}
+      .fac-card{background:white;border-radius:14px;padding:17px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 3px 12px rgba(0,0,0,0.07);border:1.5px solid #f1f5f9;transition:all 0.3s ease;position:relative;overflow:hidden;}
+      .fac-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#1a56db,#3b82f6);transform:scaleY(0);transition:transform 0.3s ease;border-radius:14px 0 0 14px;}
+      .fac-card:hover{border-color:#bfdbfe;transform:translateY(-3px);box-shadow:0 10px 26px rgba(26,86,219,0.12);}
+      .fac-card:hover::before{transform:scaleY(1);}
+      .fac-icon{font-size:22px;flex-shrink:0;width:46px;height:46px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid #bfdbfe;transition:transform 0.3s ease;}
+      .fac-card:hover .fac-icon{transform:scale(1.1) rotate(-5deg);}
+      .fac-title{font-size:13px;font-weight:700;color:#1e293b;}
+      .fac-sub{font-size:11.5px;color:#64748b;margin-top:3px;line-height:1.5;}
+
+      /* ── NEW: SCHOLARSHIPS ── */
+      .scholarship-list{background:white;border-radius:16px;padding:24px;box-shadow:0 4px 18px rgba(0,0,0,0.07);margin-bottom:22px;border:1.5px solid #f1f5f9;position:relative;overflow:hidden;}
+      .scholarship-list::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1a56db,#3b82f6,#60a5fa);border-radius:16px 16px 0 0;}
+      .sch-item{display:flex;align-items:flex-start;gap:14px;padding:12px 8px;border-bottom:1px solid #f1f5f9;transition:background 0.2s;border-radius:8px;margin:0 -8px;}
+      .sch-item:hover{background:#f8fafc;}
+      .sch-item:last-child{border-bottom:none;}
+      .sch-dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#1a56db,#3b82f6);flex-shrink:0;margin-top:5px;box-shadow:0 2px 6px rgba(26,86,219,0.3);}
+      .sch-text{font-size:13.5px;color:#374151;line-height:1.6;}
+      .sch-text strong{color:#1e3a8a;}
+
+      /* ── NEW: ALUMNI QUOTES ── */
+      .quote-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin-bottom:22px;}
+      .quote-card{background:white;border-radius:16px;padding:26px 22px 20px;box-shadow:0 4px 18px rgba(0,0,0,0.07);border:1.5px solid #f1f5f9;position:relative;overflow:hidden;transition:all 0.3s ease;}
+      .quote-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1a56db,#3b82f6,#60a5fa);border-radius:16px 16px 0 0;}
+      .quote-card::after{content:'\201C';font-size:80px;color:#dbeafe;position:absolute;top:2px;left:14px;line-height:1;font-family:Georgia,serif;font-weight:700;pointer-events:none;}
+      .quote-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(26,86,219,0.12);border-color:#bfdbfe;}
+      .quote-text{font-size:13.5px;color:#374151;line-height:1.75;margin-bottom:16px;padding-top:22px;font-style:italic;position:relative;z-index:1;}
+      .quote-author{font-size:13px;font-weight:800;color:#1e293b;letter-spacing:-0.2px;}
+      .quote-role{font-size:11.5px;color:#64748b;margin-top:3px;}
+
+      /* ── NEW: YEAR-WISE PLACEMENT TABLE ── */
+      .placement-table-wrap{background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,0.07);margin-bottom:22px;border:1.5px solid #f1f5f9;}
+      .placement-table{width:100%;border-collapse:collapse;font-size:14px;}
+      .placement-table th{background:linear-gradient(135deg,#1e3a8a,#1d4ed8);color:white;padding:14px 18px;text-align:left;font-weight:700;font-size:12px;letter-spacing:0.8px;text-transform:uppercase;}
+      .placement-table td{padding:14px 18px;border-bottom:1px solid #f1f5f9;color:#374151;font-weight:500;transition:background 0.2s;}
+      .placement-table td:first-child{font-weight:700;color:#1e293b;}
+      .placement-table tr:hover td{background:#f0f7ff;}
+      .placement-table tr:last-child td{border-bottom:none;}
+
+      /* ── NEW: CONTACT CARD ── */
+      .contact-card{background:white;border-radius:16px;padding:24px;box-shadow:0 4px 18px rgba(0,0,0,0.07);margin-bottom:22px;border:1.5px solid #f1f5f9;position:relative;overflow:hidden;}
+      .contact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1a56db,#3b82f6,#60a5fa);border-radius:16px 16px 0 0;}
+      .contact-row{display:flex;align-items:center;gap:14px;padding:13px 10px;border-bottom:1px solid #f1f5f9;font-size:13.5px;color:#374151;border-radius:8px;transition:background 0.2s;}
+      .contact-row:hover{background:#f8fafc;}
+      .contact-row:last-child{border-bottom:none;}
+      .cr-icon{font-size:17px;width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#eff6ff,#dbeafe);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #bfdbfe;}
 
       /* POPUP */
       .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:none;align-items:center;justify-content:center;}
@@ -81,8 +165,20 @@
 </head>
 <body>
 
+<!-- ── NEW: SCROLLING NEWS TICKER ── -->
+<div class="news-ticker">
+  <span class="ticker-track">
+    &nbsp;&nbsp;&nbsp;🎓 SVPCET — Sri Venkatesa Perumal College of Engineering & Technology, Puttur, AP
+    &nbsp;·&nbsp; 🏆 NAAC B++ Accredited &nbsp;·&nbsp; ✅ NBA & AICTE Approved &nbsp;·&nbsp; 🎯 100% Placement Drive every year
+    &nbsp;·&nbsp; 💰 Highest Package 2024: ₹7.6 LPA &nbsp;·&nbsp; 📊 Median Package 2024: ₹5.76 LPA
+    &nbsp;·&nbsp; 🏢 Top Recruiters: TCS · Infosys · Tech Mahindra · Bosch · Wipro
+    &nbsp;·&nbsp; 📚 30+ Courses · 1675 Total Seats &nbsp;·&nbsp; 🏗 25 Acres Campus
+    &nbsp;·&nbsp; 📞 +91 93905 05445 &nbsp;·&nbsp; 🌐 www.svpcet.org &nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
 <div class="top-bar">
-    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ admission@svpcet.org &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, AP
+    📞 +91 93905 05445 &nbsp;|&nbsp; ✉️ <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741510191d07071d1b1a340702041711005a1b0613">[email&#160;protected]</a> &nbsp;|&nbsp; 📍 RVS Nagar, K.N Road, Puttur, AP
 </div>
 
 <div class="college-header">
@@ -147,6 +243,7 @@
     </div>
 </div>
 
+<!-- ── ORIGINAL STATS STRIP ── -->
 <div class="stats-strip">
     <div class="stat-item"><h3>2001</h3><p>Established</p></div>
     <div class="stat-item"><h3>25 Acres</h3><p>Campus</p></div>
@@ -155,11 +252,87 @@
     <div class="stat-item"><h3>7.6 LPA</h3><p>Highest Package</p></div>
 </div>
 
+<!-- ── NEW: ANIMATED COUNTER STRIP ── -->
+<div class="counter-strip">
+  <div class="counter-item">
+    <span class="counter-num" data-target="283">0</span>
+    <span class="counter-lbl">Students Placed 2024</span>
+  </div>
+  <div class="counter-item">
+    <span class="counter-num" data-target="50" data-suffix="+">0</span>
+    <span class="counter-lbl">Recruiting Companies</span>
+  </div>
+  <div class="counter-item">
+    <span class="counter-num" data-target="1675">0</span>
+    <span class="counter-lbl">Total Seats</span>
+  </div>
+  <div class="counter-item">
+    <span class="counter-num" data-target="70" data-suffix="%">0</span>
+    <span class="counter-lbl">Faculty Ratified by JNTUA</span>
+  </div>
+  <div class="counter-item">
+    <span class="counter-num" data-target="10000" data-prefix="10K+">0</span>
+    <span class="counter-lbl">Library Books</span>
+  </div>
+  <div class="counter-item">
+    <span class="counter-num" data-target="23">0</span>
+    <span class="counter-lbl">Courses Offered</span>
+  </div>
+</div>
+
+<!-- ── ORIGINAL ABOUT SECTION ── -->
 <div class="section">
     <div class="section-title">🏫 About SVPCET</div>
     <div class="about-card">Sri Venkatesa Perumal College of Engineering & Technology (SVPCET), established in <strong>2001</strong>, is a premier interdisciplinary technological institute spread across <strong>25 acres</strong> in Puttur, AP. Affiliated to <strong>JNTUA</strong>, recognized by <strong>UGC & AICTE</strong>, accredited by <strong>NAAC</strong> and approved by <strong>NBA</strong>.</div>
 </div>
 
+<!-- ── NEW: KEY INFORMATION CARDS ── -->
+<div class="section">
+  <div class="section-title">ℹ️ Key Information</div>
+  <div class="key-info-grid">
+    <div class="key-info-card">
+      <span class="ki-icon">🏛️</span>
+      <div><div class="ki-title">Founded</div><div class="ki-text">2001 by Tamilian Education Academy, Puttur, Chittoor (Dt.), AP</div></div>
+    </div>
+    <div class="key-info-card">
+      <span class="ki-icon">🎓</span>
+      <div><div class="ki-title">Affiliation</div><div class="ki-text">Jawaharlal Nehru Technological University Anantapur (JNTUA) — Autonomous</div></div>
+    </div>
+    <div class="key-info-card">
+      <span class="ki-icon">✅</span>
+      <div><div class="ki-title">Accreditations</div><div class="ki-text">NAAC B++ · NBA · AICTE · UGC Recognised · AP EAPCET Approved</div></div>
+    </div>
+    <div class="key-info-card">
+      <span class="ki-icon">📚</span>
+      <div><div class="ki-title">Programs Offered</div><div class="ki-text">Diploma · B.Tech · M.Tech · MBA · MCA — 23 courses, 1675 seats</div></div>
+    </div>
+    <div class="key-info-card">
+      <span class="ki-icon">💰</span>
+      <div><div class="ki-title">Fee Structure</div><div class="ki-text">B.Tech: ~₹1.64 Lakhs total · Hostel: ₹55,000/year</div></div>
+    </div>
+    <div class="key-info-card">
+      <span class="ki-icon">🗺️</span>
+      <div><div class="ki-title">How to Reach</div><div class="ki-text">3.5 km from Puttur APSRTC · 4.7 km from Anangur Railway · 25 km from Tirupati Airport</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NEW: B.TECH SPECIALISATIONS ── -->
+<div class="section">
+  <div class="section-title">📖 B.Tech Specialisations</div>
+  <div class="courses-grid">
+    <div class="course-chip"><strong>CSE</strong><span>Computer Science Engineering</span></div>
+    <div class="course-chip"><strong>AI & ML</strong><span>Artificial Intelligence & Machine Learning</span></div>
+    <div class="course-chip"><strong>AI (DS)</strong><span>Artificial Intelligence & Data Science</span></div>
+    <div class="course-chip"><strong>ECE</strong><span>Electronics & Communication</span></div>
+    <div class="course-chip"><strong>EEE</strong><span>Electrical & Electronics</span></div>
+    <div class="course-chip"><strong>Civil</strong><span>Civil Engineering</span></div>
+    <div class="course-chip"><strong>Mechanical</strong><span>Mechanical Engineering</span></div>
+    <div class="course-chip"><strong>VLSI</strong><span>Electronics & VLSI Design</span></div>
+  </div>
+</div>
+
+<!-- ── ORIGINAL PLACEMENTS SECTION ── -->
 <div class="section">
     <div class="section-title">💼 Placements 2024</div>
     <div class="highlight-strip"><div class="hs-icon">🏆</div><div><h4>Outstanding Placement Record</h4><p>Dedicated T&P Cell with mock interviews, aptitude training, and industry partnerships.</p></div></div>
@@ -179,16 +352,96 @@
     </div>
 </div>
 
+<!-- ── NEW: YEAR-WISE PLACEMENT HISTORY ── -->
+<div class="section">
+  <div class="section-title">📊 Year-wise Placement Record</div>
+  <div class="placement-table-wrap">
+    <table class="placement-table">
+      <tr><th>Year</th><th>Students Placed</th><th>Total Students</th><th>Median Package</th><th>Highest Package</th></tr>
+      <tr><td>2024</td><td style="color:#059669;font-weight:700;">283</td><td>1361</td><td>₹5.76 LPA</td><td>₹7.6 LPA</td></tr>
+      <tr><td>2023</td><td style="color:#059669;font-weight:700;">290</td><td>1330</td><td>₹6.0 LPA</td><td>—</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ── NEW: CAMPUS FACILITIES ── -->
+<div class="section">
+  <div class="section-title">🏟️ Campus Facilities</div>
+  <div class="facilities-grid">
+    <div class="fac-card"><span class="fac-icon">📚</span><div><div class="fac-title">Central Library</div><div class="fac-sub">10,000+ books · 100+ journals · 500+ memoirs · Digital resources</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🔬</span><div><div class="fac-title">State-of-Art Labs</div><div class="fac-sub">Advanced practical learning labs for all departments</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🏠</span><div><div class="fac-title">Boys & Girls Hostels</div><div class="fac-sub">Separate hostels · Mess · TV room · ₹55,000/year</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🏋️</span><div><div class="fac-title">Gymnasium</div><div class="fac-sub">Fully equipped fitness centre for students & staff</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🏟️</span><div><div class="fac-title">Sports Complex</div><div class="fac-sub">Outdoor & indoor sports and games facilities</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🍽️</span><div><div class="fac-title">Cafeteria & Mess</div><div class="fac-sub">Vegetarian & non-vegetarian options available</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🚌</span><div><div class="fac-title">Transportation</div><div class="fac-sub">College bus service for students & staff</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🏦</span><div><div class="fac-title">Banking Services</div><div class="fac-sub">On-campus banking facilities available</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🏥</span><div><div class="fac-title">Medical Facility</div><div class="fac-sub">On-campus health & medical care services</div></div></div>
+    <div class="fac-card"><span class="fac-icon">🎭</span><div><div class="fac-title">Activity Room</div><div class="fac-sub">Clubs, fests, events & cultural activities</div></div></div>
+  </div>
+</div>
+
+<!-- ── NEW: SCHOLARSHIPS ── -->
+<div class="section">
+  <div class="section-title">🎁 Scholarships Available</div>
+  <div class="scholarship-list">
+    <div class="sch-item"><div class="sch-dot"></div><div class="sch-text"><strong>SC/ST/BC/EBC/Minority Scholarships</strong> — through the Andhra Pradesh State Government</div></div>
+    <div class="sch-item"><div class="sch-dot"></div><div class="sch-text"><strong>EWS (Economically Weaker Section) Scholarships</strong> — for eligible candidates</div></div>
+    <div class="sch-item"><div class="sch-dot"></div><div class="sch-text"><strong>Merit-Based Scholarships</strong> — for top-performing students in college-level tests & competitive exams</div></div>
+    <div class="sch-item"><div class="sch-dot"></div><div class="sch-text"><strong>AICTE Scholarships</strong> — for specific categories including girls and differently-abled students</div></div>
+    <div class="sch-item"><div class="sch-dot"></div><div class="sch-text"><strong>Up to 100% Scholarships</strong> — for outstanding academic excellence & extracurricular achievements</div></div>
+  </div>
+</div>
+
+<!-- ── NEW: STUDENT TESTIMONIALS ── -->
+<div class="section">
+  <div class="section-title">💬 Student Testimonials</div>
+  <div class="quote-grid">
+    <div class="quote-card">
+      <div class="quote-text">SVPCET days fill maximum colors in life's journey in the form of lessons. Best student accommodation with spacious rooms and staff is so kind.</div>
+      <div class="quote-author">SVPCET Alumni</div>
+      <div class="quote-role">B.Tech Graduate</div>
+    </div>
+    <div class="quote-card">
+      <div class="quote-text">This college has a very good infrastructure, good faculty and you will get great exposure there. The placements you get here are up to the mark.</div>
+      <div class="quote-author">SVPCET Student</div>
+      <div class="quote-role">Final Year B.Tech</div>
+    </div>
+    <div class="quote-card">
+      <div class="quote-text">The placement head and other faculty helped students a lot to succeed in their dream jobs by giving training and helping them get jobs in MNC and startup companies.</div>
+      <div class="quote-author">Placed Student</div>
+      <div class="quote-role">Mechanical Engineering</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ORIGINAL ACCREDITATIONS ── -->
 <div class="section">
     <div class="section-title">🏅 Accreditations</div>
     <div class="accred-list">
-        <span class="accred-badge">✅ NAAC</span><span class="accred-badge">✅ NBA</span>
-        <span class="accred-badge">✅ AICTE</span><span class="accred-badge">✅ UGC Autonomous</span>
+        <span class="accred-badge">✅ NAAC B++</span>
+        <span class="accred-badge">✅ NBA</span>
+        <span class="accred-badge">✅ AICTE</span>
+        <span class="accred-badge">✅ UGC Autonomous</span>
         <span class="accred-badge">✅ JNTUA</span>
+        <span class="accred-badge">✅ AP EAPCET</span>
+        <span class="accred-badge">✅ International Admissions Open</span>
     </div>
 </div>
 
-<footer>© 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur.</footer>
+<!-- ── NEW: CONTACT SECTION ── -->
+<div class="section">
+  <div class="section-title">📞 Contact Information</div>
+  <div class="contact-card">
+    <div class="contact-row"><span class="cr-icon">📍</span><span>RVS Nagar, K.N Road, Puttur, Chittoor District, Andhra Pradesh — 517583</span></div>
+    <div class="contact-row"><span class="cr-icon">📞</span><span>+91 93905 05445 &nbsp;·&nbsp; +91 93905 05456 &nbsp;·&nbsp; 084980 82020</span></div>
+    <div class="contact-row"><span class="cr-icon">✉️</span><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6a0b0e070319190305042a191c1a090f1e4405180d">[email&#160;protected]</a> &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bcccced5d2dfd5ccddd092cfcaccdfd9c8fcdbd1ddd5d092dfd3d1">[email&#160;protected]</a></span></div>
+    <div class="contact-row"><span class="cr-icon">🌐</span><span>www.svpcet.org</span></div>
+    <div class="contact-row"><span class="cr-icon">🚉</span><span>4.7 km — Anangur Railway Station &nbsp;·&nbsp; 3.5 km — Puttur APSRTC Bus Stand &nbsp;·&nbsp; 25 km — Tirupati International Airport</span></div>
+  </div>
+</div>
+
+<footer>© 2025 Sri Venkatesa Perumal College of Engineering & Technology, Puttur. All rights reserved.</footer>
 
 <!-- SUCCESS POPUP -->
 <div class="popup-overlay" id="loginPopup">
@@ -209,7 +462,7 @@
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const API     = window.location.origin;
 const subject = localStorage.getItem("subject");
 const subjectLabels = {
@@ -390,10 +643,38 @@ setTimeout(async()=>{
     if(data.requests&&data.requests.length>0){badge.style.display="inline";badge.textContent=data.requests.length;}
   }catch(e){}
 },1500);
-</script>
 
-<div id="loader" style="display:none;"><div class="spinner"></div></div>
-<script src="utils.js"></script>
-<script src="reminders.js"></script>
-</body>
-</html>
+// ── NEW: ANIMATED COUNTER LOGIC ──
+function animateCounter(el, target, prefix, suffix){
+  const duration = 2000;
+  const start    = performance.now();
+  const update   = (now) => {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease     = 1 - Math.pow(1 - progress, 3);
+    const value    = Math.round(target * ease);
+    // For 10000 → show "10K+"
+    if(prefix) { el.innerHTML = prefix; return; }
+    el.textContent = value.toLocaleString('en-IN') + (suffix || "");
+    if(progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting && !entry.target.dataset.done){
+      entry.target.dataset.done = "1";
+
+      const el = entry.target;
+      const target = +el.dataset.target;
+      const prefix = el.dataset.prefix || "";
+      const suffix = el.dataset.suffix || "";
+
+      animateCounter(el, target, prefix, suffix);
+    }
+  });
+});
+
+document.querySelectorAll(".counter-num").forEach(el => {
+  counterObserver.observe(el);
+});
