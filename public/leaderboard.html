@@ -88,11 +88,6 @@
 
 <div class="container">
 
-  <div class="tabs">
-    <button class="tab active" id="tab-student" onclick="switchTab('student')">🎓 Students</button>
-    <button class="tab" id="tab-teacher" onclick="switchTab('teacher')">👨‍🏫 Teachers</button>
-  </div>
-
   <!-- MY RANK (shown if student logged in) -->
   <div class="my-rank-card" id="myRankCard" style="display:none;">
     <div class="mrc-icon">⭐</div>
@@ -124,7 +119,9 @@ async function loadStudentLeaderboard() {
     return;
   }
 
-  const lb = data.leaderboard.filter(s => s.section === section);
+  const lb = data.leaderboard
+  .filter(s => s.section === section)
+  .sort((a, b) => b.pct - a.pct);
 
   // Show my rank if logged in
   if (roll) {
@@ -161,25 +158,26 @@ async function loadStudentLeaderboard() {
   });
 
   // FULL LIST (from rank 4+)
-  const listEl = document.getElementById("rankList");
-  listEl.innerHTML = "";
-  lb.slice(3).forEach((s, i) => {
-    const color = s.pct >= 75 ? "#34d399" : s.pct >= 65 ? "#fbbf24" : "#f87171";
-    const isMe  = s.roll === roll;
-    const item  = document.createElement("div");
-    item.className = "rank-item";
-    if (isMe) item.style.border = "2px solid #f59e0b";
-    item.innerHTML = `
-      <div class="rank-num">${i+4}</div>
-      <div class="rank-info">
-        <strong>${s.roll} ${isMe ? "⭐" : ""}<span class="sec-badge">${s.section||""}</span></strong>
-        <span>${s.present} present / ${s.total} total</span>
-      </div>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${s.pct}%;background:${color};"></div></div>
-      <div class="rank-pct" style="color:${color}">${s.pct}%</div>
-    `;
-    listEl.appendChild(item);
-  });
+const listEl = document.getElementById("rankList");
+
+listEl.innerHTML = `
+<table style="width:100%;color:white;border-collapse:collapse;">
+<tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+  <th>Rank</th>
+  <th>Roll No</th>
+  <th>Attendance %</th>
+</tr>
+
+${lb.map((s, i) => `
+<tr style="background:${s.roll === roll ? '#f59e0b33' : 'transparent'};text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);">
+  <td>${i+1}</td>
+  <td>${s.roll}</td>
+  <td>${s.pct}%</td>
+</tr>
+`).join("")}
+
+</table>
+`;
 }
 
 async function loadTeacherLeaderboard() {
@@ -264,11 +262,9 @@ function switchTab(tab) {
 showLoader();
 
 if(role === "teacher"){
-  document.getElementById("tab-student").style.display = "none";
-  switchTab("teacher");
+  loadTeacherLeaderboard();
 } else {
-  document.getElementById("tab-teacher").style.display = "none";
-  switchTab("student");
+  loadStudentLeaderboard();
 }
 
 hideLoader();
