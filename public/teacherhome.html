@@ -645,18 +645,27 @@ setTimeout(async()=>{
 },1500);
 
 // ── NEW: ANIMATED COUNTER LOGIC ──
+
 function animateCounter(el, target, prefix, suffix){
   const duration = 2000;
-  const start    = performance.now();
-  const update   = (now) => {
+  const start = performance.now();
+
+  const update = (now) => {
     const progress = Math.min((now - start) / duration, 1);
-    const ease     = 1 - Math.pow(1 - progress, 3);
-    const value    = Math.round(target * ease);
-    // For 10000 → show "10K+"
-    if(prefix) { el.innerHTML = prefix; return; }
-    el.textContent = value.toLocaleString('en-IN') + (suffix || "");
-    if(progress < 1) requestAnimationFrame(update);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const value = Math.round(target * ease);
+
+    if(prefix){
+      el.textContent = prefix;
+    } else {
+      el.textContent = value.toLocaleString('en-IN') + (suffix || "");
+    }
+
+    if(progress < 1){
+      requestAnimationFrame(update);
+    }
   };
+
   requestAnimationFrame(update);
 }
 
@@ -666,13 +675,17 @@ const counterObserver = new IntersectionObserver((entries) => {
       entry.target.dataset.done = "1";
 
       const el = entry.target;
-      const target = +el.dataset.target;
+      const target = parseInt(el.dataset.target);
       const prefix = el.dataset.prefix || "";
       const suffix = el.dataset.suffix || "";
 
       animateCounter(el, target, prefix, suffix);
     }
   });
+});
+
+document.querySelectorAll(".counter-num").forEach(el => {
+  counterObserver.observe(el);
 });
 
 document.querySelectorAll(".counter-num").forEach(el => {
