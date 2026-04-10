@@ -1,5 +1,7 @@
 // 🌐 API BASE
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 
 // 🔔 TOAST NOTIFICATION
 function showToast(message, color="#4caf50") {
