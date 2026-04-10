@@ -465,6 +465,9 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const API     = window.location.origin;
 const subject = localStorage.getItem("subject");
+if(!subject){
+  window.location.href = "index.html";
+}
 const subjectLabels = {
   "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
   "DS":"Data Structures","DEVC":"DE&VC","EG LAB":"Engineering Graphics","IT WORKSHOP":"IT Workshop"
@@ -573,8 +576,13 @@ async function loadLeaveRequests(filter){
     const url=filter==="All"
       ? `${API}/leave/teacher/${subject}?status=All`
       : `${API}/leave/teacher/${subject}?status=Pending`;
-    const res=await fetch(url);
-    const data=await res.json();
+    const res = await fetch(url);
+
+if(!res.ok){
+  throw new Error("Server error");
+}
+
+const data = await res.json();
 
     // Update badge
     if(filter==="Pending"){
@@ -648,15 +656,26 @@ setTimeout(async()=>{
 
 function animateCounter(el, target){
   let count = 0;
+  const step = Math.ceil(target / 100);
+
+  const suffix = el.dataset.suffix || "";
+  const prefix = el.dataset.prefix || "";
 
   const interval = setInterval(() => {
-    count++;
-    el.textContent = count;
+    count += step;
 
     if(count >= target){
+      count = target;
       clearInterval(interval);
     }
-  }, 50);
+
+    if(prefix){
+  el.textContent = prefix;
+} else {
+  el.textContent = count + suffix;
+}
+
+  }, 20);
 }
 
 // RUN DIRECTLY (no observer)
@@ -664,3 +683,6 @@ document.querySelectorAll(".counter-num").forEach(el => {
   const target = parseInt(el.dataset.target);
   animateCounter(el, target);
 });
+</script>
+</body>
+</html>
