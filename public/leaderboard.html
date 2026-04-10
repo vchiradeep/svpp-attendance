@@ -111,10 +111,12 @@
 </div>
 
 <script>
+  const role = localStorage.getItem("role");
 const roll = localStorage.getItem("studentRoll");
 let currentTab = "student";
 
 async function loadStudentLeaderboard() {
+  const section = localStorage.getItem("section");
   const res  = await fetch("/leaderboard/students");
   const data = await res.json();
   if (!data.success || !data.leaderboard.length) {
@@ -122,7 +124,7 @@ async function loadStudentLeaderboard() {
     return;
   }
 
-  const lb = data.leaderboard;
+  const lb = data.leaderboard.filter(s => s.section === section);
 
   // Show my rank if logged in
   if (roll) {
@@ -181,7 +183,8 @@ async function loadStudentLeaderboard() {
 }
 
 async function loadTeacherLeaderboard() {
-  const res  = await fetch("/leaderboard/teachers");
+  const section = localStorage.getItem("section");
+const res = await fetch("/leaderboard/teachers");
   const data = await res.json();
   if (!data.success || !data.leaderboard.length) {
     showEmpty("No teacher performance data yet.");
@@ -219,23 +222,26 @@ async function loadTeacherLeaderboard() {
   });
 
   // FULL LIST
-  const listEl = document.getElementById("rankList");
-  listEl.innerHTML = "";
-  lb.slice(3).forEach((t, i) => {
-    const color = t.score >= 80 ? "#34d399" : t.score >= 65 ? "#fbbf24" : "#f87171";
-    const item  = document.createElement("div");
-    item.className = "rank-item";
-    item.innerHTML = `
-      <div class="rank-num">${i+4}</div>
-      <div class="rank-info">
-        <strong>${subjectLabels[t.subject]||t.subject}</strong>
-        <span>Marked ${t.markedDays}/${t.totalDays} days · On-time: ${t.onTime} · Late: ${t.late}</span>
-      </div>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${t.score}%;background:${color};"></div></div>
-      <div class="rank-pct" style="color:${color}">${t.score}%</div>
-    `;
-    listEl.appendChild(item);
-  });
+const listEl = document.getElementById("rankList");
+
+listEl.innerHTML = `
+<table style="width:100%;color:white;border-collapse:collapse;">
+<tr style="border-bottom:1px solid rgba(255,255,255,0.2);">
+  <th>Rank</th>
+  <th>Roll No</th>
+  <th>Attendance %</th>
+</tr>
+
+${lb.map((s, i) => `
+<tr style="background:${s.roll === roll ? '#f59e0b33' : 'transparent'};text-align:center;border-bottom:1px solid rgba(255,255,255,0.1);">
+  <td>${i+1}</td>
+  <td>${s.roll}</td>
+  <td>${s.pct}%</td>
+</tr>
+`).join("")}
+
+</table>
+`;
 }
 
 function showEmpty(msg) {
@@ -256,7 +262,16 @@ function switchTab(tab) {
 
 // Init
 showLoader();
-loadStudentLeaderboard().finally(() => hideLoader());
+
+if(role === "teacher"){
+  document.getElementById("tab-student").style.display = "none";
+  switchTab("teacher");
+} else {
+  document.getElementById("tab-teacher").style.display = "none";
+  switchTab("student");
+}
+
+hideLoader();
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
