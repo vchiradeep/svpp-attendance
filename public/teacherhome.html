@@ -646,48 +646,21 @@ setTimeout(async()=>{
 
 // ── NEW: ANIMATED COUNTER LOGIC ──
 
-function animateCounter(el, target, prefix, suffix){
-  const duration = 2000;
-  const start = performance.now();
+function animateCounter(el, target){
+  let count = 0;
 
-  const update = (now) => {
-    const progress = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const value = Math.round(target * ease);
+  const interval = setInterval(() => {
+    count++;
+    el.textContent = count;
 
-    if(prefix){
-      el.textContent = prefix;
-    } else {
-      el.textContent = value.toLocaleString('en-IN') + (suffix || "");
+    if(count >= target){
+      clearInterval(interval);
     }
-
-    if(progress < 1){
-      requestAnimationFrame(update);
-    }
-  };
-
-  requestAnimationFrame(update);
+  }, 50);
 }
 
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting && !entry.target.dataset.done){
-      entry.target.dataset.done = "1";
-
-      const el = entry.target;
-      const target = parseInt(el.dataset.target);
-      const prefix = el.dataset.prefix || "";
-      const suffix = el.dataset.suffix || "";
-
-      animateCounter(el, target, prefix, suffix);
-    }
-  });
-});
-
+// RUN DIRECTLY (no observer)
 document.querySelectorAll(".counter-num").forEach(el => {
-  counterObserver.observe(el);
-});
-
-document.querySelectorAll(".counter-num").forEach(el => {
-  counterObserver.observe(el);
+  const target = parseInt(el.dataset.target);
+  animateCounter(el, target);
 });
