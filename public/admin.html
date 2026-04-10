@@ -514,25 +514,75 @@ const subjectLabels = {
 };
 let adminMarkData = {};
 
-function showPopup(icon, title, msg){
+// ══════════════════════════════════════════
+// ✅ FIX 1: LOADER — defined inline so it
+//    never throws "showLoader is not defined"
+// ══════════════════════════════════════════
+function showLoader() {
+  const el = document.getElementById("loader");
+  if (el) el.style.display = "flex";
+}
+function hideLoader() {
+  const el = document.getElementById("loader");
+  if (el) el.style.display = "none";
+}
+
+// ══════════════════════════════════════════
+// POPUP HELPER
+// ══════════════════════════════════════════
+function showPopup(icon, title, msg) {
   document.getElementById("popupIcon").textContent  = icon;
   document.getElementById("popupTitle").textContent = title;
   document.getElementById("popupMsg").textContent   = msg;
   document.getElementById("successPopup").classList.add("show");
 }
 
-function togglePwd(){
+// ══════════════════════════════════════════
+// SAFE FETCH HELPER
+// ✅ FIX 3: All API calls go through this —
+//    catches network errors, non-JSON responses
+// ══════════════════════════════════════════
+async function apiFetch(url, options = {}) {
+  const res = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+  const text = await res.text();
+  if (!text) throw new Error("Server returned empty response");
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error("Server returned invalid response (Status " + res.status + ")");
+  }
+}
+
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
+function togglePwd() {
   const i = document.getElementById("adminPass");
   i.type = i.type === "password" ? "text" : "password";
 }
 
-function checkLogin(){
-  const pwd = document.getElementById("adminPass").value;
-  if(pwd === "chiru1122"){
+function checkLogin() {
+  const pwd = document.getElementById("adminPass").value.trim();
+
+  // ✅ FIX 8: Validate input before checking
+  if (!pwd) {
+    document.getElementById("adminPass").style.borderColor = "rgba(244,63,94,0.7)";
+    document.getElementById("adminPass").placeholder = "⚠️ Please enter a password";
+    setTimeout(() => {
+      document.getElementById("adminPass").style.borderColor = "";
+      document.getElementById("adminPass").placeholder = "Enter admin password";
+    }, 2000);
+    return;
+  }
+
+  if (pwd === "chiru1122") {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("adminPanel").style.display   = "block";
     loadStats();
-    showPopup("🛡️","Welcome, Admin!","You have full access to the system.");
+    showPopup("🛡️", "Welcome, Admin!", "You have full access to the system.");
   } else {
     document.getElementById("adminPass").style.borderColor = "rgba(244,63,94,0.7)";
     document.getElementById("adminPass").style.boxShadow   = "0 0 0 4px rgba(244,63,94,0.1)";
@@ -540,227 +590,344 @@ function checkLogin(){
     document.getElementById("adminPass").placeholder = "❌ Wrong password — try again";
     setTimeout(() => {
       document.getElementById("adminPass").style.borderColor = "";
-      document.getElementById("adminPass").style.boxShadow = "";
+      document.getElementById("adminPass").style.boxShadow   = "";
       document.getElementById("adminPass").placeholder = "Enter admin password";
     }, 2000);
   }
 }
 
-// ── STATS BAR ──
-async function loadStats(){
+// ══════════════════════════════════════════
+// STATS BAR
+// ══════════════════════════════════════════
+async function loadStats() {
   try {
     const [attRes, leaveRes, missedRes] = await Promise.all([
-      fetch(API+"/attendance"),
-      fetch(API+"/leave/pending"),
-      fetch(API+"/admin/missed-summary")
+      apiFetch(API + "/attendance"),
+      apiFetch(API + "/leave/pending"),
+      apiFetch(API + "/admin/missed-summary")
     ]);
-    const attData    = await attRes.json();
-    const leaveData  = await leaveRes.json();
-    const missedData = await missedRes.json();
 
-    const today      = new Date().toISOString().split("T")[0];
-    const todayRecs  = attData.filter(d => new Date(d.date).toISOString().split("T")[0] === today);
-    const presentToday = todayRecs.filter(d=>d.status==="Present").length;
-    const absentToday  = todayRecs.filter(d=>d.status==="Absent").length;
-    const uniqueStudents = [...new Set(attData.map(d=>d.studentName))].length;
-    const pendingLeaves  = leaveData.requests?.length || 0;
-    const missedCount    = missedData.missed?.filter(m=>!m.used).length || 0;
+    const today          = new Date().toISOString().split("T")[0];
+    const todayRecs      = attRes.filter(d => new Date(d.date).toISOString().split("T")[0] === today);
+    const presentToday   = todayRecs.filter(d => d.status === "Present").length;
+    const absentToday    = todayRecs.filter(d => d.status === "Absent").length;
+    const uniqueStudents = [...new Set(attRes.map(d => d.studentName))].length;
+    const pendingLeaves  = leaveRes.requests?.length || 0;
+    const missedCount    = missedRes.missed?.filter(m => !m.used).length || 0;
 
     document.getElementById("st-students").textContent = uniqueStudents;
     document.getElementById("st-present").textContent  = presentToday;
     document.getElementById("st-absent").textContent   = absentToday;
     document.getElementById("st-missed").textContent   = missedCount;
     document.getElementById("st-leaves").textContent   = pendingLeaves;
-  } catch(e){ console.log("Stats error:",e); }
+  } catch (e) {
+    // Stats failure is silent — don't break the whole page
+  }
 }
 
-function showSection(type){
+function showSection(type) {
   currentSection = type;
-  ["student","teacher","leave","audit"].forEach(t=>{
-    const s = document.getElementById(t+"Section");
-    const b = document.getElementById("tab-"+t);
-    if(s) s.style.display = "none";
-    if(b) b.classList.remove("active");
+  ["student","teacher","leave","audit"].forEach(t => {
+    const s = document.getElementById(t + "Section");
+    const b = document.getElementById("tab-" + t);
+    if (s) s.style.display = "none";
+    if (b) b.classList.remove("active");
   });
-  document.getElementById(type+"Section").style.display = "block";
-  document.getElementById("tab-"+type).classList.add("active");
+  document.getElementById(type + "Section").style.display = "block";
+  document.getElementById("tab-" + type).classList.add("active");
 }
 
-function refreshCurrentTab(){
+function refreshCurrentTab() {
   loadStats();
-  if(currentSection==="teacher") loadMissedSummary();
-  if(currentSection==="leave")   loadLeaveRequests("Pending");
-  if(currentSection==="audit")   loadAuditLog();
+  if (currentSection === "teacher") loadMissedSummary();
+  if (currentSection === "leave")   loadLeaveRequests("Pending");
+  if (currentSection === "audit")   loadAuditLog();
 }
 
-// ══════════ STUDENT ══════════
-async function searchStudent(){
+// ══════════════════════════════════════════
+// STUDENT CONTROLS
+// ══════════════════════════════════════════
+async function searchStudent() {
   const roll = document.getElementById("searchRoll").value.trim();
-  if(!roll){ alert("Enter Roll No"); return; }
-  showLoader();
-  const res  = await fetch(API+"/attendance?studentName="+encodeURIComponent(roll));
-  const data = await res.json();
-  hideLoader();
 
-  const result = document.getElementById("result");
-  if(!data.length){
-    result.innerHTML = `<div class="dark-card"><p style="color:var(--muted);">No records found for <b>${roll}</b>.</p></div>`;
+  // ✅ FIX 7: Validate input before API call
+  if (!roll) {
+    document.getElementById("searchRoll").placeholder = "⚠️ Enter a roll number first";
+    setTimeout(() => { document.getElementById("searchRoll").placeholder = "e.g. 25G01A0501"; }, 2000);
     return;
   }
 
-  const present   = data.filter(d=>d.status==="Present").length;
-  const absent    = data.filter(d=>d.status==="Absent").length;
-  const notMarked = data.filter(d=>d.status==="NotMarked").length;
-  const onLeave   = data.filter(d=>d.status==="OnLeave").length;
-  const pct       = ((present/((present+absent)||1))*100).toFixed(1);
-  const pctColor  = pct>=75?"col-green":pct>=65?"col-amber":"col-red";
+  showLoader();
+  try {
+    const data = await apiFetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    hideLoader();
 
-  let html = `<div class="dark-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-      <h3 style="margin:0;">🎓 ${roll}</h3>
-      <button onclick="deleteAllStudentRecords('${roll}')" class="btn btn-red btn-sm">🗑 Delete All</button>
-    </div>
-    <div class="mini-stats">
-      <div class="mini-stat"><span class="val">${present+absent}</span><span class="lbl">Counted</span></div>
-      <div class="mini-stat"><span class="val col-green">${present}</span><span class="lbl">Present</span></div>
-      <div class="mini-stat"><span class="val col-red">${absent}</span><span class="lbl">Absent</span></div>
-      <div class="mini-stat"><span class="val ${pctColor}">${pct}%</span><span class="lbl">Percentage</span></div>
-      <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
-      <div class="mini-stat"><span class="val col-blue">${onLeave}</span><span class="lbl">On Leave</span></div>
-    </div>
-    <div class="table-wrap scroll-box"><table class="dark-table">
-      <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>`;
+    const result = document.getElementById("result");
+    if (!data.length) {
+      result.innerHTML = `<div class="dark-card"><p style="color:var(--muted);">No records found for <b>${roll}</b>.</p></div>`;
+      document.getElementById("updateBox").style.display = "none";
+      return;
+    }
 
-  data.forEach(d=>{
-    const autoTag = d.autoMarked ? `<span class="auto-tag">AUTO</span>` : "";
-    const sc = d.status==="Present"?"col-green":d.status==="Absent"?"col-red":d.status==="OnLeave"?"col-blue":"col-amber";
-    html += `<tr>
-      <td>${new Date(d.date).toLocaleDateString('en-IN')}</td>
-      <td>${subjectLabels[d.subject]||d.subject}</td>
-      <td class="${sc}">${d.status}${autoTag}</td>
-      <td style="font-size:11px;color:var(--muted);">${new Date(d.updatedAt).toLocaleString('en-IN')}</td>
-      <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" class="btn btn-red btn-sm">🗑</button></td>
-    </tr>`;
+    const present   = data.filter(d => d.status === "Present").length;
+    const absent    = data.filter(d => d.status === "Absent").length;
+    const notMarked = data.filter(d => d.status === "NotMarked").length;
+    const onLeave   = data.filter(d => d.status === "OnLeave").length;
+    const pct       = ((present / ((present + absent) || 1)) * 100).toFixed(1);
+    const pctColor  = pct >= 75 ? "col-green" : pct >= 65 ? "col-amber" : "col-red";
+
+    let html = `<div class="dark-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <h3 style="margin:0;">🎓 ${roll}</h3>
+        <button onclick="deleteStudentRecord('${roll}')" class="btn btn-red btn-sm">🗑 Delete All Records</button>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><span class="val">${present + absent}</span><span class="lbl">Counted</span></div>
+        <div class="mini-stat"><span class="val col-green">${present}</span><span class="lbl">Present</span></div>
+        <div class="mini-stat"><span class="val col-red">${absent}</span><span class="lbl">Absent</span></div>
+        <div class="mini-stat"><span class="val ${pctColor}">${pct}%</span><span class="lbl">Percentage</span></div>
+        <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
+        <div class="mini-stat"><span class="val col-blue">${onLeave}</span><span class="lbl">On Leave</span></div>
+      </div>
+      <div class="table-wrap scroll-box"><table class="dark-table">
+        <tr><th>Date</th><th>Subject</th><th>Status</th><th>Updated</th><th>Action</th></tr>`;
+
+    data.forEach(d => {
+      const autoTag = d.autoMarked ? `<span class="auto-tag">AUTO</span>` : "";
+      const sc = d.status === "Present" ? "col-green" : d.status === "Absent" ? "col-red" : d.status === "OnLeave" ? "col-blue" : "col-amber";
+      html += `<tr>
+        <td>${new Date(d.date).toLocaleDateString("en-IN")}</td>
+        <td>${subjectLabels[d.subject] || d.subject}</td>
+        <td class="${sc}">${d.status}${autoTag}</td>
+        <td style="font-size:11px;color:var(--muted);">${new Date(d.updatedAt).toLocaleString("en-IN")}</td>
+        <td><button onclick="deleteRecord('${d.studentName}','${d.date}','${d.subject}')" class="btn btn-red btn-sm">🗑</button></td>
+      </tr>`;
+    });
+
+    html += `</table></div></div>`;
+    result.innerHTML = html;
+    document.getElementById("updateBox").style.display = "block";
+    document.getElementById("updateRoll").value = roll;
+
+  } catch (err) {
+    hideLoader();
+    document.getElementById("result").innerHTML = `<div class="dark-card"><p style="color:var(--red);">Failed to load records. ${err.message}</p></div>`;
+  }
+}
+
+async function deleteRecord(name, date, subject) {
+  // ✅ FIX 5/6: Confirm before delete with clear message
+  if (!confirm(`Delete this attendance record?\n\nStudent: ${name}\nSubject: ${subjectLabels[subject] || subject}\nDate: ${new Date(date).toLocaleDateString("en-IN")}`)) return;
+
+  showLoader();
+  try {
+    const data = await apiFetch(API + "/delete", {
+      method: "POST",
+      body: JSON.stringify({ studentName: name, date, subject })
+    });
+    hideLoader();
+    if (data.message) {
+      showPopup("🗑️", "Deleted", "Record deleted successfully.");
+      searchStudent();
+    }
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Error", "Failed to delete record. " + err.message);
+  }
+}
+
+// ✅ FIX 5: Renamed from deleteAllStudentRecords — now only deletes ONE student's records
+// Also requires typing the roll number to confirm — prevents accidental bulk wipe
+async function deleteStudentRecord(roll) {
+  const confirmed = prompt(
+    `⚠️ DANGER: This will delete ALL attendance records for ${roll}.\n\nType the roll number below to confirm:`
+  );
+  if (confirmed === null) return; // cancelled
+  if (confirmed.trim().toUpperCase() !== roll.toUpperCase()) {
+    showPopup("❌", "Cancelled", "Roll number did not match. No records were deleted.");
+    return;
+  }
+
+  showLoader();
+  try {
+    // ✅ Uses per-student delete (calls /delete for each record) instead of /delete-all
+    const data = await apiFetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    let deleted = 0;
+    for (const record of data) {
+      await apiFetch(API + "/delete", {
+        method: "POST",
+        body: JSON.stringify({ studentName: record.studentName, date: record.date, subject: record.subject })
+      });
+      deleted++;
+    }
+    hideLoader();
+    showPopup("🗑️", "All Records Deleted", `${deleted} records for ${roll} deleted successfully.`);
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("updateBox").style.display = "none";
+    loadStats();
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Error", "Failed to delete records. " + err.message);
+  }
+}
+
+async function updateAttendance() {
+  const roll    = document.getElementById("updateRoll").value.trim();
+  const date    = document.getElementById("updateDate").value;
+  const subject = document.getElementById("period").value;
+  const status  = document.getElementById("status").value;
+
+  // ✅ FIX 7: Full input validation
+  if (!roll)    { showPopup("⚠️", "Missing Field", "Please enter a roll number."); return; }
+  if (!date)    { showPopup("⚠️", "Missing Field", "Please select a date."); return; }
+  if (!subject || subject === "Select Date First" || subject === "No Classes") {
+    showPopup("⚠️", "Missing Field", "Please select a valid period/subject."); return;
+  }
+  if (!status)  { showPopup("⚠️", "Missing Field", "Please select a status."); return; }
+
+  showLoader();
+  try {
+    const d = {};
+    d[roll] = status;
+    const data = await apiFetch(API + "/submit-attendance", {
+      method: "POST",
+      body: JSON.stringify({ date, subject, data: d, section: "Unknown" })
+    });
+    hideLoader();
+    if (data.success) {
+      showPopup("✅", "Updated!", `${roll} marked ${status} for ${subjectLabels[subject] || subject}.`);
+      searchStudent();
+    } else {
+      showPopup("❌", "Update Failed", data.message || "Server error. Please try again.");
+    }
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Network Error", err.message);
+  }
+}
+
+function updatePeriods() {
+  const date     = document.getElementById("updateDate").value;
+  if (!date) return;
+  const day      = new Date(date + "T12:00:00").toLocaleString("en-US", { weekday: "long" });
+  const dropdown = document.getElementById("period");
+  dropdown.innerHTML = "";
+  const dayData  = timetable[day];
+  if (!dayData) {
+    dropdown.innerHTML = "<option>No Classes</option>";
+    return;
+  }
+  dayData.forEach(r => {
+    const o = document.createElement("option");
+    o.value = r[1];
+    o.text  = `Period ${r[0]} — ${subjectLabels[r[1]] || r[1]}`;
+    dropdown.appendChild(o);
   });
-
-  html += `</table></div></div>`;
-  result.innerHTML = html;
-  document.getElementById("updateBox").style.display = "block";
-  document.getElementById("updateRoll").value = roll;
 }
 
-async function deleteRecord(name,date,subject){
-  if(!confirm("Delete this record?")) return;
+// ══════════════════════════════════════════
+// MISSED MONITOR
+// ══════════════════════════════════════════
+async function loadMissedSummary() {
+  const box = document.getElementById("missedSummary");
+  box.innerHTML = `<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  try {
+    const data = await apiFetch(API + "/admin/missed-summary");
+    if (!data.success || !data.missed || !data.missed.length) {
+      box.innerHTML = `<p style="color:var(--green);font-size:13px;">✅ No missed markings — all teachers up to date.</p>`;
+      return;
+    }
+    box.innerHTML = data.missed.map(item => {
+      const date = new Date(item.date).toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"short", year:"numeric" });
+      let pillClass = "pill-warn", pillText = "⚠️ Not Marked";
+      if (item.used)     { pillClass = "pill-success"; pillText = "✅ Re-marked"; }
+      if (item.unlocked) { pillClass = "pill-blue";    pillText = "🔓 Unlocked"; }
+      const iso = new Date(item.date).toISOString().split("T")[0];
+      return `<div class="missed-row">
+        <div>
+          <strong style="color:var(--text);font-size:14px;">${subjectLabels[item.subject] || item.subject} — ${item.section}</strong>
+          <p style="color:var(--muted);font-size:12px;margin-top:2px;">${date} · ${item.count} students</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span class="pill ${pillClass}">${pillText}</span>
+          ${!item.used ? `<button class="btn btn-amber btn-sm" onclick="quickUnlock('${item.subject}','${item.section}','${iso}')">🔓 Unlock</button>` : ""}
+        </div>
+      </div>`;
+    }).join("");
+    loadStats();
+  } catch (err) {
+    box.innerHTML = `<p style="color:var(--red);font-size:13px;">Failed to load. ${err.message}</p>`;
+  }
+}
+
+async function quickUnlock(subject, section, date) {
   showLoader();
-  await fetch(API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
-  hideLoader();
-  showPopup("🗑️","Deleted","Record deleted successfully.");
-  searchStudent();
+  try {
+    const data = await apiFetch(API + "/admin/unlock", {
+      method: "POST",
+      body: JSON.stringify({ subject, section, date })
+    });
+    hideLoader();
+    if (data.success) { showPopup("🔓", "Unlocked!", data.message); loadMissedSummary(); }
+    else showPopup("❌", "Failed", data.message || "Could not unlock.");
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Network Error", err.message);
+  }
 }
 
-async function deleteAllStudentRecords(roll){
-  if(!confirm(`⚠️ Delete ALL records for ${roll}? Cannot be undone.`)) return;
+async function unlockForTeacher() {
+  const subject = document.getElementById("unlockSubject").value;
+  const section = document.getElementById("unlockSection").value;
+  const date    = document.getElementById("unlockDate").value;
+
+  // ✅ FIX 7: Validate all fields
+  if (!subject) { showPopup("⚠️", "Missing Field", "Please select a subject."); return; }
+  if (!section) { showPopup("⚠️", "Missing Field", "Please select a section."); return; }
+  if (!date)    { showPopup("⚠️", "Missing Field", "Please select a date."); return; }
+
   showLoader();
-  await fetch(API+"/delete-all",{method:"POST"});
-  hideLoader();
-  showPopup("🗑️","Deleted","All records deleted.");
-  document.getElementById("result").innerHTML="";
+  try {
+    const data = await apiFetch(API + "/admin/unlock", {
+      method: "POST",
+      body: JSON.stringify({ subject, section, date })
+    });
+    hideLoader();
+    const box = document.getElementById("unlockResult");
+    box.style.display = "block";
+    box.style.color   = data.success ? "#34d399" : "#f87171";
+    box.textContent   = (data.success ? "✅ " : "❌ ") + data.message;
+    if (data.success) { showPopup("🔓", "Unlocked!", data.message); loadMissedSummary(); }
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Network Error", err.message);
+  }
 }
 
-async function updateAttendance(){
-  const roll=document.getElementById("updateRoll").value;
-  const date=document.getElementById("updateDate").value;
-  const subject=document.getElementById("period").value;
-  const status=document.getElementById("status").value;
-  if(!roll||!date||!subject||subject==="Select Date First"){ alert("Fill all fields"); return; }
-  showLoader();
-  const d={}; d[roll]=status;
-  const res=await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data:d,section:"Unknown"})});
-  const data=await res.json();
-  hideLoader();
-  if(data.success){ showPopup("✅","Updated!",`${roll} marked ${status} for ${subjectLabels[subject]||subject}.`); searchStudent(); }
-  else alert("❌ Update failed: "+(data.message||"Server error"));
-}
+function showAdminMarkForm() {
+  const subject = document.getElementById("unlockSubject").value;
+  const section = document.getElementById("unlockSection").value;
+  const date    = document.getElementById("unlockDate").value;
 
-function updatePeriods(){
-  const date=document.getElementById("updateDate").value;
-  if(!date) return;
-  const day=new Date(date+"T12:00:00").toLocaleString('en-US',{weekday:'long'});
-  const dropdown=document.getElementById("period");
-  dropdown.innerHTML="";
-  const dayData=timetable[day];
-  if(!dayData){ dropdown.innerHTML="<option>No Classes</option>"; return; }
-  dayData.forEach(r=>{ const o=document.createElement("option"); o.value=r[1]; o.text=`Period ${r[0]} — ${subjectLabels[r[1]]||r[1]}`; dropdown.appendChild(o); });
-}
-
-// ══════════ MISSED ══════════
-async function loadMissedSummary(){
-  const box=document.getElementById("missedSummary");
-  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
-  const res=await fetch(API+"/admin/missed-summary");
-  const data=await res.json();
-  if(!data.success||!data.missed||!data.missed.length){
-    box.innerHTML=`<p style="color:var(--green);font-size:13px;">✅ No missed markings — all teachers up to date.</p>`;
+  // ✅ FIX 7: Validate before showing form
+  if (!subject || !section || !date) {
+    showPopup("⚠️", "Missing Fields", "Please fill Subject, Section and Date first.");
     return;
   }
-  box.innerHTML=data.missed.map(item=>{
-    const date=new Date(item.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    let pillClass="pill-warn",pillText="⚠️ Not Marked";
-    if(item.used){pillClass="pill-success";pillText="✅ Re-marked";}
-    if(item.unlocked){pillClass="pill-blue";pillText="🔓 Unlocked";}
-    const iso=new Date(item.date).toISOString().split("T")[0];
-    return `<div class="missed-row">
-      <div>
-        <strong style="color:var(--text);font-size:14px;">${subjectLabels[item.subject]||item.subject} — ${item.section}</strong>
-        <p style="color:var(--muted);font-size:12px;margin-top:2px;">${date} · ${item.count} students</p>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <span class="pill ${pillClass}">${pillText}</span>
-        ${!item.used?`<button class="btn btn-amber btn-sm" onclick="quickUnlock('${item.subject}','${item.section}','${iso}')">🔓 Unlock</button>`:""}
-      </div>
-    </div>`;
-  }).join("");
-  loadStats();
-}
+  const students = getStudentsForSection(section);
+  if (!students.length) {
+    showPopup("❌", "Invalid Section", "No students found for section: " + section);
+    return;
+  }
 
-async function quickUnlock(subject,section,date){
-  showLoader();
-  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data=await res.json();
-  hideLoader();
-  if(data.success){ showPopup("🔓","Unlocked!",data.message); loadMissedSummary(); }
-  else alert("❌ "+data.message);
-}
+  document.getElementById("adminMarkInfo").textContent =
+    `Marking ${subjectLabels[subject] || subject} for ${section} on ${new Date(date).toLocaleDateString("en-IN")} (${students.length} students)`;
 
-async function unlockForTeacher(){
-  const subject=document.getElementById("unlockSubject").value;
-  const section=document.getElementById("unlockSection").value;
-  const date=document.getElementById("unlockDate").value;
-  if(!subject||!section||!date){ alert("Please fill Subject, Section and Date"); return; }
-  showLoader();
-  const res=await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
-  const data=await res.json();
-  hideLoader();
-  const box=document.getElementById("unlockResult");
-  box.style.display="block";
-  box.style.color=data.success?"#34d399":"#f87171";
-  box.textContent=(data.success?"✅ ":"❌ ")+data.message;
-  if(data.success){ showPopup("🔓","Unlocked!",data.message); loadMissedSummary(); }
-}
+  adminMarkData = {};
+  students.forEach(r => adminMarkData[r] = "Present");
 
-function showAdminMarkForm(){
-  const subject=document.getElementById("unlockSubject").value;
-  const section=document.getElementById("unlockSection").value;
-  const date=document.getElementById("unlockDate").value;
-  if(!subject||!section||!date){ alert("Please fill Subject, Section and Date first"); return; }
-  const students=getStudentsForSection(section);
-  if(!students.length){ alert("Invalid section: "+section); return; }
-  document.getElementById("adminMarkInfo").textContent=
-    `Marking ${subjectLabels[subject]||subject} for ${section} on ${new Date(date).toLocaleDateString('en-IN')} (${students.length} students)`;
-  adminMarkData={};
-  students.forEach(r=>adminMarkData[r]="Present");
-  const listEl=document.getElementById("adminMarkStudentList");
-  listEl.innerHTML=`
+  const listEl = document.getElementById("adminMarkStudentList");
+  listEl.innerHTML = `
     <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
       <button class="btn btn-green btn-sm" onclick="markAllAdmin('Present')">✅ All Present</button>
       <button class="btn btn-red btn-sm" onclick="markAllAdmin('Absent')">❌ All Absent</button>
@@ -769,201 +936,279 @@ function showAdminMarkForm(){
     <div class="scroll-box" style="max-height:280px;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
     <table class="dark-table">
       <tr><th>Roll No</th><th>Present</th><th>Absent</th></tr>
-      ${students.map(r=>`<tr>
+      ${students.map(r => `<tr>
         <td style="font-size:12px;">${r}</td>
         <td><input type="radio" name="atd_${r}" value="Present" onchange="adminMarkData['${r}']='Present'" checked></td>
         <td><input type="radio" name="atd_${r}" value="Absent"  onchange="adminMarkData['${r}']='Absent'"></td>
       </tr>`).join("")}
     </table></div>`;
-  const form=document.getElementById("adminMarkForm");
-  form.style.display="block";
-  form.dataset.subject=subject; form.dataset.section=section; form.dataset.date=date;
-  form.scrollIntoView({behavior:"smooth"});
+
+  const form = document.getElementById("adminMarkForm");
+  form.style.display  = "block";
+  form.dataset.subject = subject;
+  form.dataset.section = section;
+  form.dataset.date    = date;
+  form.scrollIntoView({ behavior: "smooth" });
 }
 
-function markAllAdmin(status){
-  document.querySelectorAll(`[name^="atd_"]`).forEach(r=>{ if(r.value===status) r.checked=true; });
-  Object.keys(adminMarkData).forEach(k=>adminMarkData[k]=status);
+function markAllAdmin(status) {
+  document.querySelectorAll(`[name^="atd_"]`).forEach(r => { if (r.value === status) r.checked = true; });
+  Object.keys(adminMarkData).forEach(k => adminMarkData[k] = status);
 }
 
-async function submitAdminMark(){
-  const form=document.getElementById("adminMarkForm");
-  const{subject,section,date}=form.dataset;
-  if(!subject||!section||!date){ alert("Missing data"); return; }
+async function submitAdminMark() {
+  const form    = document.getElementById("adminMarkForm");
+  const subject = form.dataset.subject;
+  const section = form.dataset.section;
+  const date    = form.dataset.date;
+
+  if (!subject || !section || !date) {
+    showPopup("⚠️", "Missing Data", "Form data is incomplete. Please re-open the form.");
+    return;
+  }
+
   showLoader();
-  const res=await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
-  const data=await res.json();
-  hideLoader();
-  if(data.success){ form.style.display="none"; showPopup("✅","Marked!","Attendance submitted successfully."); loadMissedSummary(); }
-  else alert("❌ "+data.message);
+  try {
+    const data = await apiFetch(API + "/admin/mark-on-behalf", {
+      method: "POST",
+      body: JSON.stringify({ subject, section, date, data: adminMarkData })
+    });
+    hideLoader();
+    if (data.success) {
+      form.style.display = "none";
+      showPopup("✅", "Marked!", "Attendance submitted successfully.");
+      loadMissedSummary();
+    } else {
+      showPopup("❌", "Failed", data.message || "Server error.");
+    }
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Network Error", err.message);
+  }
 }
 
-// ══════════ TEACHER PERFORMANCE ══════════
-function getPerf(markedDays,totalDays,onTime,late,notMarked){
-  if(!totalDays) return{score:0,grade:"N/A",color:"#94a3b8",msg:"No data yet"};
-  const s=Math.max(0,Math.min(100,(markedDays/totalDays)*60+(onTime+late>0?(onTime/(onTime+late))*30:30)-(notMarked/(totalDays||1))*10)).toFixed(1);
-  let grade,color,msg;
-  if(s>=90){grade="⭐ Excellent";color="#34d399";msg="Outstanding consistency!";}
-  else if(s>=80){grade="👍 Good";color="#60a5fa";msg="Good performance, minor improvements.";}
-  else if(s>=65){grade="⚠️ Average";color="#fbbf24";msg="Needs improvement in consistency.";}
-  else{grade="🚨 Needs Attention";color:"#f87171";msg="Multiple missed markings detected.";}
-  return{score:s,grade,color,msg};
+// ══════════════════════════════════════════
+// TEACHER PERFORMANCE
+// ✅ FIX: color assignment bug fixed (was color:"#f87171" instead of color="#f87171")
+// ══════════════════════════════════════════
+function getPerf(markedDays, totalDays, onTime, late, notMarked) {
+  if (!totalDays) return { score: 0, grade: "N/A", color: "#94a3b8", msg: "No data yet" };
+  const s = Math.max(0, Math.min(100,
+    (markedDays / totalDays) * 60 +
+    (onTime + late > 0 ? (onTime / (onTime + late)) * 30 : 30) -
+    (notMarked / (totalDays || 1)) * 10
+  )).toFixed(1);
+  let grade, color, msg;
+  if      (s >= 90) { grade = "⭐ Excellent";       color = "#34d399"; msg = "Outstanding consistency!"; }
+  else if (s >= 80) { grade = "👍 Good";             color = "#60a5fa"; msg = "Good performance, minor improvements."; }
+  else if (s >= 65) { grade = "⚠️ Average";          color = "#fbbf24"; msg = "Needs improvement in consistency."; }
+  else              { grade = "🚨 Needs Attention";  color = "#f87171"; msg = "Multiple missed markings detected."; }
+  return { score: s, grade, color, msg };
 }
 
-function loadTeachers(){
-  document.getElementById("teacherResult").innerHTML=`
+function loadTeachers() {
+  document.getElementById("teacherResult").innerHTML = `
     <div class="dark-card"><h3>👩‍🏫 Faculty Performance Board</h3>
     <div class="table-wrap"><table class="dark-table">
       <tr><th>Subject</th><th>Faculty</th><th>Action</th></tr>
-      ${subjects.map(s=>`<tr>
-        <td>${subjectLabels[s]||s}</td>
+      ${subjects.map(s => `<tr>
+        <td>${subjectLabels[s] || s}</td>
         <td style="color:var(--muted);font-size:12px;">${s} Faculty</td>
         <td><button class="btn btn-sm" onclick="viewTeacher('${s}')">📊 View Score</button></td>
       </tr>`).join("")}
     </table></div></div><div id="teacherDetails"></div>`;
 }
 
-async function viewTeacher(subject){
+async function viewTeacher(subject) {
   showLoader();
-  const res=await fetch(API+"/attendance");
-  const data=await res.json();
-  hideLoader();
-  const filtered=data.filter(d=>d.subject===subject);
-  if(!filtered.length){
-    document.getElementById("teacherDetails").innerHTML=`<div class="dark-card"><p style="color:var(--muted);">No data for ${subjectLabels[subject]||subject} yet.</p></div>`;
-    return;
-  }
-  let present=0,absent=0,notMarked=0,onTime=0,late=0;
-  const dateMap={};
-  filtered.forEach(d=>{
-    if(d.status==="Present")present++;
-    else if(d.status==="Absent")absent++;
-    else notMarked++;
-    const dk=new Date(d.date).toLocaleDateString('en-IN');
-    if(!dateMap[dk]) dateMap[dk]={present:0,absent:0,notMarked:0,teacherMarked:!d.autoMarked};
-    if(d.status==="Present")dateMap[dk].present++;
-    else if(d.status==="Absent")dateMap[dk].absent++;
-    else dateMap[dk].notMarked++;
-    if(!d.autoMarked&&d.updatedAt){const t=new Date(d.updatedAt);if(!isNaN(t.getTime())){if(t.getHours()<=10)onTime++;else late++;}}
-  });
-  const counted=present+absent;
-  const studentPct=counted?((present/counted)*100).toFixed(1):0;
-  const totalDays=Object.keys(dateMap).length;
-  const markedDays=Object.values(dateMap).filter(d=>d.teacherMarked).length;
-  const perf=getPerf(markedDays,totalDays,onTime,late,notMarked);
-  let html=`<div class="dark-card">
-    <h3>📊 ${subjectLabels[subject]||subject} — Performance Report</h3>
-    <div class="score-card" style="border-color:${perf.color};">
-      <div class="score-num" style="color:${perf.color};">${perf.score}%</div>
-      <div class="score-grade" style="color:${perf.color};">${perf.grade}</div>
-      <div class="score-msg">${perf.msg}</div>
-      <div class="score-bar"><div class="score-fill" style="width:${perf.score}%;background:${perf.color};"></div></div>
-      <div style="display:flex;justify-content:center;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap;">
-        <span>📋 Marking: <b style="color:var(--text)">60%</b></span>
-        <span>⏰ Punctuality: <b style="color:var(--text)">30%</b></span>
-        <span>❌ Penalty: <b style="color:var(--text)">10%</b></span>
-      </div>
-    </div>
-    <div class="mini-stats">
-      <div class="mini-stat"><span class="val col-green">${markedDays}</span><span class="lbl">Marked</span></div>
-      <div class="mini-stat"><span class="val col-red">${totalDays-markedDays}</span><span class="lbl">Missed</span></div>
-      <div class="mini-stat"><span class="val col-blue">${onTime}</span><span class="lbl">On Time</span></div>
-      <div class="mini-stat"><span class="val col-amber">${late}</span><span class="lbl">Late</span></div>
-      <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
-      <div class="mini-stat"><span class="val col-purple">${studentPct}%</span><span class="lbl">Student Avg</span></div>
-    </div>
-    <h4 style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 10px;">Date-wise Breakdown</h4>
-    <div class="table-wrap scroll-box"><table class="dark-table">
-      <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Status</th></tr>`;
-  for(const[d,dm]of Object.entries(dateMap)){
-    const ts=dm.teacherMarked?'<span class="pill pill-success">✅ Marked</span>':'<span class="pill pill-warn">⚠️ Missed</span>';
-    html+=`<tr><td>${d}</td><td class="col-green">${dm.present}</td><td class="col-red">${dm.absent}</td><td class="col-amber">${dm.notMarked}</td><td>${ts}</td></tr>`;
-  }
-  html+=`</table></div></div>`;
-  document.getElementById("teacherDetails").innerHTML=html;
-}
+  try {
+    const data     = await apiFetch(API + "/attendance");
+    hideLoader();
+    const filtered = data.filter(d => d.subject === subject);
 
-// ══════════ LEAVE REQUESTS ══════════
-async function loadLeaveRequests(filter){
-  const box=document.getElementById("leaveList");
-  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
-  try{
-    const url=filter==="All"?API+"/leave/pending?all=true":API+"/leave/pending";
-    const res=await fetch(url);
-    const data=await res.json();
-    if(!data.success||!data.requests||!data.requests.length){
-      box.innerHTML=`<p style="color:var(--green);font-size:13px;">✅ No ${filter==="All"?"":"pending "}leave requests.</p>`;
+    if (!filtered.length) {
+      document.getElementById("teacherDetails").innerHTML =
+        `<div class="dark-card"><p style="color:var(--muted);">No data for ${subjectLabels[subject] || subject} yet.</p></div>`;
       return;
     }
-    box.innerHTML=data.requests.map(r=>{
-      const date=new Date(r.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-      const subLabel=r.subject?(subjectLabels[r.subject]||r.subject):"Full Day";
+
+    let present = 0, absent = 0, notMarked = 0, onTime = 0, late = 0;
+    const dateMap = {};
+
+    filtered.forEach(d => {
+      if      (d.status === "Present") present++;
+      else if (d.status === "Absent")  absent++;
+      else                              notMarked++;
+      const dk = new Date(d.date).toLocaleDateString("en-IN");
+      if (!dateMap[dk]) dateMap[dk] = { present:0, absent:0, notMarked:0, teacherMarked: !d.autoMarked };
+      if      (d.status === "Present") dateMap[dk].present++;
+      else if (d.status === "Absent")  dateMap[dk].absent++;
+      else                              dateMap[dk].notMarked++;
+      if (!d.autoMarked && d.updatedAt) {
+        const t = new Date(d.updatedAt);
+        if (!isNaN(t.getTime())) { if (t.getHours() <= 10) onTime++; else late++; }
+      }
+    });
+
+    const counted    = present + absent;
+    const studentPct = counted ? ((present / counted) * 100).toFixed(1) : 0;
+    const totalDays  = Object.keys(dateMap).length;
+    const markedDays = Object.values(dateMap).filter(d => d.teacherMarked).length;
+    const perf       = getPerf(markedDays, totalDays, onTime, late, notMarked);
+
+    let html = `<div class="dark-card">
+      <h3>📊 ${subjectLabels[subject] || subject} — Performance Report</h3>
+      <div class="score-card" style="border-color:${perf.color};">
+        <div class="score-num" style="color:${perf.color};">${perf.score}%</div>
+        <div class="score-grade" style="color:${perf.color};">${perf.grade}</div>
+        <div class="score-msg">${perf.msg}</div>
+        <div class="score-bar"><div class="score-fill" style="width:${perf.score}%;background:${perf.color};"></div></div>
+        <div style="display:flex;justify-content:center;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap;">
+          <span>📋 Marking: <b style="color:var(--text)">60%</b></span>
+          <span>⏰ Punctuality: <b style="color:var(--text)">30%</b></span>
+          <span>❌ Penalty: <b style="color:var(--text)">10%</b></span>
+        </div>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><span class="val col-green">${markedDays}</span><span class="lbl">Marked</span></div>
+        <div class="mini-stat"><span class="val col-red">${totalDays - markedDays}</span><span class="lbl">Missed</span></div>
+        <div class="mini-stat"><span class="val col-blue">${onTime}</span><span class="lbl">On Time</span></div>
+        <div class="mini-stat"><span class="val col-amber">${late}</span><span class="lbl">Late</span></div>
+        <div class="mini-stat"><span class="val col-amber">${notMarked}</span><span class="lbl">Not Marked</span></div>
+        <div class="mini-stat"><span class="val col-purple">${studentPct}%</span><span class="lbl">Student Avg</span></div>
+      </div>
+      <h4 style="color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 10px;">Date-wise Breakdown</h4>
+      <div class="table-wrap scroll-box"><table class="dark-table">
+        <tr><th>Date</th><th>Present</th><th>Absent</th><th>Not Marked</th><th>Status</th></tr>`;
+
+    for (const [d, dm] of Object.entries(dateMap)) {
+      const ts = dm.teacherMarked
+        ? '<span class="pill pill-success">✅ Marked</span>'
+        : '<span class="pill pill-warn">⚠️ Missed</span>';
+      html += `<tr><td>${d}</td><td class="col-green">${dm.present}</td><td class="col-red">${dm.absent}</td><td class="col-amber">${dm.notMarked}</td><td>${ts}</td></tr>`;
+    }
+    html += `</table></div></div>`;
+    document.getElementById("teacherDetails").innerHTML = html;
+
+  } catch (err) {
+    hideLoader();
+    document.getElementById("teacherDetails").innerHTML =
+      `<div class="dark-card"><p style="color:var(--red);">Failed to load teacher data. ${err.message}</p></div>`;
+  }
+}
+
+// ══════════════════════════════════════════
+// LEAVE REQUESTS
+// ══════════════════════════════════════════
+async function loadLeaveRequests(filter) {
+  const box = document.getElementById("leaveList");
+  box.innerHTML = `<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  try {
+    const url  = filter === "All" ? API + "/leave/pending?all=true" : API + "/leave/pending";
+    const data = await apiFetch(url);
+
+    if (!data.success || !data.requests || !data.requests.length) {
+      box.innerHTML = `<p style="color:var(--green);font-size:13px;">✅ No ${filter === "All" ? "" : "pending "}leave requests.</p>`;
+      return;
+    }
+
+    box.innerHTML = data.requests.map(r => {
+      const date     = new Date(r.date).toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"short", year:"numeric" });
+      const subLabel = r.subject ? (subjectLabels[r.subject] || r.subject) : "Full Day";
       return `<div class="leave-card">
         <h4>🎓 ${r.studentName} <span style="font-size:12px;color:var(--muted);font-weight:400;">— ${r.section}</span></h4>
-        <div class="leave-meta">📅 ${date} &nbsp;·&nbsp; 📘 ${subLabel} &nbsp;·&nbsp; ⏰ ${new Date(r.createdAt).toLocaleString('en-IN')}</div>
+        <div class="leave-meta">📅 ${date} &nbsp;·&nbsp; 📘 ${subLabel} &nbsp;·&nbsp; ⏰ ${new Date(r.createdAt).toLocaleString("en-IN")}</div>
         <div class="leave-reason">💬 "${r.reason}"</div>
         <div class="leave-actions">
           <input type="text" placeholder="Remarks (optional)" id="rem_${r._id}">
           <button class="btn btn-green btn-sm" onclick="reviewLeave('${r._id}','Approved')">✅ Approve</button>
-          <button class="btn btn-red btn-sm" onclick="reviewLeave('${r._id}','Rejected')">❌ Reject</button>
+          <button class="btn btn-red btn-sm"   onclick="reviewLeave('${r._id}','Rejected')">❌ Reject</button>
         </div>
       </div>`;
     }).join("");
     loadStats();
-  }catch(err){ box.innerHTML=`<p style="color:var(--red);">Failed to load. Check connection.</p>`; }
+  } catch (err) {
+    box.innerHTML = `<p style="color:var(--red);">Failed to load. ${err.message}</p>`;
+  }
 }
 
-async function reviewLeave(id,status){
-  const remarks=document.getElementById("rem_"+id)?.value||"";
+async function reviewLeave(id, status) {
+  // ✅ FIX 7: Validate id and status
+  if (!id || !status) { showPopup("⚠️", "Error", "Missing leave request data."); return; }
+
+  const remarks = document.getElementById("rem_" + id)?.value || "";
   showLoader();
-  const res=await fetch(API+"/leave/review",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:"admin",remarks})});
-  const data=await res.json();
-  hideLoader();
-  if(data.success){ showPopup(status==="Approved"?"✅":"❌",status+"!",`Leave ${status.toLowerCase()} successfully.`); loadLeaveRequests("Pending"); }
-  else alert("❌ "+data.message);
+  try {
+    const data = await apiFetch(API + "/leave/review", {
+      method: "POST",
+      body: JSON.stringify({ id, status, reviewedBy: "admin", remarks })
+    });
+    hideLoader();
+    if (data.success) {
+      showPopup(status === "Approved" ? "✅" : "❌", status + "!", `Leave ${status.toLowerCase()} successfully.`);
+      loadLeaveRequests("Pending");
+    } else {
+      showPopup("❌", "Failed", data.message || "Server error.");
+    }
+  } catch (err) {
+    hideLoader();
+    showPopup("❌", "Network Error", err.message);
+  }
 }
 
-// ══════════ AUDIT LOG ══════════
-async function loadAuditLog(){
-  const box=document.getElementById("auditList");
-  const roll=document.getElementById("auditRollFilter").value.trim();
-  box.innerHTML=`<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
-  try{
-    const url=roll?`/audit-log?studentName=${encodeURIComponent(roll)}&limit=100`:"/audit-log?limit=100";
-    const res=await fetch(API+url);
-    const data=await res.json();
-    if(!data.success||!data.logs||!data.logs.length){
-      box.innerHTML=`<p style="color:var(--muted);font-size:13px;">No records found${roll?" for "+roll:""}.</p>`;
+// ══════════════════════════════════════════
+// AUDIT LOG
+// ══════════════════════════════════════════
+async function loadAuditLog() {
+  const box  = document.getElementById("auditList");
+  const roll = document.getElementById("auditRollFilter").value.trim();
+  box.innerHTML = `<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
+  try {
+    const url  = roll
+      ? `/audit-log?studentName=${encodeURIComponent(roll)}&limit=100`
+      : `/audit-log?limit=100`;
+    const data = await apiFetch(API + url);
+
+    if (!data.success || !data.logs || !data.logs.length) {
+      box.innerHTML = `<p style="color:var(--muted);font-size:13px;">No records found${roll ? " for " + roll : ""}.</p>`;
       return;
     }
-    const actionColors={
+
+    const actionColors = {
       "MARKED":"#34d399","EDITED":"#fbbf24","DELETED":"#f87171",
       "AUTO_MARKED":"#94a3b8","ADMIN_MARKED":"#a78bfa",
       "LEAVE_APPROVED":"#60a5fa","LEAVE_REQUESTED":"#38bdf8",
       "UNLOCK_GRANTED":"#fb923c","DELETE_ALL":"#ef4444"
     };
-    box.innerHTML=`<div class="table-wrap scroll-box" style="max-height:400px;">
+
+    box.innerHTML = `<div class="table-wrap scroll-box" style="max-height:400px;">
       <table class="dark-table">
         <tr><th>Time</th><th>Action</th><th>By</th><th>Student</th><th>Subject</th><th>Change</th></tr>
-        ${data.logs.map(l=>{
-          const color=actionColors[l.action]||"#94a3b8";
-          const time=new Date(l.timestamp).toLocaleString('en-IN');
-          const change=l.oldStatus&&l.newStatus?`${l.oldStatus} → ${l.newStatus}`:l.newStatus||"—";
+        ${data.logs.map(l => {
+          const color  = actionColors[l.action] || "#94a3b8";
+          const time   = new Date(l.timestamp).toLocaleString("en-IN");
+          const change = l.oldStatus && l.newStatus ? `${l.oldStatus} → ${l.newStatus}` : l.newStatus || "—";
           return `<tr>
             <td style="font-size:11px;color:var(--muted);">${time}</td>
             <td><span class="audit-action" style="background:${color}20;color:${color};">${l.action}</span></td>
-            <td style="font-size:12px;">${l.performedBy||"—"}</td>
-            <td style="font-size:12px;">${l.studentName||"—"}</td>
-            <td style="font-size:12px;">${subjectLabels[l.subject]||l.subject||"—"}</td>
+            <td style="font-size:12px;">${l.performedBy || "—"}</td>
+            <td style="font-size:12px;">${l.studentName || "—"}</td>
+            <td style="font-size:12px;">${subjectLabels[l.subject] || l.subject || "—"}</td>
             <td style="font-size:12px;color:var(--muted);">${change}</td>
           </tr>`;
         }).join("")}
       </table></div>`;
-  }catch(err){ box.innerHTML=`<p style="color:var(--red);">Failed to load audit log.</p>`; }
+  } catch (err) {
+    box.innerHTML = `<p style="color:var(--red);">Failed to load audit log. ${err.message}</p>`;
+  }
 }
 
-document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&document.getElementById("loginOverlay")?.style.display!=="none") checkLogin(); });
+// Enter key on login
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.getElementById("loginOverlay")?.style.display !== "none") checkLogin();
+});
 </script>
+
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 <script src="utils.js"></script>
