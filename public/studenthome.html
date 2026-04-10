@@ -91,7 +91,7 @@
 <div class="top-nav">
   <h2>🎓 Student Dashboard — SVPCET</h2>
   <div class="nav-btns">
-    <a href="leaderboard.html" class="nav-btn">🏆 Leaderboard</a>
+    <button class="nav-btn" onclick="goRanking()">🏆 Leaderboard</button>
     <a href="leaverequest.html" class="nav-btn">📋 Leave</a>
     <button class="nav-btn logout" onclick="logout()">🚪 Logout</button>
   </div>
@@ -462,6 +462,11 @@ connectSSE();
 
 // ✅ Fallback polling every 5 seconds (reduced from 30s)
 setInterval(() => loadData(false), 5000);
+function goRanking(){
+  localStorage.setItem("role","student");
+  localStorage.setItem("section", section); // VERY IMPORTANT
+  window.location.href = "leaderboard.html";
+}
 </script>
 
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
