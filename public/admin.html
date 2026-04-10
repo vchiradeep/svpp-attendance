@@ -496,7 +496,9 @@ body { background:var(--bg); min-height:100vh; color:var(--text); font-family:'D
 </div>
 <script src="utils.js"></script>
 <script>
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 let currentSection = 'student';
 
 const timetable = {
@@ -602,9 +604,9 @@ function checkLogin() {
 async function loadStats() {
   try {
     const [attRes, leaveRes, missedRes] = await Promise.all([
-      apiFetch(API + "/attendance"),
-      apiFetch(API + "/leave/pending"),
-      apiFetch(API + "/admin/missed-summary")
+      apiFetch(window.API + "/attendance"),
+      apiFetch(window.API + "/leave/pending"),
+      apiFetch(window.API + "/admin/missed-summary")
     ]);
 
     const today          = new Date().toISOString().split("T")[0];
@@ -659,7 +661,7 @@ async function searchStudent() {
 
   showLoader();
   try {
-    const data = await apiFetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    const data = await apiFetch(window.API + "/attendance?studentName=" + encodeURIComponent(roll));
     hideLoader();
 
     const result = document.getElementById("result");
@@ -721,7 +723,7 @@ async function deleteRecord(name, date, subject) {
 
   showLoader();
   try {
-    const data = await apiFetch(API + "/delete", {
+    const data = await apiFetch(window.API + "/delete", {
       method: "POST",
       body: JSON.stringify({ studentName: name, date, subject })
     });
@@ -751,10 +753,10 @@ async function deleteStudentRecord(roll) {
   showLoader();
   try {
     // ✅ Uses per-student delete (calls /delete for each record) instead of /delete-all
-    const data = await apiFetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    const data = await apiFetch(window.API + "/attendance?studentName=" + encodeURIComponent(roll));
     let deleted = 0;
     for (const record of data) {
-      await apiFetch(API + "/delete", {
+      await apiFetch(window.API + "/delete", {
         method: "POST",
         body: JSON.stringify({ studentName: record.studentName, date: record.date, subject: record.subject })
       });
@@ -789,7 +791,7 @@ async function updateAttendance() {
   try {
     const d = {};
     d[roll] = status;
-    const data = await apiFetch(API + "/submit-attendance", {
+    const data = await apiFetch(window.API + "/submit-attendance", {
       method: "POST",
       body: JSON.stringify({ date, subject, data: d, section: "Unknown" })
     });
@@ -832,7 +834,7 @@ async function loadMissedSummary() {
   const box = document.getElementById("missedSummary");
   box.innerHTML = `<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
   try {
-    const data = await apiFetch(API + "/admin/missed-summary");
+    const data = await apiFetch(window.API + "/admin/missed-summary");
     if (!data.success || !data.missed || !data.missed.length) {
       box.innerHTML = `<p style="color:var(--green);font-size:13px;">✅ No missed markings — all teachers up to date.</p>`;
       return;
@@ -863,7 +865,7 @@ async function loadMissedSummary() {
 async function quickUnlock(subject, section, date) {
   showLoader();
   try {
-    const data = await apiFetch(API + "/admin/unlock", {
+    const data = await apiFetch(window.API + "/admin/unlock", {
       method: "POST",
       body: JSON.stringify({ subject, section, date })
     });
@@ -888,7 +890,7 @@ async function unlockForTeacher() {
 
   showLoader();
   try {
-    const data = await apiFetch(API + "/admin/unlock", {
+    const data = await apiFetch(window.API + "/admin/unlock", {
       method: "POST",
       body: JSON.stringify({ subject, section, date })
     });
@@ -969,7 +971,7 @@ async function submitAdminMark() {
 
   showLoader();
   try {
-    const data = await apiFetch(API + "/admin/mark-on-behalf", {
+    const data = await apiFetch(window.API + "/admin/mark-on-behalf", {
       method: "POST",
       body: JSON.stringify({ subject, section, date, data: adminMarkData })
     });
@@ -1022,7 +1024,7 @@ function loadTeachers() {
 async function viewTeacher(subject) {
   showLoader();
   try {
-    const data     = await apiFetch(API + "/attendance");
+    const data     = await apiFetch(window.API + "/attendance");
     hideLoader();
     const filtered = data.filter(d => d.subject === subject);
 
@@ -1104,7 +1106,7 @@ async function loadLeaveRequests(filter) {
   const box = document.getElementById("leaveList");
   box.innerHTML = `<p style="color:var(--muted);font-size:13px;">Loading...</p>`;
   try {
-    const url  = filter === "All" ? API + "/leave/pending?all=true" : API + "/leave/pending";
+    const url  = filter === "All" ? window.API + "/leave/pending?all=true" : window.API + "/leave/pending";
     const data = await apiFetch(url);
 
     if (!data.success || !data.requests || !data.requests.length) {
@@ -1139,7 +1141,7 @@ async function reviewLeave(id, status) {
   const remarks = document.getElementById("rem_" + id)?.value || "";
   showLoader();
   try {
-    const data = await apiFetch(API + "/leave/review", {
+    const data = await apiFetch(window.API + "/leave/review", {
       method: "POST",
       body: JSON.stringify({ id, status, reviewedBy: "admin", remarks })
     });
@@ -1167,7 +1169,7 @@ async function loadAuditLog() {
     const url  = roll
       ? `/audit-log?studentName=${encodeURIComponent(roll)}&limit=100`
       : `/audit-log?limit=100`;
-    const data = await apiFetch(API + url);
+    const data = await apiFetch(window.API + url);
 
     if (!data.success || !data.logs || !data.logs.length) {
       box.innerHTML = `<p style="color:var(--muted);font-size:13px;">No records found${roll ? " for " + roll : ""}.</p>`;
@@ -1208,8 +1210,6 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter" && document.getElementById("loginOverlay")?.style.display !== "none") checkLogin();
 });
 </script>
-
-
 <div id="loader" style="display:none;"><div class="spinner"></div></div>
 </body>
 </html>
