@@ -182,7 +182,9 @@
 </div>
 <script src="utils.js"></script>
 <script>
-const API     = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 const roll    = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
 if(!roll||!section){alert("Please login first");window.location.href="student.html";}
@@ -319,8 +321,7 @@ async function submitLeave(){
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     
-        const baseAPI = window.location.origin;
-    const res = await fetch(baseAPI+"/leave/request",{
+    const res = await fetch(window.API + "/leave/request", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
@@ -393,7 +394,7 @@ async function loadHistory(){
   box.innerHTML = `<div class="empty">Loading...</div>`;
 
   try {
-    const res  = await fetch(API+"/leave/student/"+encodeURIComponent(roll));
+    const res  = await fetch(window.API+"/leave/student/"+encodeURIComponent(roll));
     const data = await res.json();
     allRequests = data.requests || [];
     renderHistory();

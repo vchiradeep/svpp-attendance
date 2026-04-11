@@ -210,7 +210,9 @@
 </div>
 
 <script>
-const API     = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 const subject = localStorage.getItem("subject");
 const subjectLabels = {
   "PHY":"Physics","BEEE":"Electrical (BEEE)","ECE":"Electronics (BEEE)",
@@ -238,7 +240,7 @@ function showActionPopup(icon,title,msg){
 async function checkMissedAttendance(){
   if(!subject)return;
   try{
-    const res=await fetch(`${API}/teacher/missed/${subject}`);
+    const res=await fetch(`${window.API}/teacher/missed/${subject}`);
     const data=await res.json();
     if(!data.success)return;
     if(data.missed){
@@ -286,7 +288,7 @@ async function toggleMissedHistory(){
   if(historyLoaded)return;
   historyLoaded=true;
   try{
-    const res=await fetch(`${API}/teacher/all-missed/${subject}`);
+    const res=await fetch(`${window.API}/teacher/all-missed/${subject}`);
     const data=await res.json();
     const container=document.getElementById("missedHistoryItems");
     if(!data.success||!data.missedDates||!data.missedDates.length){
@@ -318,8 +320,8 @@ async function loadLeaveRequests(filter){
   box.innerHTML=`<p style="color:#64748b;font-size:13px;">Loading...</p>`;
   try{
     const url=filter==="All"
-      ? `${API}/leave/teacher/${subject}?status=All`
-      : `${API}/leave/teacher/${subject}?status=Pending`;
+      ? `${window.API}/leave/teacher/${subject}?status=All`
+      : `${window.API}/leave/teacher/${subject}?status=Pending`;
     const res=await fetch(url);
     const data=await res.json();
 
@@ -367,7 +369,7 @@ function toggleLLetter(i){
 async function reviewLeave(id,status){
   const remarks=document.getElementById("rem_"+id)?.value||"";
   try{
-    const res=await fetch(`${API}/leave/review`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:subject,remarks})});
+    const res=await fetch(`${window.API}/leave/review`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:subject,remarks})});
     const data=await res.json();
     if(data.success){
       showActionPopup(status==="Approved"?"✅":"❌",status+"!",`Leave request ${status.toLowerCase()} successfully.`);
@@ -384,7 +386,7 @@ checkMissedAttendance();
 // Check for pending leave requests on load
 setTimeout(async()=>{
   try{
-    const res=await fetch(`${API}/leave/teacher/${subject}?status=Pending`);
+    const res=await fetch(`${window.API}/leave/teacher/${subject}?status=Pending`);
     const data=await res.json();
     const badge=document.getElementById("leaveBadge");
     if(data.requests&&data.requests.length>0){badge.style.display="inline";badge.textContent=data.requests.length;}

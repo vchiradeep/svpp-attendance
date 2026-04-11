@@ -51,12 +51,14 @@
  
 <script>
 // ✅ FIXED: was "http://localhost:3000" — breaks on Render
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
  
 async function loadRanking(){
     showLoader();
  
-    const res = await fetch(API + "/attendance");
+    const res = await fetch(window.API + "/attendance");
     const data = await res.json();
  
     let subjectMap = {};

@@ -73,7 +73,9 @@
 <script>
 // ✅ FIXED: Use window.location.origin instead of hardcoded localhost
 // was: const API = "http://localhost:3000";  ❌ BREAKS ON RENDER
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 
 const roll = localStorage.getItem("studentRoll");
 
@@ -128,7 +130,7 @@ function showNotification(msg, color="#4caf50"){
 async function loadAttendance(showLoad = true){
   if(showLoad) showLoader();
 
-  const res = await fetch(API + "/attendance?studentName=" + roll);
+  const res = await fetch(window.API + "/attendance?studentName=" + roll);
   const data = await res.json();
 
   let currentHash = JSON.stringify(data);
@@ -301,7 +303,7 @@ function toggleDark(){
 let eventSource = null;
 function connectSSE() {
   if (eventSource) eventSource.close();
-  eventSource = new EventSource(API + "/events");
+  eventSource = new EventSource(window.API + "/events");
   eventSource.onmessage = (e) => {
     const data = JSON.parse(e.data);
     if (data.type === "attendance" || data.type === "connected") {

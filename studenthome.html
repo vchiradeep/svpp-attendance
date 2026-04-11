@@ -178,7 +178,9 @@
 </div>
 
 <script>
-const API     = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 const roll    = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
 
@@ -211,7 +213,7 @@ const chart = new Chart(document.getElementById("chart"), {
 async function loadData(showLoad=true){
   if(showLoad) showLoader();
   try {
-    const res  = await fetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    const res  = await fetch(window.API + "/attendance?studentName=" + encodeURIComponent(roll));
     const data = await res.json();
 
     // ✅ Check if data changed (for auto-refresh notification)

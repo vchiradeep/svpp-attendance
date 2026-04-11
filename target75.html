@@ -17,12 +17,14 @@
  
 <script>
 // ✅ FIXED: was "http://localhost:3000" — breaks on Render
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 const roll = localStorage.getItem("studentRoll");
  
 showLoader();
  
-fetch(API + "/attendance?studentName=" + roll)
+fetch(window.API + "/attendance?studentName=" + roll)
 .then(res => res.json())
 .then(data => {
  

@@ -269,7 +269,9 @@
 </div>
 
 <script>
-const API = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 
 const timetable = {
   Monday:    [["1","9:30-10:20","BEEE"],["2","10:20-11:10","BEEE"],["3","11:10-12:00","EG LAB"],["4","12:00-12:50","EG LAB"],["5","1:30-2:20","DS LAB"],["6","2:20-3:10","DS LAB"],["7","3:10-4:00","DS LAB"]],
@@ -329,7 +331,7 @@ async function searchStudent(){
   const roll = document.getElementById("searchRoll").value.trim();
   if(!roll){ alert("Enter Roll No"); return; }
   showLoader();
-  const res  = await fetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+  const res  = await fetch(window.API + "/attendance?studentName=" + encodeURIComponent(roll));
   const data = await res.json();
   hideLoader();
 
@@ -380,7 +382,7 @@ async function searchStudent(){
 async function deleteRecord(name,date,subject){
   if(!confirm("Delete this record?")) return;
   showLoader();
-  await fetch(API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
+  await fetch(window.API+"/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({studentName:name,date,subject})});
   hideLoader();
   showPopup("🗑️","Deleted","Record deleted successfully.");
   searchStudent();
@@ -389,7 +391,7 @@ async function deleteRecord(name,date,subject){
 async function deleteAllStudentRecords(roll){
   if(!confirm(`⚠️ Delete ALL attendance records for ${roll}? This cannot be undone.`)) return;
   showLoader();
-  await fetch(API+"/delete-all",{method:"POST"});
+  await fetch(window.API+"/delete-all",{method:"POST"});
   hideLoader();
   showPopup("🗑️","All Deleted","All records deleted successfully.");
   document.getElementById("result").innerHTML="";
@@ -403,7 +405,7 @@ async function updateAttendance(){
   if(!roll||!date||!subject){ alert("Fill all fields"); return; }
   showLoader();
   const d = {}; d[roll] = status;
-  const res  = await fetch(API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data:d,section:"A"})});
+  const res  = await fetch(window.API+"/submit-attendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({date,subject,data:d,section:"A"})});
   const data = await res.json();
   hideLoader();
   if(data.success){ showPopup("✅","Updated!",`Attendance for ${roll} updated to ${status}.`); searchStudent(); }
@@ -425,7 +427,7 @@ function updatePeriods(){
 async function loadMissedSummary(){
   const box = document.getElementById("missedSummary");
   box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
-  const res  = await fetch(API+"/admin/missed-summary");
+  const res  = await fetch(window.API+"/admin/missed-summary");
   const data = await res.json();
 
   if(!data.success||!data.missed||!data.missed.length){
@@ -454,7 +456,7 @@ async function loadMissedSummary(){
 
 async function quickUnlock(subject,section,date){
   showLoader();
-  const res  = await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const res  = await fetch(window.API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
   const data = await res.json();
   hideLoader();
   if(data.success){ showPopup("🔓","Unlocked!",data.message); loadMissedSummary(); }
@@ -467,7 +469,7 @@ async function unlockForTeacher(){
   const date    = document.getElementById("unlockDate").value;
   if(!subject||!section||!date){ alert("Please fill Subject, Section and Date"); return; }
   showLoader();
-  const res  = await fetch(API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
+  const res  = await fetch(window.API+"/admin/unlock",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date})});
   const data = await res.json();
   hideLoader();
   const box = document.getElementById("unlockResult");
@@ -531,7 +533,7 @@ async function submitAdminMark(){
   if(!subject||!section||!date){ alert("Missing data"); return; }
 
   showLoader();
-  const res  = await fetch(API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
+  const res  = await fetch(window.API+"/admin/mark-on-behalf",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({subject,section,date,data:adminMarkData})});
   const data = await res.json();
   hideLoader();
 
@@ -571,7 +573,7 @@ function loadTeachers(){
 
 async function viewTeacher(subject){
   showLoader();
-  const res  = await fetch(API+"/attendance");
+  const res  = await fetch(window.API+"/attendance");
   const data = await res.json();
   hideLoader();
 
@@ -645,7 +647,7 @@ async function loadLeaveRequests(filter){
   box.innerHTML = `<p style="color:#64748b;font-size:13px;">Loading...</p>`;
 
   try {
-    const url = filter==="All" ? API+"/leave/pending?all=true" : API+"/leave/pending";
+    const url = filter==="All" ? window.API+"/leave/pending?all=true" : window.API+"/leave/pending";
     const res  = await fetch(url);
     const data = await res.json();
 
@@ -676,7 +678,7 @@ async function loadLeaveRequests(filter){
 async function reviewLeave(id,status){
   const remarks = document.getElementById("rem_"+id)?.value||"";
   showLoader();
-  const res  = await fetch(API+"/leave/review",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:"admin",remarks})});
+  const res  = await fetch(window.API+"/leave/review",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status,reviewedBy:"admin",remarks})});
   const data = await res.json();
   hideLoader();
   if(data.success){
@@ -695,7 +697,7 @@ async function loadAuditLog(){
 
   try {
     const url  = roll ? `/audit-log?studentName=${encodeURIComponent(roll)}&limit=100` : `/audit-log?limit=100`;
-    const res  = await fetch(API+url);
+    const res  = await fetch(window.API+url);
     const data = await res.json();
 
     if(!data.success||!data.logs||!data.logs.length){

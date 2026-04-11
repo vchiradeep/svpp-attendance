@@ -178,7 +178,9 @@
 </div>
 <script src="utils.js"></script>
 <script>
-const API     = window.location.origin;
+if (!window.API) {
+  window.API = window.location.origin;
+}
 const roll    = localStorage.getItem("studentRoll");
 const section = localStorage.getItem("section");
 
@@ -211,7 +213,7 @@ const chart = new Chart(document.getElementById("chart"), {
 async function loadData(showLoad=true){
   if(showLoad) showLoader();
   try {
-    const res  = await fetch(API + "/attendance?studentName=" + encodeURIComponent(roll));
+    const res  = await fetch(window.API + "/attendance?studentName=" + encodeURIComponent(roll));
     const data = await res.json();
 
     // ✅ Check if data changed (for auto-refresh notification)
@@ -445,7 +447,7 @@ loadData(true);
 let sseRetry = 0;
 function connectSSE(){
   try {
-    const es = new EventSource(API + "/events");
+    const es = new EventSource(window.API + "/events");
     es.onopen = () => { sseRetry = 0; };
     es.onmessage = () => {
       // Any server event triggers an immediate silent refresh
